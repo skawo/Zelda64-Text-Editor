@@ -23,6 +23,20 @@ namespace OcarinaTextEditor
             }
         }
 
+        public static void PadByteList16(List<byte> list)
+        {
+            // Pad up to a 32 byte alignment
+            // Formula: (x + (n-1)) & ~(n-1)
+            long nextAligned = (list.Count + 0xE) & ~0xE;
+
+            long delta = nextAligned - list.Count;
+
+            for (int i = 0; i < delta; i++)
+            {
+                list.Add(0);
+            }
+        }
+
         public static void PadByteList4(List<byte> list)
         {
             // Pad up to a 32 byte alignment

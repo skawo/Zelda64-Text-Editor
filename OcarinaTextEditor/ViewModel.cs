@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Data;
 using OcarinaTextEditor.Enums;
 using System.IO;
+using GameFormatReader.Common;
 
 namespace OcarinaTextEditor
 {
@@ -41,6 +42,36 @@ namespace OcarinaTextEditor
             }
         }
         private ObservableCollection<Message> m_messageList;
+        #endregion
+
+        #region ZZRPMode
+
+        private Boolean _ZZRPMode;
+        public Boolean ZZRPMode
+        {
+            get { return _ZZRPMode; }
+            set
+            {
+                _ZZRPMode = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        #endregion
+
+        #region OldMode
+
+        private Boolean _OldMode;
+        public Boolean OldMode
+        {
+            get { return _OldMode; }
+            set
+            {
+                _OldMode = value;
+                NotifyPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region public Message SelectedMessage
@@ -113,6 +144,8 @@ namespace OcarinaTextEditor
 
         private Dictionary<ControlCode, string> m_controlCodes;
 
+        ROMVer Version = ROMVer.Unknown;
+
         public int TextboxPosition;
 
         private MemoryStream m_inputFile;
@@ -159,6 +192,14 @@ namespace OcarinaTextEditor
         {
             get { return new RelayCommand(x => InsertControlCode((string)x), x => SelectedMessage != null); }
         }
+        public ICommand OnRequestOpenZZRP
+        {
+            get { return new RelayCommand(x => OpenZZRP(), x => true); }
+        }
+        public ICommand OnRequestSaveZZRP
+        {
+            get { return new RelayCommand(x => SaveZZRP(), x => MessageList != null); }
+        }
         #endregion
 
         public ViewModel()
@@ -166,6 +207,42 @@ namespace OcarinaTextEditor
             ViewSource = new CollectionViewSource();
 
             m_controlCodes = PopulateCodeDictionary();
+        }
+
+        private ROMVer CheckRomVersion(string fileName)
+        {
+            using (FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            {
+                m_inputFile = new MemoryStream();
+                stream.CopyTo(m_inputFile);
+
+                EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
+
+                byte[] Buffer = new byte[8];
+                reader.BaseStream.Seek(0x740C, 0);
+                reader.Read(Buffer, 0, 8);
+                string Date = Encoding.ASCII.GetString(Buffer);
+
+                if (Date == "98-10-21")
+                {
+                    System.Windows.MessageBox.Show("Warning: 1.0 Support is largely untested!");
+                    return ROMVer.N1_0;
+                }
+                else
+                {
+                    reader.BaseStream.Seek(0x12F50, 0);
+                    reader.Read(Buffer, 0, 8);
+                    Date = Encoding.ASCII.GetString(Buffer);
+
+                    if (Date == "03-02-21")
+                        return ROMVer.Debug;
+                    else
+                    {
+                        System.Windows.MessageBox.Show("ROM unsupported; supply a clean uncompressed NTSC 1.0 ROM, or the Debug ROM.");
+                        return ROMVer.Unknown;
+                    }
+                }
+            }
         }
 
         #region Input/Output
@@ -177,7 +254,12 @@ namespace OcarinaTextEditor
 
             if (openFile.ShowDialog() == true)
             {
-                Importer file = new Importer(openFile.FileName, m_controlCodes);
+                Version = CheckRomVersion(openFile.FileName);
+
+                if (Version == ROMVer.Unknown)
+                    return;
+
+                Importer file = new Importer(openFile.FileName, m_controlCodes, false, Version == ROMVer.Debug);
                 MessageList = file.GetMessageList();
 
                 // If message list is null, we failed to open a ROM
@@ -191,6 +273,47 @@ namespace OcarinaTextEditor
                 SelectedMessage = MessageList[0];
 
                 WindowTitle = string.Format("{0} - Ocarina of Time Text Editor", openFile.FileName);
+
+                OldMode = true;
+                ZZRPMode = false;
+            }
+        }
+
+        private void OpenZZRP()
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+
+            openFile.Filter = "zzromtool Projects (*.zzrp)|*.zzrp";
+
+            if (openFile.ShowDialog() == true)
+            {
+                string zzrpFolder = Path.GetDirectoryName(openFile.FileName);
+                string codeFile = Path.Combine(zzrpFolder, "system", "code");
+                string msgData = Path.Combine(zzrpFolder, "misc", "nes_message_data_static");
+
+                if (!File.Exists(codeFile) || !File.Exists(msgData))
+                {
+                    System.Windows.Forms.MessageBox.Show("This doesn't look to be a zzromtool filesystem...");
+                    return;
+                }
+
+                Importer file = new Importer(openFile.FileName, m_controlCodes, true, Version == ROMVer.Debug);
+                MessageList = file.GetMessageList();
+
+                // If message list is null, we failed to parse.
+                if (MessageList == null)
+                    return;
+
+                m_inputFileName = openFile.FileName;
+                m_inputFile = file.GetInputFile();
+
+                ViewSource.Source = MessageList;
+                SelectedMessage = MessageList[0];
+
+                WindowTitle = Path.GetFileNameWithoutExtension(openFile.FileName) + " - Ocarina of Time Text Editor";
+
+                ZZRPMode = true;
+                OldMode = false;
             }
         }
 
@@ -223,6 +346,9 @@ namespace OcarinaTextEditor
             SelectedMessage = MessageList[0];
 
             WindowTitle = string.Format("{0} - Ocarina of Time Text Editor", tableFileName);
+
+            OldMode = true;
+            ZZRPMode = false;
         }
 
         private void SaveToNewRom()
@@ -232,7 +358,7 @@ namespace OcarinaTextEditor
 
             if (saveFile.ShowDialog() == true)
             {
-                Exporter export = new Exporter(m_messageList, saveFile.FileName, Enums.ExportType.NewROM, m_controlCodes, m_inputFile);
+                Exporter export = new Exporter(m_messageList, saveFile.FileName, Enums.ExportType.NewROM, m_controlCodes, m_inputFile, Version == ROMVer.Debug);
                 m_inputFileName = saveFile.FileName;
                 WindowTitle = string.Format("{0} - Ocarina of Time Text Editor", m_inputFileName);
             }
@@ -240,7 +366,12 @@ namespace OcarinaTextEditor
 
         private void SaveToOriginalRom()
         {
-            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.OriginalROM, m_controlCodes, m_inputFile);
+            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.OriginalROM, m_controlCodes, m_inputFile, Version == ROMVer.Debug);
+        }
+
+        private void SaveZZRP()
+        {
+            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRP, m_controlCodes, m_inputFile, Version == ROMVer.Debug);
         }
 
         private void SaveToFiles()
@@ -259,7 +390,7 @@ namespace OcarinaTextEditor
 
             if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                Exporter export = new Exporter(m_messageList, ofd.FileName, Enums.ExportType.File, m_controlCodes);
+                Exporter export = new Exporter(m_messageList, ofd.FileName, Enums.ExportType.File, m_controlCodes, Version == ROMVer.Debug);
             }
         }
 
@@ -270,7 +401,7 @@ namespace OcarinaTextEditor
 
             if (saveFile.ShowDialog() == true)
             {
-                Exporter export = new Exporter(m_messageList, saveFile.FileName, Enums.ExportType.Patch, m_controlCodes);
+                Exporter export = new Exporter(m_messageList, saveFile.FileName, Enums.ExportType.Patch, m_controlCodes, Version == ROMVer.Debug);
             }
         }
 
@@ -281,6 +412,10 @@ namespace OcarinaTextEditor
             m_inputFileName = "";
             ViewSource.Source = null;
             WindowTitle = "Ocarina of Time Text Editor";
+
+            OldMode = false;
+            ZZRPMode = false;
+
         }
         #endregion
 
@@ -331,9 +466,9 @@ namespace OcarinaTextEditor
             
             if (src == null)
                 e.Accepted = false;
-            
+
             //test if textbox message doesn't match our filter
-            if (src.TextData != null && !src.TextData.Contains(SearchFilter))
+            if (src.TextData != null && !src.TextData.ToUpper().Contains(SearchFilter.ToUpper()))
                 e.Accepted = false;
 
             //test if filter matches a textbox id

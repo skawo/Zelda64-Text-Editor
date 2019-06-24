@@ -260,7 +260,7 @@ namespace OcarinaTextEditor
                         {
                             data.Add((byte)ControlCode.Line_Break);
                         }
-                        catch (IndexOutOfRangeException ex)
+                        catch (IndexOutOfRangeException)
                         {
                             data.Add((byte)ControlCode.Line_Break);
                         }

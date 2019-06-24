@@ -20,7 +20,11 @@
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="10"/>
         <DockPanel LastChildFill="True" Margin="0,21,2,32">
             <Grid>
-                <ListView Margin="10,31,0,10" ItemsSource="{Binding ViewSource.View}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="21*"/>
+                </Grid.ColumnDefinitions>
+                <ListView Margin="10,31,0,10" ItemsSource="{Binding ViewSource.View}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2">
                     <ListView.View>
                         <GridView AllowsColumnReorder="False">
                             <!--<GridViewColumn Header="ID (Dec)" Width="80" DisplayMemberBinding="{Binding MessageID}"/>-->
@@ -29,20 +33,22 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
-                <xctk:WatermarkTextBox Margin="10,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Watermark="Type to search..." Text="{Binding SearchFilter, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding MessageList, Converter={StaticResource NullToFalseConverter}}"/>
+                <xctk:WatermarkTextBox Margin="10,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Watermark="Type to search..." Text="{Binding SearchFilter, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding MessageList, Converter={StaticResource NullToFalseConverter}}" Grid.ColumnSpan="2"/>
             </Grid>
         </DockPanel>
         <Menu VerticalAlignment="Top" Grid.ColumnSpan="3" Height="21">
             <MenuItem Header="File">
+                <MenuItem Header="Open ZZRP..." HorizontalAlignment="Left" Height="22" Width="212" Command="{Binding OnRequestOpenZZRP, Mode=OneWay}"/>
                 <MenuItem Header="Open ROM..." Command="{Binding OnRequestOpenFile}"/>
                 <MenuItem Header="Open Generated Data..." Command="{Binding OnRequestOpenData}"/>
                 <Separator/>
-                <MenuItem Header="Save to ROM" IsEnabled="{Binding MessageList, Converter={StaticResource NullToFalseConverter}}">
+                <MenuItem Header="Save ZZRP" Height="17" IsEnabled="{Binding ZZRPMode}" Command="{Binding OnRequestSaveZZRP, Mode=OneWay}"/>
+                <MenuItem Header="Save to ROM" IsEnabled="{Binding OldMode}">
                     <MenuItem Header="Save" Command="{Binding OnRequestSaveFileOriginalROM}"/>
                     <MenuItem Header="Save as..." Command="{Binding OnRequestSaveFileNewROM}"/>
                 </MenuItem>
-                <MenuItem Header="Save to PPF..." Command="{Binding OnRequestSaveFilePatch}"/>
-                <MenuItem Header="Save to Extracted Data..." Command="{Binding OnRequestSaveFileFiles}"/>
+                <MenuItem Header="Save to PPF..." IsEnabled="{Binding OldMode}"/>
+                <MenuItem Header="Save to Extracted Data..." IsEnabled="{Binding MessageList, Converter={StaticResource NullToFalseConverter}}" Command="{Binding OnRequestSaveFileFiles, Mode=OneWay}"/>
                 <Separator/>
                 <MenuItem Header="Close File" Command="{Binding OnRequestCloseFile}"/>
             </MenuItem>

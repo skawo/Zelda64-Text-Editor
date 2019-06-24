@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace OcarinaTextEditor.Enums
 {
-    public enum ExportType
+    public enum ROMVer
     {
-        NewROM,
-        OriginalROM,
-        Patch,
-        File,
-        ZZRP
+        Debug = 0,
+        N1_0 = 1,
+        Unknown = 20
     }
 }
