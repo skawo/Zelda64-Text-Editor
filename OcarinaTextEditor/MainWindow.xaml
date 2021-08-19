@@ -4,7 +4,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="OcarinaTextEditor.MainWindow"
         xmlns:local="clr-namespace:OcarinaTextEditor"
         xmlns:converters="clr-namespace:OcarinaTextEditor.Converters"
-        Title="{Binding WindowTitle}" Height="450" Width="600" Icon="Resources/Ocarina_of_Time_Icon.ico">
+        Title="{Binding WindowTitle}" Height="634" Width="600" Icon="Resources/Ocarina_of_Time_Icon.ico">
     <Window.DataContext>
         <local:ViewModel/>
     </Window.DataContext>
@@ -13,11 +13,13 @@
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="101*"/>
+            <ColumnDefinition Width="209*"/>
             <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="183*"/>
+            <ColumnDefinition Width="270*"/>
+            <ColumnDefinition Width="108*"/>
+            <ColumnDefinition Width="0*"/>
         </Grid.ColumnDefinitions>
-        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="10"/>
+
         <DockPanel LastChildFill="True" Margin="0,21,2,32">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -36,7 +38,7 @@
                 <xctk:WatermarkTextBox Margin="10,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Watermark="Type to search..." Text="{Binding SearchFilter, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding MessageList, Converter={StaticResource NullToFalseConverter}}" Grid.ColumnSpan="2"/>
             </Grid>
         </DockPanel>
-        <Menu VerticalAlignment="Top" Grid.ColumnSpan="3" Height="21">
+        <Menu VerticalAlignment="Top" Grid.ColumnSpan="4" Height="21">
             <MenuItem Header="File">
                 <MenuItem Header="Open ZZRP..." HorizontalAlignment="Left" Height="22" Width="212" Command="{Binding OnRequestOpenZZRP, Mode=OneWay}"/>
                 <MenuItem Header="Open ROM..." Command="{Binding OnRequestOpenFile}"/>
@@ -53,8 +55,8 @@
                 <MenuItem Header="Close File" Command="{Binding OnRequestCloseFile}"/>
             </MenuItem>
         </Menu>
-        <DockPanel LastChildFill="True" Margin="0,123,9,10" Grid.Column="2">
-            <TextBox TextWrapping="Wrap" Text="{Binding SelectedMessage.TextData, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" SelectionChanged="TextBox_SelectionChanged">
+        <DockPanel LastChildFill="True" Margin="0,123,9,136" Grid.Column="2" Grid.ColumnSpan="2">
+            <TextBox x:Name="textBoxMsg" TextWrapping="Wrap" Text="{Binding SelectedMessage.TextData, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" SelectionChanged="TextBox_SelectionChanged">
                 <TextBox.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Cut" Command="ApplicationCommands.Cut"/>
@@ -120,7 +122,7 @@
                 </TextBox.ContextMenu>
             </TextBox>
         </DockPanel>
-        <DockPanel Height="97" LastChildFill="True" Margin="4,21,9,0" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="2">
+        <DockPanel Height="97" LastChildFill="True" Margin="4,21,9,0" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="3">
             <Grid>
                 <GroupBox Header="Textbox Options" Margin="0,-3,0,0">
                     <Grid HorizontalAlignment="Left" Width="282" Margin="0,0,0,-10">
@@ -140,5 +142,15 @@
             <Button Content="Add" Margin="0,0,7,10" Command="{Binding OnRequestAddMessage}" Height="22" VerticalAlignment="Bottom"/>
             <Button Content="Remove" Margin="8,0,0,10" Command="{Binding OnRequestRemoveMessage}" Height="22" VerticalAlignment="Bottom" Grid.Column="1"/>
         </Grid>
+        <DockPanel x:Name="dockMsgPreview" LastChildFill="True" Margin="0,463,9,32" Grid.Column="2" Grid.ColumnSpan="2">
+            <DockPanel.Background>
+                <ImageBrush x:Name="msgPreview" Stretch="Uniform" AlignmentX="Left" AlignmentY="Center"/>
+            </DockPanel.Background>
+        </DockPanel>
+        <DockPanel Margin="0,567,9,0" Grid.Column="2" HorizontalAlignment="Right" Grid.ColumnSpan="2" VerticalAlignment="Bottom">
+            <Label Width="100" HorizontalAlignment="Right" Height="25">Box number:</Label>
+            <xctk:IntegerUpDown x:Name="numUpNumBoxes" FormatString="N0" Value="1" Increment="1" Maximum="1" Width="50" HorizontalAlignment="Left" Height="25"/>
+        </DockPanel>
+        <Button x:Name="button" Content="Button" Grid.Column="4" HorizontalAlignment="Left" Margin="118,118,-193,0" VerticalAlignment="Top" Width="75"/>
     </Grid>
 </Window>

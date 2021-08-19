@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,79 @@ namespace OcarinaTextEditor
 
             BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
             BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>();
+
+            textBoxMsg.TextChanged += TextBoxMsg_TextChanged;
+            numUpNumBoxes.ValueChanged += NumUpNumBoxes_ValueChanged;
+            BoxTypeCombo.SelectionChanged += BoxTypeCombo_SelectionChanged;
+        }
+
+
+        BitmapImage BitmapToImageSource(System.Drawing.Bitmap bitmap)
+        {
+            using (MemoryStream memory = new MemoryStream())
+            {
+                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+                memory.Position = 0;
+                BitmapImage bitmapimage = new BitmapImage();
+                bitmapimage.BeginInit();
+                bitmapimage.StreamSource = memory;
+                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapimage.EndInit();
+               
+
+                return bitmapimage;
+            }
+        }
+
+        private void SetMsgBackground(int Type)
+        {
+           // if (Type == 4)
+           //     dockMsgPreview.Background = System.Windows.Media.Brushes.Black;
+           // else
+           //     dockMsgPreview.Background = System.Windows.Media.Brushes.White;
+        }
+
+        private void BoxTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            textBoxMsg.TextChanged -= TextBoxMsg_TextChanged;
+            numUpNumBoxes.ValueChanged -= NumUpNumBoxes_ValueChanged;
+            BoxTypeCombo.SelectionChanged -= BoxTypeCombo_SelectionChanged;
+
+            SetMsgBackground(BoxTypeCombo.SelectedIndex);
+            TextBoxMsg_TextChanged(null, null);
+
+            textBoxMsg.TextChanged += TextBoxMsg_TextChanged;
+            numUpNumBoxes.ValueChanged += NumUpNumBoxes_ValueChanged;
+            BoxTypeCombo.SelectionChanged += BoxTypeCombo_SelectionChanged;
+        }
+
+        private void NumUpNumBoxes_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            TextBoxMsg_TextChanged(null, null);
+        }
+
+        private void TextBoxMsg_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ViewModel view = (ViewModel)DataContext;
+
+            Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
+            byte[] outD = mes.ConvertTextData(view.m_controlCodes).ToArray();
+
+            ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
+
+            int NumBoxes = mp.MessageCount;
+
+            if (NumBoxes == 0)
+                numUpNumBoxes.Minimum = 0;
+            else
+                numUpNumBoxes.Minimum = 1;
+
+            if (numUpNumBoxes.Value > NumBoxes)
+                numUpNumBoxes.Value = NumBoxes;
+
+            numUpNumBoxes.Maximum = NumBoxes;
+
+            msgPreview.ImageSource = BitmapToImageSource(mp.GetPreview((int)numUpNumBoxes.Value - 1));
         }
 
         private void TextBox_SelectionChanged(object sender, RoutedEventArgs e)
@@ -35,5 +109,6 @@ namespace OcarinaTextEditor
             TextBox box = sender as TextBox;
             view.TextboxPosition = box.SelectionStart;
         }
+
     }
 }

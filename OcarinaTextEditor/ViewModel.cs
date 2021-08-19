@@ -142,7 +142,7 @@ namespace OcarinaTextEditor
         private string m_searchFilter;
         #endregion
 
-        private Dictionary<ControlCode, string> m_controlCodes;
+        public Dictionary<ControlCode, string> m_controlCodes;
 
         ROMVer Version = ROMVer.Unknown;
 

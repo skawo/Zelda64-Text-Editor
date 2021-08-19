@@ -100,6 +100,12 @@ namespace OcarinaTextEditor
             GetStringData(reader, controlCodeDict);
         }
 
+        public Message(string Message, TextboxType t)
+        {
+            TextData = Message;
+            BoxType = t;
+        }
+
         public void Print()
         {
             string printString = string.Format("ID: {0}\nBox Type: {1}\nBox Pos: {2}\nData:\n{3}\n\n", MessageID, BoxType, BoxPosition, TextData);
@@ -248,7 +254,7 @@ namespace OcarinaTextEditor
             for (int i = 0; i < TextData.Count(); i++)
             {
                 // Not a control code, copy char to output buffer
-                if (TextData[i] != '<')
+                if (TextData[i] != '<' && TextData[i] != '>')
                 {
                     if (codeDict.ContainsValue(TextData[i].ToString()))
                     {
@@ -286,7 +292,7 @@ namespace OcarinaTextEditor
                     // Buffer for the control code
                     List<char> controlCode = new List<char>();
 
-                    while (TextData[i] != '>')
+                    while (TextData[i] != '>' && i < TextData.Length - 1)
                     {
                         // Add code chars to the buffer
                         controlCode.Add(TextData[i]);
