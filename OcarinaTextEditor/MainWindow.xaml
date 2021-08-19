@@ -143,9 +143,7 @@
             <Button Content="Remove" Margin="8,0,0,10" Command="{Binding OnRequestRemoveMessage}" Height="22" VerticalAlignment="Bottom" Grid.Column="1"/>
         </Grid>
         <DockPanel x:Name="dockMsgPreview" LastChildFill="True" Margin="0,463,9,32" Grid.Column="2" Grid.ColumnSpan="2">
-            <DockPanel.Background>
-                <ImageBrush x:Name="msgPreview" Stretch="Uniform" AlignmentX="Left" AlignmentY="Center"/>
-            </DockPanel.Background>
+            <Image x:Name="msgPreview" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </DockPanel>
         <DockPanel Margin="0,567,9,0" Grid.Column="2" HorizontalAlignment="Right" Grid.ColumnSpan="2" VerticalAlignment="Bottom">
             <Label Width="100" HorizontalAlignment="Right" Height="25">Box number:</Label>

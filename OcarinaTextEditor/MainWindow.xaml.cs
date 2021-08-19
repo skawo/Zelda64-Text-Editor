@@ -54,10 +54,10 @@ namespace OcarinaTextEditor
 
         private void SetMsgBackground(int Type)
         {
-           // if (Type == 4)
-           //     dockMsgPreview.Background = System.Windows.Media.Brushes.Black;
-           // else
-           //     dockMsgPreview.Background = System.Windows.Media.Brushes.White;
+            if (Type == 4)
+              dockMsgPreview.Background = System.Windows.Media.Brushes.Black;
+            else
+              dockMsgPreview.Background = System.Windows.Media.Brushes.White;
         }
 
         private void BoxTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -83,6 +83,9 @@ namespace OcarinaTextEditor
         {
             ViewModel view = (ViewModel)DataContext;
 
+            if (textBoxMsg.Text == "")
+                return;
+
             Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
             byte[] outD = mes.ConvertTextData(view.m_controlCodes).ToArray();
 
@@ -100,7 +103,8 @@ namespace OcarinaTextEditor
 
             numUpNumBoxes.Maximum = NumBoxes;
 
-            msgPreview.ImageSource = BitmapToImageSource(mp.GetPreview((int)numUpNumBoxes.Value - 1));
+            msgPreview.Source = BitmapToImageSource(mp.GetPreview((int)numUpNumBoxes.Value - 1));
+            
         }
 
         private void TextBox_SelectionChanged(object sender, RoutedEventArgs e)
