@@ -300,6 +300,9 @@ namespace OcarinaTextEditor
                         i++;
                     }
 
+                    if (controlCode.Count == 0)
+                        continue;
+
                     // Remove the < chevron from the beginning of the code
                     controlCode.RemoveAt(0);
 

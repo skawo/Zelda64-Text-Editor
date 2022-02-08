@@ -103,7 +103,7 @@ namespace OcarinaTextEditor
 
             numUpNumBoxes.Maximum = NumBoxes;
 
-            msgPreview.Source = BitmapToImageSource(mp.GetPreview((int)numUpNumBoxes.Value - 1));
+            msgPreview.Source = BitmapToImageSource(mp.GetPreview((int)numUpNumBoxes.Value - 1, true));
             
         }
 
