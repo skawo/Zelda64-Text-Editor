@@ -12,6 +12,7 @@ namespace OcarinaTextEditor.Enums
         OriginalROM,
         Patch,
         File,
-        ZZRP
+        ZZRP,
+        ZZRPL
     }
 }

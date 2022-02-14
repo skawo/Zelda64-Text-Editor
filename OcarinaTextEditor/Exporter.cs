@@ -103,6 +103,9 @@ namespace OcarinaTextEditor
                         case ExportType.ZZRP:
                             ExportToZZRP(messageTableStream, stringData);
                             break;
+                        case ExportType.ZZRPL:
+                            ExportToZZRPL(messageTableStream, stringData);
+                            break;
                     }
                 }
             }
@@ -194,6 +197,9 @@ namespace OcarinaTextEditor
                             break;
                         case ExportType.ZZRP:
                             ExportToZZRP(messageTableStream, stringData);
+                            break;
+                        case ExportType.ZZRPL:
+                            ExportToZZRPL(messageTableStream, stringData);
                             break;
                     }
                 }
@@ -387,6 +393,38 @@ namespace OcarinaTextEditor
             {
                 stringWriter.BaseStream.CopyTo(textFile);
                 textFile.Close();
+            }
+        }
+
+        private void ExportToZZRPL(MemoryStream table, MemoryStream stringBank)
+        {
+            string zzrplFolder = Path.GetDirectoryName(m_fileName);
+            string tablePath = Path.Combine(zzrplFolder, "messages", "MessageTable.tbl");
+            string msgDataPath = Path.Combine(zzrplFolder, "messages", "StringData.bin");
+
+            try
+            {
+                using (FileStream tableFile = new FileStream(tablePath, FileMode.Open))
+                {
+                    tableFile.Position = 0;
+                    EndianBinaryWriter writer = new EndianBinaryWriter(tableFile, Endian.Big);
+
+                    tableFile.Position = 0;
+                    table.CopyTo(tableFile);
+                }
+
+                File.Delete(msgDataPath);
+
+                using (FileStream msgFile = new FileStream(msgDataPath, FileMode.Create, FileAccess.Write))
+                {
+                    msgFile.Position = 0;
+                    stringBank.WriteTo(msgFile);
+                }
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
             }
         }
 

@@ -136,7 +136,10 @@ namespace OcarinaTextEditor
                     }
                 }
 
-                testByte = reader.ReadByte();
+                if (reader.BaseStream.Position != reader.BaseStream.Length)
+                    testByte = reader.ReadByte();
+                else
+                    testByte = 0x02;
             }
 
             TextData = new String(charData.ToArray());

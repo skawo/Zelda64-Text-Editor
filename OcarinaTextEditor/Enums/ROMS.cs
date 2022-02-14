@@ -12,4 +12,11 @@ namespace OcarinaTextEditor.Enums
         N1_0 = 1,
         Unknown = 20
     }
+
+    public enum EditMode
+    {
+        ROM = 0,
+        ZZRT = 1,
+        ZZRPL = 2,
+    }
 }

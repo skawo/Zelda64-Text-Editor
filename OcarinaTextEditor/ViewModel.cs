@@ -59,6 +59,21 @@ namespace OcarinaTextEditor
 
         #endregion
 
+        #region ZZRPLMode
+
+        private Boolean _ZZRPLMode;
+        public Boolean ZZRPLMode
+        {
+            get { return _ZZRPLMode; }
+            set
+            {
+                _ZZRPLMode = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        #endregion
+
         #region OldMode
 
         private Boolean _OldMode;
@@ -192,6 +207,10 @@ namespace OcarinaTextEditor
         {
             get { return new RelayCommand(x => InsertControlCode((string)x), x => SelectedMessage != null); }
         }
+        public ICommand OnRequestOpenZZRPL
+        {
+            get { return new RelayCommand(x => OpenZZRPL(), x => true); }
+        }
         public ICommand OnRequestOpenZZRP
         {
             get { return new RelayCommand(x => OpenZZRP(), x => true); }
@@ -199,6 +218,11 @@ namespace OcarinaTextEditor
         public ICommand OnRequestSaveZZRP
         {
             get { return new RelayCommand(x => SaveZZRP(), x => MessageList != null); }
+        }
+
+        public ICommand OnRequestSaveZZRPL
+        {
+            get { return new RelayCommand(x => SaveZZRPL(), x => MessageList != null); }
         }
         #endregion
 
@@ -259,7 +283,7 @@ namespace OcarinaTextEditor
                 if (Version == ROMVer.Unknown)
                     return;
 
-                Importer file = new Importer(openFile.FileName, m_controlCodes, false, Version == ROMVer.Debug);
+                Importer file = new Importer(openFile.FileName, m_controlCodes, EditMode.ROM, Version == ROMVer.Debug);
                 MessageList = file.GetMessageList();
 
                 // If message list is null, we failed to open a ROM
@@ -276,6 +300,66 @@ namespace OcarinaTextEditor
 
                 OldMode = true;
                 ZZRPMode = false;
+                ZZRPLMode = false;
+            }
+        }
+        private void OpenZZRPL()
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+
+            openFile.Filter = "zzrtl Projects (*.zzrpl)|*.zzrpl";
+
+            if (openFile.ShowDialog() == true)
+            {
+                string zzrplFolder = Path.GetDirectoryName(openFile.FileName);
+
+
+                string msgDataEd = Path.Combine(zzrplFolder, "messages", "StringData.bin");
+                string tableEd = Path.Combine(zzrplFolder, "messages", "MessageTable.tbl");
+
+                if (!File.Exists(msgDataEd) || !File.Exists(tableEd))
+                {
+                    string msgData = Path.Combine(zzrplFolder, "messages", "_vanilla-1.0", "StringData.bin");
+                    string table = Path.Combine(zzrplFolder, "messages", "_vanilla-1.0", "MessageTable.tbl");
+                    string msgDataDeb = Path.Combine(zzrplFolder, "messages", "_vanilla-debug", "StringData.bin");
+                    string tableDeb = Path.Combine(zzrplFolder, "messages", "_vanilla-debug", "MessageTable.tbl");
+
+                    if ((!File.Exists(msgData) || !File.Exists(table)) && (!File.Exists(msgDataDeb) || !File.Exists(tableDeb)))
+                    {
+                        System.Windows.Forms.MessageBox.Show("Not a ZZRTL-Audio filesystem.");
+                        return;
+                    }
+
+                    if (File.Exists(msgData))
+                    {
+                        File.Copy(msgData, msgDataEd);
+                        File.Copy(table, tableEd);
+                    }
+                    else if (File.Exists(msgDataDeb))
+                    {
+                        File.Copy(msgDataDeb, msgDataEd);
+                        File.Copy(tableDeb, tableEd);
+                    }
+                }
+
+                Importer file = new Importer(openFile.FileName, m_controlCodes, EditMode.ZZRPL, Version == ROMVer.Debug);
+                MessageList = file.GetMessageList();
+
+                // If message list is null, we failed to parse.
+                if (MessageList == null)
+                    return;
+
+                m_inputFileName = openFile.FileName;
+                m_inputFile = file.GetInputFile();
+
+                ViewSource.Source = MessageList;
+                SelectedMessage = MessageList[0];
+
+                WindowTitle = Path.GetFileNameWithoutExtension(openFile.FileName) + " - Ocarina of Time Text Editor";
+
+                ZZRPMode = false;
+                OldMode = false;
+                ZZRPLMode = true;
             }
         }
 
@@ -297,7 +381,7 @@ namespace OcarinaTextEditor
                     return;
                 }
 
-                Importer file = new Importer(openFile.FileName, m_controlCodes, true, Version == ROMVer.Debug);
+                Importer file = new Importer(openFile.FileName, m_controlCodes, EditMode.ZZRT, Version == ROMVer.Debug);
                 MessageList = file.GetMessageList();
 
                 // If message list is null, we failed to parse.
@@ -314,6 +398,7 @@ namespace OcarinaTextEditor
 
                 ZZRPMode = true;
                 OldMode = false;
+                ZZRPLMode = false;
             }
         }
 
@@ -372,6 +457,11 @@ namespace OcarinaTextEditor
         private void SaveZZRP()
         {
             Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRP, m_controlCodes, m_inputFile, Version == ROMVer.Debug);
+        }
+
+        private void SaveZZRPL()
+        {
+            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRPL, m_controlCodes, m_inputFile, Version == ROMVer.Debug);
         }
 
         private void SaveToFiles()

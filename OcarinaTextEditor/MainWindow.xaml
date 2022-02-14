@@ -41,10 +41,12 @@
         <Menu VerticalAlignment="Top" Grid.ColumnSpan="4" Height="21">
             <MenuItem Header="File">
                 <MenuItem Header="Open ZZRP..." HorizontalAlignment="Left" Height="22" Width="212" Command="{Binding OnRequestOpenZZRP, Mode=OneWay}"/>
+                <MenuItem Header="Open ZZRPL" HorizontalAlignment="Left" Height="22" Width="212" Command="{Binding OnRequestOpenZZRPL, Mode=OneWay}"/>
                 <MenuItem Header="Open ROM..." Command="{Binding OnRequestOpenFile}"/>
                 <MenuItem Header="Open Generated Data..." Command="{Binding OnRequestOpenData}"/>
                 <Separator/>
-                <MenuItem Header="Save ZZRP" Height="17" IsEnabled="{Binding ZZRPMode}" Command="{Binding OnRequestSaveZZRP, Mode=OneWay}"/>
+                <MenuItem Header="Save ZZRP" IsEnabled="{Binding ZZRPMode}" Command="{Binding OnRequestSaveZZRP, Mode=OneWay}"/>
+                <MenuItem Header="Save ZZRPL" IsEnabled="{Binding ZZRPLMode}" Command="{Binding OnRequestSaveZZRPL, Mode=OneWay}"/>
                 <MenuItem Header="Save to ROM" IsEnabled="{Binding OldMode}">
                     <MenuItem Header="Save" Command="{Binding OnRequestSaveFileOriginalROM}"/>
                     <MenuItem Header="Save as..." Command="{Binding OnRequestSaveFileNewROM}"/>

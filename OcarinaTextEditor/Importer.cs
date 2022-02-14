@@ -21,64 +21,114 @@ namespace OcarinaTextEditor
             m_messageList = new ObservableCollection<Message>();
         }
 
-        public Importer(string fileName, Dictionary<ControlCode, string> controlCodeDict, bool ZZRP, bool Debug)
+        public Importer(string fileName, Dictionary<ControlCode, string> controlCodeDict, EditMode Mode, bool Debug)
         {
             List<TableRecord> tableRecordList = new List<TableRecord>();
-
-            string zzrpFolder = "";
-            string codeFilePath = "";
-            string msgDataPath = "";
-
-            if (ZZRP)
+            TableRecord fuck = null;
+            if (Mode == EditMode.ZZRPL)
             {
-                zzrpFolder = Path.GetDirectoryName(fileName);
-                codeFilePath = Path.Combine(zzrpFolder, "system", "code");
-                msgDataPath = Path.Combine(zzrpFolder, "misc", "nes_message_data_static");
-            }
-
-            long offset = ZZRP ? 0x0012E4C0 : Debug ? 0x00BC24C0 : 0x00B849EC;
-            long msgOffset = ZZRP ? 0 : Debug ? 0x8C6000 : 0x92D000;
-
-            try
-            {
-                using (FileStream stream = new FileStream(ZZRP ? codeFilePath : fileName, FileMode.Open, FileAccess.Read))
+                try
                 {
-                    m_inputFile = new MemoryStream();
-                    stream.CopyTo(m_inputFile);
+                    string zzrplFolder = Path.GetDirectoryName(fileName);
+                    string msgData = Path.Combine(zzrplFolder, "messages", "StringData.bin");
+                    string table = Path.Combine(zzrplFolder, "messages", "MessageTable.tbl");
 
-                    EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
-                    reader.BaseStream.Seek(offset, 0);
-
-                    //Read in message table records
-                    while (reader.PeekReadInt16() != -1)
+                    using (FileStream stream = new FileStream(table, FileMode.Open, FileAccess.Read))
                     {
-                        TableRecord mesRecord = new TableRecord(reader);
-                        tableRecordList.Add(mesRecord);
+                        m_inputFile = new MemoryStream();
+                        stream.CopyTo(m_inputFile);
+
+                        EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
+                        reader.BaseStream.Seek(0, 0);
+
+                        //Read in message table records
+                        while (reader.BaseStream.Position != reader.BaseStream.Length && reader.PeekReadInt16() != -1)
+                        {
+                            TableRecord mesRecord = new TableRecord(reader);
+                            tableRecordList.Add(mesRecord);
+                        }
+                    }
+
+                    using (FileStream stream = new FileStream(msgData, FileMode.Open, FileAccess.Read))
+                    {
+                        m_messageList = new ObservableCollection<Message>();
+                        EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
+
+                        foreach (var mesgRecord in tableRecordList)
+                        {
+                            fuck = mesgRecord;
+
+                            if (mesgRecord.Offset >= reader.BaseStream.Length)
+                                continue;
+
+                            reader.BaseStream.Position = mesgRecord.Offset;
+                            Message mes = new Message(reader, mesgRecord, controlCodeDict);
+                            m_messageList.Add(mes);
+                        }
+                    }
+
+                }
+                catch (IOException ex)
+                {
+                    MessageBox.Show(ex.Message + " " + fuck.MessageID);
+                    return;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Failed loading messages.");
+                    return;
+                }
+            }
+            else
+            {
+                long offset = Mode == EditMode.ZZRT ? 0x0012E4C0 : Debug ? 0x00BC24C0 : 0x00B849EC;
+                long msgOffset = Mode == EditMode.ZZRT ? 0 : Debug ? 0x8C6000 : 0x92D000;
+
+                string zzrpFolder = Path.GetDirectoryName(fileName);
+                string codeFilePath = Path.Combine(zzrpFolder, "system", "code");
+                string msgDataPath = Path.Combine(zzrpFolder, "misc", "nes_message_data_static");
+
+                try
+                {
+                    using (FileStream stream = new FileStream(Mode == EditMode.ZZRT ? codeFilePath : fileName, FileMode.Open, FileAccess.Read))
+                    {
+                        m_inputFile = new MemoryStream();
+                        stream.CopyTo(m_inputFile);
+
+                        EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
+                        reader.BaseStream.Seek(offset, 0);
+
+                        //Read in message table records
+                        while (reader.PeekReadInt16() != -1)
+                        {
+                            TableRecord mesRecord = new TableRecord(reader);
+                            tableRecordList.Add(mesRecord);
+                        }
+                    }
+
+                    using (FileStream stream = new FileStream(Mode == EditMode.ZZRT ? msgDataPath : fileName, FileMode.Open, FileAccess.Read))
+                    {
+                        m_messageList = new ObservableCollection<Message>();
+                        EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
+
+                        foreach (var mesgRecord in tableRecordList)
+                        {
+                            reader.BaseStream.Position = msgOffset + mesgRecord.Offset;
+                            Message mes = new Message(reader, mesgRecord, controlCodeDict);
+                            m_messageList.Add(mes);
+                        }
                     }
                 }
-
-                using (FileStream stream = new FileStream(ZZRP ? msgDataPath : fileName, FileMode.Open, FileAccess.Read))
+                catch (IOException ex)
                 {
-                    m_messageList = new ObservableCollection<Message>();
-                    EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
-
-                    foreach (var mesgRecord in tableRecordList)
-                    {
-                        reader.BaseStream.Position = msgOffset + mesgRecord.Offset;
-                        Message mes = new Message(reader, mesgRecord, controlCodeDict);
-                        m_messageList.Add(mes);
-                    }
+                    MessageBox.Show(ex.Message);
+                    return;
                 }
-            }
-            catch (IOException ex)
-            {
-                MessageBox.Show(ex.Message);
-                return;
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Failed loading messages. Note: ROMs built by zzromtool are not supported directly!");
-                return;
+                catch (Exception)
+                {
+                    MessageBox.Show("Failed loading messages. Note: ROMs built by zzromtool are not supported directly!");
+                    return;
+                }
             }
         }
 
