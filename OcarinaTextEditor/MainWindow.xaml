@@ -65,7 +65,7 @@
                         <MenuItem Header="Copy" Command="ApplicationCommands.Copy"/>
                         <MenuItem Header="Paste" Command="ApplicationCommands.Paste"/>
                         <Separator/>
-                        <MenuItem Header="Control Tags...">
+                        <MenuItem Header="Control Tags..." Name="ControlTagsMenu">
                             <MenuItem Header="Color">
                                 <MenuItem Header="White" Command="{Binding OnRequestAddControl}" CommandParameter="W"/>
                                 <MenuItem Header="Red" Command="{Binding OnRequestAddControl}" CommandParameter="R"/>
@@ -74,48 +74,35 @@
                                 <MenuItem Header="Cyan" Command="{Binding OnRequestAddControl}" CommandParameter="C"/>
                                 <MenuItem Header="Magenta" Command="{Binding OnRequestAddControl}" CommandParameter="M"/>
                                 <MenuItem Header="Yellow" Command="{Binding OnRequestAddControl}" CommandParameter="Y"/>
-                                <MenuItem Header="Black" Command="{Binding OnRequestAddControl}" CommandParameter="Blk"/>
-                            </MenuItem>
-                            <MenuItem Header="Sound">
-                                <MenuItem Header="Item Fanfare" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Item Fanfare"/>
-                                <MenuItem Header="Frog Ribbit 1" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Frog Ribbit 1"/>
-                                <MenuItem Header="Frog Ribbit 2" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Frog Ribbit 2"/>
-                                <MenuItem Header="Deku Squeak" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Deku Squeak"/>
-                                <MenuItem Header="Deku Cry" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Deku Cry"/>
-                                <MenuItem Header="Generic Event" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Generic Event"/>
-                                <MenuItem Header="Poe Vanishing" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Poe Vanishing"/>
-                                <MenuItem Header="Twinrova 1" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Twinrova 1"/>
-                                <MenuItem Header="Twinrova 2" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Twinrova 2"/>
-                                <MenuItem Header="Navi Hello" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Navi Hello"/>
-                                <MenuItem Header="Talon Ehh" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Talon Ehh"/>
-                                <MenuItem Header="Carpenter Waaaa" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Carpenter Waaaa"/>
-                                <MenuItem Header="Navi HEY!" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Navi Hey"/>
-                                <MenuItem Header="Saria Giggle" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Saria Giggle"/>
-                                <MenuItem Header="Yaaaa" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Yaaaa"/>
-                                <MenuItem Header="Zelda Heh" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Zelda Heh"/>
-                                <MenuItem Header="Zelda Awww" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Zelda Awww"/>
-                                <MenuItem Header="Zelda Huh" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Zelda Huh"/>
-                                <MenuItem Header="Generic Giggle" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Generic Giggle"/>
-                                <MenuItem Header="Moo" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Moo"/>
-                                <MenuItem Header="Unused 1" Command="{Binding OnRequestAddControl}" CommandParameter="Sound:Unused 1"/>
+                                <MenuItem Header="Black" Command="{Binding OnRequestAddControl}" CommandParameter="BLK"/>
                             </MenuItem>
                             <MenuItem Header="High Score">
-                                <MenuItem Header="Archery" Command="{Binding OnRequestAddControl}" CommandParameter="High Score:Archery"/>
-                                <MenuItem Header="Poe Points" Command="{Binding OnRequestAddControl}" CommandParameter="High Score:Poe Points"/>
-                                <MenuItem Header="Fishing" Command="{Binding OnRequestAddControl}" CommandParameter="High Score:Fishing"/>
-                                <MenuItem Header="Horse Race" Command="{Binding OnRequestAddControl}" CommandParameter="High Score:Horse Race"/>
-                                <MenuItem Header="Marathon" Command="{Binding OnRequestAddControl}" CommandParameter="High Score:Marathon"/>
-                                <MenuItem Header="Dampe Race" Command="{Binding OnRequestAddControl}" CommandParameter="High Score:Dampe Race"/>
+                                <MenuItem Header="Archery" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:ARCHERY"/>
+                                <MenuItem Header="Poe Salesman Points" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:POE POINTS"/>
+                                <MenuItem Header="Fishing" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:FISHING"/>
+                                <MenuItem Header="Horse Race" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:HORSE RACE"/>
+                                <MenuItem Header="Running Man's Marathon" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:MARATHON"/>
+                                <MenuItem Header="Dampe Race" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:DAMPE RACE"/>
                             </MenuItem>
-                            <MenuItem Header="New Textbox" Command="{Binding OnRequestAddControl}" CommandParameter="New Box"/>
-                            <MenuItem Header="Player Name" Command="{Binding OnRequestAddControl}" CommandParameter="Player"/>
+                            <MenuItem Header="Button prompt" Command="{Binding OnRequestAddControl}" CommandParameter="AWAIT_BUTTON"/>
+                            <MenuItem Header="Sound effect" Command="{Binding OnRequestOpenSFXesMenu}"/>
+                            <MenuItem Header="Delay" Command="{Binding OnRequestAddControl}" CommandParameter="DELAY:0"/>
+                            <MenuItem Header="Fade" Command="{Binding OnRequestAddControl}" CommandParameter="FADE:0"/>
+                            <MenuItem Header="Fade2" Command="{Binding OnRequestAddControl}" CommandParameter="FADE2:0"/>
+                            <MenuItem Header="Pixel offset" Command="{Binding OnRequestAddControl}" CommandParameter="PIXELS RIGHT:0"/>
+                            <MenuItem Header="New Textbox" Command="{Binding OnRequestAddControl}" CommandParameter="NEW BOX"/>
+                            <MenuItem Header="Player name" Command="{Binding OnRequestAddControl}" CommandParameter="PLAYER"/>
                             <MenuItem Header="No Skip" Command="{Binding OnRequestAddControl}" CommandParameter="NS"/>
-                            <MenuItem Header="Icon" Command="{Binding OnRequestAddControl}" CommandParameter="Icon:0"/>
-                            <MenuItem Header="Speed" Command="{Binding OnRequestAddControl}" CommandParameter="Speed:0"/>
-                            <MenuItem Header="Shop Description" Command="{Binding OnRequestAddControl}" CommandParameter="Shop Description"/>
+
+                            <MenuItem Header="Icon" Name="IconHeader">
+
+                            </MenuItem>
+
+                            <MenuItem Header="Speed" Command="{Binding OnRequestAddControl}" CommandParameter="SPEED:0"/>
+                            <MenuItem Header="Persistent" Command="{Binding OnRequestAddControl}" CommandParameter="PERSISTENT"/>
                             <Separator/>
-                            <MenuItem Header="Draw Instant" Command="{Binding OnRequestAddControl}" CommandParameter="DI"/>
-                            <MenuItem Header="Draw Char" Command="{Binding OnRequestAddControl}" CommandParameter="DC"/>
+                            <MenuItem Header="Draw instantly" Command="{Binding OnRequestAddControl}" CommandParameter="DI"/>
+                            <MenuItem Header="Draw per-character" Command="{Binding OnRequestAddControl}" CommandParameter="DC"/>
                             <Separator/>
                             <MenuItem Header="Two Choices" Command="{Binding OnRequestAddControl}" CommandParameter="Two Choices"/>
                             <MenuItem Header="Three Choices" Command="{Binding OnRequestAddControl}" CommandParameter="Three Choices"/>

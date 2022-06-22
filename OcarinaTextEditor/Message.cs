@@ -91,13 +91,13 @@ namespace OcarinaTextEditor
             TextData = "";
         }
 
-        public Message(EndianBinaryReader reader, TableRecord mesgTableRecord, Dictionary<ControlCode, string> controlCodeDict)
+        public Message(EndianBinaryReader reader, TableRecord mesgTableRecord)
         {
             MessageID = mesgTableRecord.MessageID;
             BoxType = mesgTableRecord.BoxType;
             BoxPosition = mesgTableRecord.BoxPosition;
 
-            GetStringData(reader, controlCodeDict);
+            GetStringData(reader);
         }
 
         public Message(string Message, TextboxType t)
@@ -112,19 +112,19 @@ namespace OcarinaTextEditor
             Console.Write(printString);
         }
 
-        private void GetStringData(EndianBinaryReader reader, Dictionary<ControlCode, string> codeDict)
+        private void GetStringData(EndianBinaryReader reader)
         {
             List<char> charData = new List<char>();
 
             byte testByte = reader.ReadByte();
 
-            while (testByte != 0x02)
+            while (testByte != (byte)ControlCode.END)
             {
                 bool readControlCode = false;
 
-                if (codeDict.ContainsKey((ControlCode)testByte))
+                if (Enum.IsDefined(typeof(ControlCode), (int)testByte))
                 {
-                    charData.AddRange(GetControlCode((ControlCode)testByte, reader, codeDict));
+                    charData.AddRange(GetControlCode((ControlCode)testByte, reader));
                     readControlCode = true;
                 }
 
@@ -145,76 +145,73 @@ namespace OcarinaTextEditor
             TextData = new String(charData.ToArray());
         }
 
-        private char[] GetControlCode(ControlCode code, EndianBinaryReader reader, Dictionary<ControlCode, string> codeDict)
+        private char[] GetControlCode(ControlCode code, EndianBinaryReader reader)
         {
             List<char> codeBank = new List<char>();
-
-            if (codeDict.First(x => x.Key == code).Value.Count() == 1)
-            {
-                codeBank.AddRange(codeDict[code].ToCharArray());
-                return codeBank.ToArray();
-            }
-
             string codeInsides = "";
 
             switch (code)
             {
-                case ControlCode.Color:
+                case ControlCode.COLOR:
                     Color col = (Color)reader.ReadByte();
                     codeInsides = col.ToString();
                     break;
-                case ControlCode.Icon:
-                    byte iconID = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", "Icon", iconID);
+                case ControlCode.ICON:
+                    int iconID = (int)reader.ReadByte();
+                    codeInsides = string.Format("{0}:{1}", ControlCode.ICON.ToString(), Enum.IsDefined(typeof(MsgIcon), iconID) ? ((MsgIcon)iconID).ToString() : iconID.ToString());
                     break;
-                case ControlCode.Line_Break:
+                case ControlCode.LINE_BREAK:
                     return "\n".ToCharArray();
-                case ControlCode.Spaces:
+                case ControlCode.SHIFT:
                     byte numSpaces = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", "Pixels Right", numSpaces);
+                    codeInsides = string.Format("{0}:{1}", ControlCode.SHIFT.ToString(), numSpaces);
                     break;
-                case ControlCode.Delay:
+                case ControlCode.DELAY:
                     byte numFrames = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", "Delay", numFrames);
+                    codeInsides = string.Format("{0}:{1}", ControlCode.DELAY.ToString(), numFrames);
                     break;
-                case ControlCode.Fade:
+                case ControlCode.FADE:
                     byte numFramesFade = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", "Fade", numFramesFade);
+                    codeInsides = string.Format("{0}:{1}", ControlCode.FADE.ToString(), numFramesFade);
                     break;
-                case ControlCode.Sound:
-                    SoundType soundID = (SoundType)reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1}", "Sound", soundID.ToString().Replace("_", " "));
+                case ControlCode.FADE2:
+                    short numFramesFade2 = reader.ReadInt16();
+                    codeInsides = string.Format("{0}:{1}", ControlCode.FADE2.ToString(), numFramesFade2);
                     break;
-                case ControlCode.Speed:
+                case ControlCode.SOUND:
+                    short soundID = reader.ReadInt16();
+                    codeInsides = string.Format("{0}:{1}", ControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : soundID.ToString());
+                    break;
+                case ControlCode.SPEED:
                     byte speed = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", "Speed", speed);
+                    codeInsides = string.Format("{0}:{1}", ControlCode.SPEED.ToString(), speed);
                     break;
-                case ControlCode.High_Score:
-                    HighScore scoreID = (HighScore)reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", "High Score", scoreID.ToString().Replace("_", " "));
+                case ControlCode.HIGH_SCORE:
+                    int scoreID = (int)reader.ReadByte();
+                    codeInsides = string.Format("{0}:{1}", ControlCode.HIGH_SCORE.ToString().Replace("_", " "), Enum.IsDefined(typeof(HighScore), scoreID) ? ((HighScore)scoreID).ToString() : scoreID.ToString());
                     break;
-                case ControlCode.Jump:
+                case ControlCode.JUMP:
                     short msgID = reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1:X4}", "Jump", msgID);
+                    codeInsides = string.Format("{0}:{1:X4}", ControlCode.JUMP.ToString(), msgID);
                     break;
-                case ControlCode.Box_Break:
-                    return "\n<New Box>\n".ToCharArray();
-                case ControlCode.No_Skip:
-                    codeInsides = "NS";
+                case ControlCode.NEW_BOX:
+                    return ($"{Environment.NewLine}<{ControlCode.NEW_BOX.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
+                case ControlCode.NS:
+                    codeInsides = ControlCode.NS.ToString();
                     break;
-                case ControlCode.Draw_Instant:
-                    codeInsides = "DI";
+                case ControlCode.DI:
+                    codeInsides = ControlCode.DI.ToString();
                     break;
-                case ControlCode.Draw_Char:
-                    codeInsides = "DC";
+                case ControlCode.DC:
+                    codeInsides = ControlCode.DC.ToString();
                     break;
-                case ControlCode.Background:
+                case ControlCode.BACKGROUND:
                     int backgroundID;
                     byte id1 = reader.ReadByte();
                     byte id2 = reader.ReadByte();
                     byte id3 = reader.ReadByte();
                     backgroundID = BitConverter.ToInt32(new byte[] { id3, id2, id1, 0 }, 0 );
-                    codeInsides = string.Format("{0}:{1}", "Background", backgroundID);
+                    codeInsides = string.Format("{0}:{1}", ControlCode.BACKGROUND.ToString(), backgroundID);
                     break;
 
                 default:
@@ -241,54 +238,36 @@ namespace OcarinaTextEditor
             writer.Write((int)0);
         }
 
-        public List<byte> ConvertTextData(Dictionary<ControlCode, string> codeDict)
+        public List<byte> ConvertTextData(bool ShowErrors = true)
         {
             List<byte> data = new List<byte>();
+            List<string> errors = new List<string>();
 
-            for (int i = 0; i < TextData.Count(); i++)
-            {
-                if (TextData[i] == '\r')
-                {
-                    TextData = TextData.Remove(i, 1);
-                    i--;
-                }
-            }
-
-            for (int i = 0; i < TextData.Count(); i++)
+            for (int i = 0; i < TextData.Length; i++)
             {
                 // Not a control code, copy char to output buffer
                 if (TextData[i] != '<' && TextData[i] != '>')
                 {
-                    if (codeDict.ContainsValue(TextData[i].ToString()))
+                    if (Enum.IsDefined(typeof(ControlCode), TextData[i].ToString()))
                     {
-                        data.Add((byte)codeDict.First(x => x.Value == TextData[i].ToString()).Key);
+                        ControlCode Result;
+                        Enum.TryParse(TextData[i].ToString(), out Result);
+                        data.Add((byte)Result);
                     }
                     else if (TextData[i] == '\n')
-                    {
-                        try
-                        {
-                            data.Add((byte)ControlCode.Line_Break);
-                        }
-                        catch (IndexOutOfRangeException)
-                        {
-                            data.Add((byte)ControlCode.Line_Break);
-                        }
-                    }
+                        data.Add((byte)ControlCode.LINE_BREAK);
                     else if (TextData[i] == '\r')
                     {
                         // Do nothing
                     }
                     else
-                    {
                         data.Add((byte)TextData[i]);
-                    }
+
                     continue;
                 }
                 // Control code end tag. This should never be encountered on its own.
                 else if (TextData[i] == '>')
-                {
-                    // This should be an error handler
-                }
+                    errors.Add($"Message formatting is not valid: found stray >");
                 // We've got a control code
                 else
                 {
@@ -310,287 +289,151 @@ namespace OcarinaTextEditor
                     controlCode.RemoveAt(0);
 
                     string parsedCode = new string(controlCode.ToArray());
+                    string parsedFixed = parsedCode.Split(':')[0].Replace(" ", "_").ToUpper();
 
-                    if (parsedCode.ToLower() == "new box")
+                    if (parsedFixed == ControlCode.NEW_BOX.ToString() || parsedFixed == ControlCode.DELAY.ToString())
                     {
-                        data.RemoveAt(data.Count - 1); // Removes the last \n, which was added during import
-                        i++; // Skips next \n, added at import
+                        if (data.Count != 0)
+                            if (data[data.Count - 1] == 0x01)
+                                data.RemoveAt(data.Count - 1);
+
+                        if (TextData.Length > i + Environment.NewLine.Length)
+                        {
+                            string s;
+
+                            if (Environment.NewLine.Length == 2)
+                                s = String.Concat(TextData[i + 1], TextData[i + 2]);
+                            else
+                                s = String.Concat(TextData[i + 1]);
+
+                            if (s == Environment.NewLine)
+                            {
+                                i += Environment.NewLine.Length; // Skips next linebreak
+                            }
+                        }
                     }
 
-                    data.AddRange(GetControlCode(parsedCode.Split(':')));
+                    data.AddRange(GetControlCode(parsedCode.Split(':'), ref errors));
                 }
             }
 
-            return data;
+            data.Add((byte)ControlCode.END);
+
+            if (ShowErrors && errors.Count != 0)
+                System.Windows.Forms.MessageBox.Show($"Errors parsing message {MessageID}: " + Environment.NewLine + String.Join(Environment.NewLine, errors.ToArray()));
+
+            if (errors.Count == 0)
+                return data;
+            else
+                return new List<byte>();
         }
 
-        private List<byte> GetControlCode(string[] code)
+
+        private List<byte> GetControlCode(string[] code, ref List<string> errors)
         {
             List<byte> output = new List<byte>();
 
-            switch (code[0].ToLower())
+            try
             {
-                case "line break":
-                    output.Add((byte)ControlCode.Line_Break);
-                    break;
-                case "box break":
-                    output.Add((byte)ControlCode.Box_Break);
-                    break;
-                case "w":
-                    output.Add(5);
-                    output.Add((byte)Color.W);
-                    break;
-                case "r":
-                    output.Add(5);
-                    output.Add((byte)Color.R);
-                    break;
-                case "g":
-                    output.Add(5);
-                    output.Add((byte)Color.G);
-                    break;
-                case "b":
-                    output.Add(5);
-                    output.Add((byte)Color.B);
-                    break;
-                case "c":
-                    output.Add(5);
-                    output.Add((byte)Color.C);
-                    break;
-                case "m":
-                    output.Add(5);
-                    output.Add((byte)Color.M);
-                    break;
-                case "y":
-                    output.Add(5);
-                    output.Add((byte)Color.Y);
-                    break;
-                case "blk":
-                    output.Add(5);
-                    output.Add((byte)Color.Blk);
-                    break;
-                case "pixels right":
-                    output.Add((byte)ControlCode.Spaces);
-                    output.Add(Convert.ToByte(code[1]));
-                    break;
-                case "jump":
-                    output.Add((byte)ControlCode.Jump);
-                    byte[] jumpIDBytes = BitConverter.GetBytes(short.Parse(code[1], System.Globalization.NumberStyles.HexNumber));
-                    output.Add(jumpIDBytes[1]);
-                    output.Add(jumpIDBytes[0]);
-                    break;
-                case "di":
-                    output.Add((byte)ControlCode.Draw_Instant);
-                    break;
-                case "dc":
-                    output.Add((byte)ControlCode.Draw_Char);
-                    break;
-                case "shop description":
-                    output.Add((byte)ControlCode.Shop_Description);
-                    break;
-                case "event":
-                    output.Add((byte)ControlCode.Event);
-                    break;
-                case "delay":
-                    output.Add((byte)ControlCode.Delay);
-                    output.Add(Convert.ToByte(code[1]));
-                    break;
-                case "fade":
-                    output.Add((byte)ControlCode.Fade);
-                    output.Add(Convert.ToByte(code[1]));
-                    break;
-                case "player":
-                    output.Add((byte)ControlCode.Player);
-                    break;
-                case "ocarina":
-                    output.Add((byte)ControlCode.Ocarina);
-                    break;
-                case "sound":
-                    output.Add((byte)ControlCode.Sound);
-                    short soundValue = 0;
-                    switch (code[1].ToLower())
-                    {
-                        case "item fanfare":
-                            soundValue = (short)SoundType.Item_Fanfare;
+                for (int i = 0; i < code.Length; i++)
+                    code[i] = code[i].Replace(" ", "_").ToUpper();
+
+                switch (code[0])
+                {
+                    case "PIXELS_RIGHT":
+                        {
+                            output.Add((byte)ControlCode.SHIFT);
+                            output.Add(Convert.ToByte(code[1]));
                             break;
-                        case "frog ribbit 1":
-                            soundValue = (short)SoundType.Frog_Ribbit_1;
+                        }
+                    case "JUMP":
+                        {
+                            output.Add((byte)ControlCode.JUMP);
+                            byte[] jumpIDBytes = BitConverter.GetBytes(short.Parse(code[1], System.Globalization.NumberStyles.HexNumber));
+                            output.Add(jumpIDBytes[1]);
+                            output.Add(jumpIDBytes[0]);
                             break;
-                        case "frog ribbit 2":
-                            soundValue = (short)SoundType.Frog_Ribbit_2;
+                        }
+                    case "DELAY":
+                    case "FADE":
+                    case "FADE2":
+                    case "SHIFT":
+                    case "SPEED":
+                        {
+                            output.Add((byte)(int)Enum.Parse(typeof(ControlCode), code[0]));
+                            output.Add(Convert.ToByte(code[1]));
                             break;
-                        case "deku squeak":
-                            soundValue = (short)SoundType.Deku_Squeak;
+                        }
+                    case "ICON":
+                        {
+                            output.Add((byte)(int)Enum.Parse(typeof(ControlCode), code[0]));
+                            output.Add((byte)(int)Enum.Parse(typeof(MsgIcon), code[1]));
                             break;
-                        case "deku cry":
-                            soundValue = (short)SoundType.Deku_Cry;
+                        }
+                    case "BACKGROUND":
+                        {
+                            output.Add((byte)ControlCode.BACKGROUND);
+                            byte[] backgroundIDBytes = BitConverter.GetBytes(Convert.ToInt32(code[1]));
+                            output.Add(backgroundIDBytes[2]);
+                            output.Add(backgroundIDBytes[1]);
+                            output.Add(backgroundIDBytes[0]);
                             break;
-                        case "generic event":
-                            soundValue = (short)SoundType.Generic_Event;
+                        }
+                    case "HIGH_SCORE":
+                        {
+                            output.Add((byte)ControlCode.HIGH_SCORE);
+                            output.Add((byte)(int)Enum.Parse(typeof(MsgHighScore), code[1]));
                             break;
-                        case "poe vanishing":
-                            soundValue = (short)SoundType.Poe_Vanishing;
+                        }
+                    case "SOUND":
+                        {
+                            output.Add((byte)ControlCode.SOUND);
+                            short soundValue = 0;
+
+                            if (Dicts.SFXes.ContainsKey(code[1]))
+                                soundValue = (short)Dicts.SFXes[code[1]];
+                            else
+                            {
+                                try
+                                {
+                                    soundValue = Convert.ToInt16(code[1]);
+                                }
+                                catch (Exception)
+                                {
+                                    errors.Add($"{code[1]} is not a valid sound.");
+                                    soundValue = 0;
+                                }
+                            }
+
+                            byte[] soundIDBytes = BitConverter.GetBytes(soundValue);
+                            output.Add(soundIDBytes[1]);
+                            output.Add(soundIDBytes[0]);
+
                             break;
-                        case "twinrova 1":
-                            soundValue = (short)SoundType.Twinrova_1;
+                        }
+                    default:
+                        {
+                            if (Enum.IsDefined(typeof(MsgColor), code[0]))
+                            {
+                                output.Add((byte)ControlCode.COLOR);
+                                output.Add((byte)(int)Enum.Parse(typeof(MsgColor), code[0]));
+                            }
+                            else if (Enum.IsDefined(typeof(ControlCode), code[0]))
+                                output.Add((byte)(int)Enum.Parse(typeof(ControlCode), code[0]));
+                            else
+                                errors.Add($"{code[0]} is not a valid control code.");
+
                             break;
-                        case "twinrova 2":
-                            soundValue = (short)SoundType.Twinrova_2;
-                            break;
-                        case "navi hello":
-                            soundValue = (short)SoundType.Navi_Hello;
-                            break;
-                        case "talon ehh":
-                            soundValue = (short)SoundType.Talon_Ehh;
-                            break;
-                        case "carpenter waaaa":
-                            soundValue = (short)SoundType.Carpenter_Waaaa;
-                            break;
-                        case "navi hey":
-                            soundValue = (short)SoundType.Navi_HEY;
-                            break;
-                        case "saria giggle":
-                            soundValue = (short)SoundType.Saria_Giggle;
-                            break;
-                        case "yaaaa":
-                            soundValue = (short)SoundType.Yaaaa;
-                            break;
-                        case "zelda heh":
-                            soundValue = (short)SoundType.Zelda_Heh;
-                            break;
-                        case "zelda awww":
-                            soundValue = (short)SoundType.Zelda_Awww;
-                            break;
-                        case "zelda huh":
-                            soundValue = (short)SoundType.Zelda_Huh;
-                            break;
-                        case "generic giggle":
-                            soundValue = (short)SoundType.Generic_Giggle;
-                            break;
-                        case "unused 1":
-                            soundValue = (short)SoundType.Unused_1;
-                            break;
-                        case "moo":
-                            soundValue = (short)SoundType.Moo;
-                            break;
-                    }
-                    byte[] soundIDBytes = BitConverter.GetBytes(soundValue);
-                    output.Add(soundIDBytes[1]);
-                    output.Add(soundIDBytes[0]);
-                    break;
-                case "icon":
-                    output.Add((byte)ControlCode.Icon);
-                    output.Add(Convert.ToByte(code[1]));
-                    break;
-                case "speed":
-                    output.Add((byte)ControlCode.Speed);
-                    output.Add(Convert.ToByte(code[1]));
-                    break;
-                case "background":
-                    output.Add((byte)ControlCode.Background);
-                    byte[] backgroundIDBytes = BitConverter.GetBytes(Convert.ToInt32(code[1]));
-                    output.Add(backgroundIDBytes[2]);
-                    output.Add(backgroundIDBytes[1]);
-                    output.Add(backgroundIDBytes[0]);
-                    break;
-                case "marathon time":
-                    output.Add((byte)ControlCode.Marathon_Time);
-                    break;
-                case "race time":
-                    output.Add((byte)ControlCode.Race_Time);
-                    break;
-                case "points":
-                    output.Add((byte)ControlCode.Points);
-                    break;
-                case "gold skulltulas":
-                    output.Add((byte)ControlCode.Gold_Skulltulas);
-                    break;
-                case "ns":
-                    output.Add((byte)ControlCode.No_Skip);
-                    break;
-                case "two choices":
-                    output.Add((byte)ControlCode.Two_Choices);
-                    break;
-                case "three choices":
-                    output.Add((byte)ControlCode.Three_Choices);
-                    break;
-                case "fish weight":
-                    output.Add((byte)ControlCode.Fish_Weight);
-                    break;
-                case "high score":
-                    output.Add((byte)ControlCode.High_Score);
-                    switch(code[1].ToLower())
-                    {
-                        case "archery":
-                            output.Add((byte)HighScore.Archery);
-                            break;
-                        case "poe points":
-                            output.Add((byte)HighScore.Poe_Points);
-                            break;
-                        case "fishing":
-                            output.Add((byte)HighScore.Fishing);
-                            break;
-                        case "horse race":
-                            output.Add((byte)HighScore.Horse_Race);
-                            break;
-                        case "marathon":
-                            output.Add((byte)HighScore.Marathon);
-                            break;
-                        case "dampe race":
-                            output.Add((byte)HighScore.Dampe_Race);
-                            break;
-                    }
-                    break;
-                case "time":
-                    output.Add((byte)ControlCode.Time);
-                    break;
-                case "dash":
-                    output.Add((byte)ControlCode.Dash);
-                    break;
-                case "a button":
-                    output.Add((byte)ControlCode.A_Button);
-                    break;
-                case "b button":
-                    output.Add((byte)ControlCode.B_Button);
-                    break;
-                case "c button":
-                    output.Add((byte)ControlCode.C_Button);
-                    break;
-                case "l button":
-                    output.Add((byte)ControlCode.L_Button);
-                    break;
-                case "r button":
-                    output.Add((byte)ControlCode.R_Button);
-                    break;
-                case "z button":
-                    output.Add((byte)ControlCode.Z_Button);
-                    break;
-                case "c up":
-                    output.Add((byte)ControlCode.C_Up);
-                    break;
-                case "c down":
-                    output.Add((byte)ControlCode.C_Down);
-                    break;
-                case "c left":
-                    output.Add((byte)ControlCode.C_Left);
-                    break;
-                case "c right":
-                    output.Add((byte)ControlCode.C_Right);
-                    break;
-                case "triangle":
-                    output.Add((byte)ControlCode.Triangle);
-                    break;
-                case "control stick":
-                    output.Add((byte)ControlCode.Control_Stick);
-                    break;
-                case "d pad":
-                    output.Add((byte)ControlCode.D_Pad);
-                    break;
-                case "new box":
-                    output.Add((byte)ControlCode.Box_Break);
-                    break;
+                        }
+                }
+            }
+            catch (Exception)
+            {
             }
 
             return output;
         }
     }
+
+
 }

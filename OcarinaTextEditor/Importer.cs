@@ -21,7 +21,7 @@ namespace OcarinaTextEditor
             m_messageList = new ObservableCollection<Message>();
         }
 
-        public Importer(string fileName, Dictionary<ControlCode, string> controlCodeDict, EditMode Mode, bool Debug)
+        public Importer(string fileName, EditMode Mode, bool Debug)
         {
             List<TableRecord> tableRecordList = new List<TableRecord>();
             TableRecord fuck = null;
@@ -62,7 +62,7 @@ namespace OcarinaTextEditor
                                 continue;
 
                             reader.BaseStream.Position = mesgRecord.Offset;
-                            Message mes = new Message(reader, mesgRecord, controlCodeDict);
+                            Message mes = new Message(reader, mesgRecord);
                             m_messageList.Add(mes);
                         }
                     }
@@ -114,7 +114,7 @@ namespace OcarinaTextEditor
                         foreach (var mesgRecord in tableRecordList)
                         {
                             reader.BaseStream.Position = msgOffset + mesgRecord.Offset;
-                            Message mes = new Message(reader, mesgRecord, controlCodeDict);
+                            Message mes = new Message(reader, mesgRecord);
                             m_messageList.Add(mes);
                         }
                     }
@@ -132,7 +132,7 @@ namespace OcarinaTextEditor
             }
         }
 
-        public Importer(string tableFileName, string messageDataFileName, Dictionary<ControlCode, string> controlCodeDict)
+        public Importer(string tableFileName, string messageDataFileName)
         {
             m_messageList = new ObservableCollection<Message>();
 
@@ -158,7 +158,7 @@ namespace OcarinaTextEditor
                 foreach (var mesgRecord in tableRecordList)
                 {
                     reader.BaseStream.Position = mesgRecord.Offset;
-                    Message mes = new Message(reader, mesgRecord, controlCodeDict);
+                    Message mes = new Message(reader, mesgRecord);
 
                     m_messageList.Add(mes);
                 }

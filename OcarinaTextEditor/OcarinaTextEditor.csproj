@@ -62,10 +62,12 @@
     <Reference Include="Microsoft.WindowsAPICodePack.Shell">
       <HintPath>..\packages\Microsoft.WindowsAPICodePack.Shell.1.1.0\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Presentation" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -76,7 +78,6 @@
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
     <Reference Include="Xceed.Wpf.AvalonDock, Version=4.1.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
       <HintPath>..\packages\Extended.Wpf.Toolkit.4.1.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
     </Reference>
@@ -103,6 +104,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\NullToFalseConverter.cs" />
+    <Compile Include="Dicts.cs" />
     <Compile Include="Enums\Color.cs" />
     <Compile Include="Enums\ControlCode.cs" />
     <Compile Include="Enums\ExportType.cs" />
@@ -115,6 +117,18 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Importer.cs" />
     <Compile Include="Message.cs" />
+    <Compile Include="PickableList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PickableList.designer.cs">
+      <DependentUpon>PickableList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PickableListEntryEdit.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PickableListEntryEdit.designer.cs">
+      <DependentUpon>PickableListEntryEdit.cs</DependentUpon>
+    </Compile>
     <Compile Include="RelayCommand.cs" />
     <Compile Include="TableRecord.cs" />
     <Compile Include="ViewModel.cs" />
@@ -145,6 +159,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="PickableList.resx">
+      <DependentUpon>PickableList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PickableListEntryEdit.resx">
+      <DependentUpon>PickableListEntryEdit.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -155,6 +175,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="SFX.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

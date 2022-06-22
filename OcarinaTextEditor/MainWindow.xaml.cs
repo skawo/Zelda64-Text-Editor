@@ -32,6 +32,7 @@ namespace OcarinaTextEditor
             textBoxMsg.TextChanged += TextBoxMsg_TextChanged;
             numUpNumBoxes.ValueChanged += NumUpNumBoxes_ValueChanged;
             BoxTypeCombo.SelectionChanged += BoxTypeCombo_SelectionChanged;
+
         }
 
 
@@ -72,6 +73,16 @@ namespace OcarinaTextEditor
             textBoxMsg.TextChanged += TextBoxMsg_TextChanged;
             numUpNumBoxes.ValueChanged += NumUpNumBoxes_ValueChanged;
             BoxTypeCombo.SelectionChanged += BoxTypeCombo_SelectionChanged;
+
+            foreach (var Icon in Enum.GetValues(typeof(Enums.MsgIcon)))
+            {
+                var Item = new MenuItem();
+                Item.Header = Icon.ToString();
+                Item.SetBinding(Button.CommandProperty, new Binding("OnRequestAddControl"));
+                Item.CommandParameter = $"ICON:{Icon.ToString()}";
+
+                IconHeader.Items.Add(Item);
+            }
         }
 
         private void NumUpNumBoxes_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -87,7 +98,7 @@ namespace OcarinaTextEditor
                 return;
 
             Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
-            byte[] outD = mes.ConvertTextData(view.m_controlCodes).ToArray();
+            byte[] outD = mes.ConvertTextData().ToArray();
 
             ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
 

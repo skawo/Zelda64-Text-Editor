@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OcarinaTextEditor;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,6 +14,7 @@ using System.Windows.Data;
 using OcarinaTextEditor.Enums;
 using System.IO;
 using GameFormatReader.Common;
+
 
 namespace OcarinaTextEditor
 {
@@ -229,8 +231,6 @@ namespace OcarinaTextEditor
         public ViewModel()
         {
             ViewSource = new CollectionViewSource();
-
-            m_controlCodes = PopulateCodeDictionary();
         }
 
         private ROMVer CheckRomVersion(string fileName)
@@ -283,7 +283,7 @@ namespace OcarinaTextEditor
                 if (Version == ROMVer.Unknown)
                     return;
 
-                Importer file = new Importer(openFile.FileName, m_controlCodes, EditMode.ROM, Version == ROMVer.Debug);
+                Importer file = new Importer(openFile.FileName, EditMode.ROM, Version == ROMVer.Debug);
                 MessageList = file.GetMessageList();
 
                 // If message list is null, we failed to open a ROM
@@ -342,7 +342,7 @@ namespace OcarinaTextEditor
                     }
                 }
 
-                Importer file = new Importer(openFile.FileName, m_controlCodes, EditMode.ZZRPL, Version == ROMVer.Debug);
+                Importer file = new Importer(openFile.FileName, EditMode.ZZRPL, Version == ROMVer.Debug);
                 MessageList = file.GetMessageList();
 
                 // If message list is null, we failed to parse.
@@ -381,7 +381,7 @@ namespace OcarinaTextEditor
                     return;
                 }
 
-                Importer file = new Importer(openFile.FileName, m_controlCodes, EditMode.ZZRT, Version == ROMVer.Debug);
+                Importer file = new Importer(openFile.FileName, EditMode.ZZRT, Version == ROMVer.Debug);
                 MessageList = file.GetMessageList();
 
                 // If message list is null, we failed to parse.
@@ -425,7 +425,7 @@ namespace OcarinaTextEditor
 
             messageDataFileName = openFile.FileName;
 
-            Importer file = new Importer(tableFileName, messageDataFileName, m_controlCodes);
+            Importer file = new Importer(tableFileName, messageDataFileName);
             MessageList = file.GetMessageList();
             ViewSource.Source = MessageList;
             SelectedMessage = MessageList[0];
@@ -443,7 +443,7 @@ namespace OcarinaTextEditor
 
             if (saveFile.ShowDialog() == true)
             {
-                Exporter export = new Exporter(m_messageList, saveFile.FileName, Enums.ExportType.NewROM, m_controlCodes, m_inputFile, Version == ROMVer.Debug);
+                Exporter export = new Exporter(m_messageList, saveFile.FileName, Enums.ExportType.NewROM, m_inputFile, Version == ROMVer.Debug);
                 m_inputFileName = saveFile.FileName;
                 WindowTitle = string.Format("{0} - Ocarina of Time Text Editor", m_inputFileName);
             }
@@ -451,17 +451,17 @@ namespace OcarinaTextEditor
 
         private void SaveToOriginalRom()
         {
-            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.OriginalROM, m_controlCodes, m_inputFile, Version == ROMVer.Debug);
+            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.OriginalROM, m_inputFile, Version == ROMVer.Debug);
         }
 
         private void SaveZZRP()
         {
-            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRP, m_controlCodes, m_inputFile, Version == ROMVer.Debug);
+            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRP, m_inputFile, Version == ROMVer.Debug);
         }
 
         private void SaveZZRPL()
         {
-            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRPL, m_controlCodes, m_inputFile, Version == ROMVer.Debug);
+            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRPL, m_inputFile, Version == ROMVer.Debug);
         }
 
         private void SaveToFiles()
@@ -480,7 +480,7 @@ namespace OcarinaTextEditor
 
             if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                Exporter export = new Exporter(m_messageList, ofd.FileName, Enums.ExportType.File, m_controlCodes, Version == ROMVer.Debug);
+                Exporter export = new Exporter(m_messageList, ofd.FileName, Enums.ExportType.File, Version == ROMVer.Debug);
             }
         }
 
@@ -491,7 +491,7 @@ namespace OcarinaTextEditor
 
             if (saveFile.ShowDialog() == true)
             {
-                Exporter export = new Exporter(m_messageList, saveFile.FileName, Enums.ExportType.Patch, m_controlCodes, Version == ROMVer.Debug);
+                Exporter export = new Exporter(m_messageList, saveFile.FileName, Enums.ExportType.Patch, Version == ROMVer.Debug);
             }
         }
 
@@ -583,16 +583,31 @@ namespace OcarinaTextEditor
             SelectedMessage.TextData = SelectedMessage.TextData.Insert(TextboxPosition,string.Format("<{0}>", code));
         }
 
-        private Dictionary<ControlCode, string> PopulateCodeDictionary()
+        private RelayCommand onRequestOpenSFXesMenu;
+
+        public ICommand OnRequestOpenSFXesMenu
         {
-            Dictionary<ControlCode, string> output = new Dictionary<ControlCode, string>();
-
-            foreach (ControlCode code in Enum.GetValues(typeof(ControlCode)))
+            get
             {
-                output.Add(code, code.ToString().Replace("_", " "));
-            }
+                if (onRequestOpenSFXesMenu == null)
+                {
+                    onRequestOpenSFXesMenu = new RelayCommand(PerformOnRequestOpenSFXesMenu);
+                }
 
-            return output;
+                return onRequestOpenSFXesMenu;
+            }
         }
+
+        private void PerformOnRequestOpenSFXesMenu(object commandParameter)
+        {
+            NPC_Maker.PickableList SFX = new NPC_Maker.PickableList(Dicts.SFXesFilename, true);
+            System.Windows.Forms.DialogResult DR = SFX.ShowDialog();
+
+            if (DR == System.Windows.Forms.DialogResult.OK)
+            {
+                InsertControlCode($"SOUND:{SFX.Chosen.Name}");
+            }
+        }
+
     }
 }

@@ -22,7 +22,7 @@ namespace OcarinaTextEditor
 
         }
 
-        public Exporter(ObservableCollection<Message> messageList, string fileName, ExportType exportType, Dictionary<ControlCode, string> codeDict, bool Debug)
+        public Exporter(ObservableCollection<Message> messageList, string fileName, ExportType exportType, bool Debug)
         {
             byte[] alphabetStartOffset;
 
@@ -69,7 +69,7 @@ namespace OcarinaTextEditor
                         messageTableWriter.Write(decompOffset[i]);
                     }
 
-                    stringBank.AddRange(mes.ConvertTextData(codeDict));
+                    stringBank.AddRange(mes.ConvertTextData());
                     stringBank.Add(0x02);
 
                     ExtensionMethods.PadByteList4(stringBank);
@@ -111,7 +111,7 @@ namespace OcarinaTextEditor
             }
         }
 
-        public Exporter(ObservableCollection<Message> messageList, string fileName, ExportType exportType, Dictionary<ControlCode, string> codeDict, MemoryStream inputFile, bool Debug)
+        public Exporter(ObservableCollection<Message> messageList, string fileName, ExportType exportType, MemoryStream inputFile, bool Debug)
         {
             byte[] alphabetStartOffset;
 
@@ -158,7 +158,7 @@ namespace OcarinaTextEditor
                         messageTableWriter.Write(decompOffset[i]);
                     }
 
-                    stringBank.AddRange(mes.ConvertTextData(codeDict));
+                    stringBank.AddRange(mes.ConvertTextData());
                     stringBank.Add(0x02);
 
                     ExtensionMethods.PadByteList4(stringBank);
