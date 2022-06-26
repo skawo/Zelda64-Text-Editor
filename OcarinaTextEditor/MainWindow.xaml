@@ -40,13 +40,15 @@
         </DockPanel>
         <Menu VerticalAlignment="Top" Grid.ColumnSpan="4" Height="21">
             <MenuItem Header="File">
-                <MenuItem Header="Open ZZRP..." HorizontalAlignment="Left" Height="22" Width="212" Command="{Binding OnRequestOpenZZRP, Mode=OneWay}"/>
-                <MenuItem Header="Open ZZRPL" HorizontalAlignment="Left" Height="22" Width="212" Command="{Binding OnRequestOpenZZRPL, Mode=OneWay}"/>
                 <MenuItem Header="Open ROM..." Command="{Binding OnRequestOpenFile}"/>
+                <MenuItem Header="Open ZZRP Project..." HorizontalAlignment="Left" Height="22" Width="212" Command="{Binding OnRequestOpenZZRP, Mode=OneWay}"/>
+                <MenuItem Header="Open ZZRPL Project..." HorizontalAlignment="Left" Height="22" Width="212" Command="{Binding OnRequestOpenZZRPL, Mode=OneWay}"/>
+                <MenuItem Header="Open Z64ROM Project..." HorizontalAlignment="Left" Height="22" Width="212" Command="{Binding OnRequestOpenZ64ROM, Mode=OneWay}"/>
                 <MenuItem Header="Open Generated Data..." Command="{Binding OnRequestOpenData}"/>
                 <Separator/>
                 <MenuItem Header="Save ZZRP" IsEnabled="{Binding ZZRPMode}" Command="{Binding OnRequestSaveZZRP, Mode=OneWay}"/>
                 <MenuItem Header="Save ZZRPL" IsEnabled="{Binding ZZRPLMode}" Command="{Binding OnRequestSaveZZRPL, Mode=OneWay}"/>
+                <MenuItem Header="Save Z64ROM" IsEnabled="{Binding Z64ROMMode}" Command="{Binding OnRequestSaveZ64ROM, Mode=OneWay}"/>
                 <MenuItem Header="Save to ROM" IsEnabled="{Binding OldMode}">
                     <MenuItem Header="Save" Command="{Binding OnRequestSaveFileOriginalROM}"/>
                     <MenuItem Header="Save as..." Command="{Binding OnRequestSaveFileNewROM}"/>

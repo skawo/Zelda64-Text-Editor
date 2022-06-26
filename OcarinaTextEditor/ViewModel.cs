@@ -76,6 +76,21 @@ namespace OcarinaTextEditor
 
         #endregion
 
+        #region Z64ROMMode
+
+        private Boolean _Z64ROMMode;
+        public Boolean Z64ROMMode
+        {
+            get { return _Z64ROMMode; }
+            set
+            {
+                _Z64ROMMode = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        #endregion
+
         #region OldMode
 
         private Boolean _OldMode;
@@ -213,6 +228,12 @@ namespace OcarinaTextEditor
         {
             get { return new RelayCommand(x => OpenZZRPL(), x => true); }
         }
+
+        public ICommand OnRequestOpenZ64ROM
+        {
+            get { return new RelayCommand(x => OpenZ64ROM(), x => true); }
+        }
+
         public ICommand OnRequestOpenZZRP
         {
             get { return new RelayCommand(x => OpenZZRP(), x => true); }
@@ -225,6 +246,11 @@ namespace OcarinaTextEditor
         public ICommand OnRequestSaveZZRPL
         {
             get { return new RelayCommand(x => SaveZZRPL(), x => MessageList != null); }
+        }
+
+        public ICommand OnRequestSaveZ64ROM
+        {
+            get { return new RelayCommand(x => SaveZ64ROM(), x => MessageList != null); }
         }
         #endregion
 
@@ -299,10 +325,10 @@ namespace OcarinaTextEditor
                 WindowTitle = string.Format("{0} - Ocarina of Time Text Editor", openFile.FileName);
 
                 OldMode = true;
-                ZZRPMode = false;
-                ZZRPLMode = false;
+                ZZRPMode = ZZRPLMode = Z64ROMMode = false;
             }
         }
+
         private void OpenZZRPL()
         {
             OpenFileDialog openFile = new OpenFileDialog();
@@ -313,9 +339,14 @@ namespace OcarinaTextEditor
             {
                 string zzrplFolder = Path.GetDirectoryName(openFile.FileName);
 
-
                 string msgDataEd = Path.Combine(zzrplFolder, "messages", "StringData.bin");
                 string tableEd = Path.Combine(zzrplFolder, "messages", "MessageTable.tbl");
+
+                if ((File.Exists(msgDataEd) && !File.Exists(tableEd)) || (!File.Exists(msgDataEd) && File.Exists(tableEd)))
+                {
+                    System.Windows.Forms.MessageBox.Show("Error: Partial edited data found. Stopping in order to avoid loss of work.");
+                    return;
+                }
 
                 if (!File.Exists(msgDataEd) || !File.Exists(tableEd))
                 {
@@ -342,7 +373,7 @@ namespace OcarinaTextEditor
                     }
                 }
 
-                Importer file = new Importer(openFile.FileName, EditMode.ZZRPL, Version == ROMVer.Debug);
+                Importer file = new Importer(tableEd, msgDataEd);
                 MessageList = file.GetMessageList();
 
                 // If message list is null, we failed to parse.
@@ -357,9 +388,75 @@ namespace OcarinaTextEditor
 
                 WindowTitle = Path.GetFileNameWithoutExtension(openFile.FileName) + " - Ocarina of Time Text Editor";
 
-                ZZRPMode = false;
-                OldMode = false;
+                ZZRPMode = OldMode = Z64ROMMode = false;
                 ZZRPLMode = true;
+            }
+        }
+
+        private void OpenZ64ROM()
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+
+            openFile.Filter = "Z64ROM Config File (*.cfg)|*.cfg";
+
+            if (openFile.ShowDialog() == true)
+            {
+                string cfgFolder = Path.GetDirectoryName(openFile.FileName);
+                string[] cfg = File.ReadAllLines(openFile.FileName);
+                string vanillaFolderName = ".vanilla";
+
+                foreach (string s in cfg)
+                {
+                    string[] setting = s.Split('=');
+
+                    if (setting.Length == 2 && setting[0] == "z_vanilla")
+                        vanillaFolderName = setting[1];
+                }
+
+                string staticFolder = Path.Combine(cfgFolder, "rom", "system", "static");
+                string msgDataEd = Path.Combine(staticFolder, "message_data_static_NES.bin");
+                string tableEd = Path.Combine(staticFolder, "message_data_static_NES.tbl");
+
+                if ((File.Exists(msgDataEd) && !File.Exists(tableEd)) || (!File.Exists(msgDataEd) && File.Exists(tableEd)))
+                {
+                    System.Windows.Forms.MessageBox.Show("Error: Partial edited data found. Stopping in order to avoid loss of work.");
+                    return;
+                }
+
+                if (!File.Exists(msgDataEd) || !File.Exists(tableEd))
+                {
+                    string msgData = Path.Combine(staticFolder, vanillaFolderName, "message_data_static_NES.bin");
+                    string table = Path.Combine(staticFolder, vanillaFolderName, "message_data_static_NES.tbl");
+
+                    if (!File.Exists(msgData) || !File.Exists(table))
+                    {
+                        System.Windows.Forms.MessageBox.Show("Could not find the extracted files.");
+                        return;
+                    }
+                    else
+                    {
+                        File.Copy(msgData, msgDataEd);
+                        File.Copy(table, tableEd);
+                    }
+                }
+
+                Importer file = new Importer(tableEd, msgDataEd);
+                MessageList = file.GetMessageList();
+
+                // If message list is null, we failed to parse.
+                if (MessageList == null)
+                    return;
+
+                m_inputFileName = openFile.FileName;
+                m_inputFile = file.GetInputFile();
+
+                ViewSource.Source = MessageList;
+                SelectedMessage = MessageList[0];
+
+                WindowTitle = Path.GetFileNameWithoutExtension(openFile.FileName) + " - Ocarina of Time Text Editor";
+
+                ZZRPMode = OldMode = ZZRPLMode = false;
+                Z64ROMMode = true;
             }
         }
 
@@ -397,8 +494,7 @@ namespace OcarinaTextEditor
                 WindowTitle = Path.GetFileNameWithoutExtension(openFile.FileName) + " - Ocarina of Time Text Editor";
 
                 ZZRPMode = true;
-                OldMode = false;
-                ZZRPLMode = false;
+                OldMode = ZZRPLMode = Z64ROMMode = false;
             }
         }
 
@@ -433,7 +529,7 @@ namespace OcarinaTextEditor
             WindowTitle = string.Format("{0} - Ocarina of Time Text Editor", tableFileName);
 
             OldMode = true;
-            ZZRPMode = false;
+            ZZRPMode = ZZRPLMode = Z64ROMMode = false;
         }
 
         private void SaveToNewRom()
@@ -462,6 +558,11 @@ namespace OcarinaTextEditor
         private void SaveZZRPL()
         {
             Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRPL, m_inputFile, Version == ROMVer.Debug);
+        }
+
+        private void SaveZ64ROM()
+        {
+            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.Z64ROM, m_inputFile, Version == ROMVer.Debug);
         }
 
         private void SaveToFiles()

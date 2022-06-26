@@ -18,5 +18,6 @@ namespace OcarinaTextEditor.Enums
         ROM = 0,
         ZZRT = 1,
         ZZRPL = 2,
+        Z64ROM = 3,
     }
 }

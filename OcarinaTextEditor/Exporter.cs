@@ -106,6 +106,9 @@ namespace OcarinaTextEditor
                         case ExportType.ZZRPL:
                             ExportToZZRPL(messageTableStream, stringData);
                             break;
+                        case ExportType.Z64ROM:
+                            ExportToZ64ROM(messageTableStream, stringData);
+                            break;
                     }
                 }
             }
@@ -200,6 +203,9 @@ namespace OcarinaTextEditor
                             break;
                         case ExportType.ZZRPL:
                             ExportToZZRPL(messageTableStream, stringData);
+                            break;
+                        case ExportType.Z64ROM:
+                            ExportToZ64ROM(messageTableStream, stringData);
                             break;
                     }
                 }
@@ -396,26 +402,21 @@ namespace OcarinaTextEditor
             }
         }
 
-        private void ExportToZZRPL(MemoryStream table, MemoryStream stringBank)
+        private void ExportToFiles(MemoryStream table, MemoryStream stringBank, string TablePath, string MsgDataPath)
         {
-            string zzrplFolder = Path.GetDirectoryName(m_fileName);
-            string tablePath = Path.Combine(zzrplFolder, "messages", "MessageTable.tbl");
-            string msgDataPath = Path.Combine(zzrplFolder, "messages", "StringData.bin");
-
             try
             {
-                using (FileStream tableFile = new FileStream(tablePath, FileMode.Open))
+                File.Delete(TablePath);
+
+                using (FileStream tableFile = new FileStream(TablePath, FileMode.Create, FileAccess.Write))
                 {
                     tableFile.Position = 0;
-                    EndianBinaryWriter writer = new EndianBinaryWriter(tableFile, Endian.Big);
-
-                    tableFile.Position = 0;
-                    table.CopyTo(tableFile);
+                    table.WriteTo(tableFile);
                 }
 
-                File.Delete(msgDataPath);
+                File.Delete(MsgDataPath);
 
-                using (FileStream msgFile = new FileStream(msgDataPath, FileMode.Create, FileAccess.Write))
+                using (FileStream msgFile = new FileStream(MsgDataPath, FileMode.Create, FileAccess.Write))
                 {
                     msgFile.Position = 0;
                     stringBank.WriteTo(msgFile);
@@ -426,6 +427,25 @@ namespace OcarinaTextEditor
                 MessageBox.Show(ex.Message);
                 return;
             }
+        }
+
+        private void ExportToZ64ROM(MemoryStream table, MemoryStream stringBank)
+        {
+            string cfgFolder = Path.GetDirectoryName(m_fileName);
+            string staticFolder = Path.Combine(cfgFolder, "rom", "system", "static");
+            string msgDataPath = Path.Combine(staticFolder, "message_data_static_NES.bin");
+            string tablePath = Path.Combine(staticFolder, "message_data_static_NES.tbl");
+
+            ExportToFiles(table, stringBank, tablePath, msgDataPath);
+        }
+
+        private void ExportToZZRPL(MemoryStream table, MemoryStream stringBank)
+        {
+            string zzrplFolder = Path.GetDirectoryName(m_fileName);
+            string tablePath = Path.Combine(zzrplFolder, "messages", "MessageTable.tbl");
+            string msgDataPath = Path.Combine(zzrplFolder, "messages", "StringData.bin");
+
+            ExportToFiles(table, stringBank, tablePath, msgDataPath);
         }
 
         private void ExportToZZRP(MemoryStream table, MemoryStream stringBank)

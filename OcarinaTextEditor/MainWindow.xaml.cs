@@ -92,29 +92,40 @@ namespace OcarinaTextEditor
 
         private void TextBoxMsg_TextChanged(object sender, TextChangedEventArgs e)
         {
-            ViewModel view = (ViewModel)DataContext;
+            try
+            {
+                ViewModel view = (ViewModel)DataContext;
 
-            if (textBoxMsg.Text == "")
-                return;
+                if (textBoxMsg.Text == "")
+                    return;
 
-            Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
-            byte[] outD = mes.ConvertTextData().ToArray();
+                Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
+                byte[] outD = mes.ConvertTextData(false).ToArray();
 
-            ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
+                if (outD.Length != 0 && numUpNumBoxes.Value == 0)
+                    numUpNumBoxes.Value = 1;
 
-            int NumBoxes = mp.MessageCount;
 
-            if (NumBoxes == 0)
-                numUpNumBoxes.Minimum = 0;
-            else
-                numUpNumBoxes.Minimum = 1;
+                ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
 
-            if (numUpNumBoxes.Value > NumBoxes)
-                numUpNumBoxes.Value = NumBoxes;
+                int NumBoxes = mp.MessageCount;
 
-            numUpNumBoxes.Maximum = NumBoxes;
+                if (NumBoxes == 0)
+                    numUpNumBoxes.Minimum = 0;
+                else
+                    numUpNumBoxes.Minimum = 1;
 
-            msgPreview.Source = BitmapToImageSource(mp.GetPreview((int)numUpNumBoxes.Value - 1, true));
+                if (numUpNumBoxes.Value > NumBoxes)
+                    numUpNumBoxes.Value = NumBoxes;
+
+                numUpNumBoxes.Maximum = NumBoxes;
+
+                msgPreview.Source = BitmapToImageSource(mp.GetPreview((int)numUpNumBoxes.Value - 1, true));
+            }
+            catch (Exception)
+            {
+
+            }
             
         }
 
