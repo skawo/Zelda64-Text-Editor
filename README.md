@@ -1,4 +1,4 @@
-This fork adds support for editing filesystems exported using zzromtool and zzrtl-audio.
+This fork adds support for editing filesystems exported using zzromtool, zzrtl-audio and z64rom.
 Implemented is also a message previewer.
 
 Decompressed NTSC 1.0 ROM support was also added, but it's not tested and not recommended for use.
