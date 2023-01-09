@@ -140,7 +140,8 @@ namespace OcarinaTextEditor
                     }
                     else if (testByte == 0x7F)
                     {
-                        charData.Add('-');
+                        // Never actually used in-game. Appears blank.
+                        charData.Add(' ');
                     }    
                     else if (testByte > 0x7F || testByte <= 0x9E)
                     {
