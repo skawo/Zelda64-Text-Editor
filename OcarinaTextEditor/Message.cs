@@ -122,10 +122,14 @@ namespace OcarinaTextEditor
             {
                 bool readControlCode = false;
 
-                if (Enum.IsDefined(typeof(ControlCode), (int)testByte))
+                if (testByte < 0x7F || testByte > 0x9E)
                 {
-                    charData.AddRange(GetControlCode((ControlCode)testByte, reader));
-                    readControlCode = true;
+
+                    if (Enum.IsDefined(typeof(ControlCode), (int)testByte))
+                    {
+                        charData.AddRange(GetControlCode((ControlCode)testByte, reader));
+                        readControlCode = true;
+                    }
                 }
 
                 if (!readControlCode)
@@ -133,6 +137,10 @@ namespace OcarinaTextEditor
                     if (char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte))
                     {
                         charData.Add((char)testByte);
+                    }
+                    else if (testByte >= 0x7F || testByte <= 0x9E)
+                    {
+                        charData.Add(Enum.GetName(typeof(ControlCode), testByte).First());
                     }
                 }
 

@@ -107,6 +107,7 @@ namespace OcarinaTextEditor.Enums
         FISHING = 0x02,
         HORSE_RACE = 0x03,
         MARATHON = 0x04,
+        HS_UNK = 0x05,
         DAMPE_RACE = 0x06
     }
 

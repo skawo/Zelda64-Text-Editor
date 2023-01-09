@@ -80,11 +80,11 @@
                             </MenuItem>
                             <MenuItem Header="High Score">
                                 <MenuItem Header="Archery" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:ARCHERY"/>
-                                <MenuItem Header="Poe Salesman Points" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:POE POINTS"/>
+                                <MenuItem Header="Poe Salesman Points" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:POE_POINTS"/>
                                 <MenuItem Header="Fishing" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:FISHING"/>
-                                <MenuItem Header="Horse Race" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:HORSE RACE"/>
+                                <MenuItem Header="Horse Race" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:HORSE_RACE"/>
                                 <MenuItem Header="Running Man's Marathon" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:MARATHON"/>
-                                <MenuItem Header="Dampe Race" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:DAMPE RACE"/>
+                                <MenuItem Header="Dampe Race" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:DAMPE_RACE"/>
                             </MenuItem>
                             <MenuItem Header="Button prompt" Command="{Binding OnRequestAddControl}" CommandParameter="AWAIT_BUTTON"/>
                             <MenuItem Header="Sound effect" Command="{Binding OnRequestOpenSFXesMenu}"/>
