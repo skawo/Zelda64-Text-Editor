@@ -138,7 +138,11 @@ namespace OcarinaTextEditor
                     {
                         charData.Add((char)testByte);
                     }
-                    else if (testByte >= 0x7F || testByte <= 0x9E)
+                    else if (testByte == 0x7F)
+                    {
+                        charData.Add('-');
+                    }    
+                    else if (testByte > 0x7F || testByte <= 0x9E)
                     {
                         charData.Add(Enum.GetName(typeof(ControlCode), testByte).First());
                     }
