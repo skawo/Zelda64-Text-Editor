@@ -89,6 +89,9 @@ namespace OcarinaTextEditor
             }
         }
 
+        public string Path1 { get; set; }
+        public string Path2 { get; set; }
+
         #endregion
 
         #region OldMode
@@ -254,6 +257,11 @@ namespace OcarinaTextEditor
         }
         #endregion
 
+        public ICommand OnRequestRefresh
+        {
+            get { return new RelayCommand(x => Refresh(), x => MessageList != null); }
+        }
+
         public ViewModel()
         {
             ViewSource = new CollectionViewSource();
@@ -296,14 +304,16 @@ namespace OcarinaTextEditor
         }
 
         #region Input/Output
-        private void Open()
+        private void Open(string PathD = "")
         {
             OpenFileDialog openFile = new OpenFileDialog();
-
             openFile.Filter = "N64 ROMs (*.n64, *.z64)|*.n64;*.z64|All files|*";
 
-            if (openFile.ShowDialog() == true)
+            if (PathD != "" || openFile.ShowDialog() == true)
             {
+                if (PathD != "")
+                    openFile.FileName = PathD;
+
                 Version = CheckRomVersion(openFile.FileName);
 
                 if (Version == ROMVer.Unknown)
@@ -315,6 +325,8 @@ namespace OcarinaTextEditor
                 // If message list is null, we failed to open a ROM
                 if (MessageList == null)
                     return;
+
+                Path1 = openFile.FileName;
 
                 m_inputFileName = openFile.FileName;
                 m_inputFile = file.GetInputFile();
@@ -329,16 +341,17 @@ namespace OcarinaTextEditor
             }
         }
 
-        private void OpenZZRPL()
+        private void OpenZZRPL(string PathD = "")
         {
             OpenFileDialog openFile = new OpenFileDialog();
-
             openFile.Filter = "zzrtl Projects (*.zzrpl)|*.zzrpl";
 
-            if (openFile.ShowDialog() == true)
+            if (PathD != "" || openFile.ShowDialog() == true)
             {
-                string zzrplFolder = Path.GetDirectoryName(openFile.FileName);
+                if (PathD != "")
+                    openFile.FileName = PathD;
 
+                string zzrplFolder = Path.GetDirectoryName(openFile.FileName);
                 string msgDataEd = Path.Combine(zzrplFolder, "messages", "StringData.bin");
                 string tableEd = Path.Combine(zzrplFolder, "messages", "MessageTable.tbl");
 
@@ -361,6 +374,8 @@ namespace OcarinaTextEditor
                         return;
                     }
 
+                    Path1 = openFile.FileName;
+
                     if (File.Exists(msgData))
                     {
                         File.Copy(msgData, msgDataEd);
@@ -373,6 +388,9 @@ namespace OcarinaTextEditor
                     }
                 }
 
+                Path1 = openFile.FileName;
+                Path2 = "";
+
                 Importer file = new Importer(tableEd, msgDataEd);
                 MessageList = file.GetMessageList();
 
@@ -383,8 +401,10 @@ namespace OcarinaTextEditor
                 m_inputFileName = openFile.FileName;
                 m_inputFile = file.GetInputFile();
 
+
                 ViewSource.Source = MessageList;
                 SelectedMessage = MessageList[0];
+
 
                 WindowTitle = Path.GetFileNameWithoutExtension(openFile.FileName) + " - Ocarina of Time Text Editor";
 
@@ -393,14 +413,17 @@ namespace OcarinaTextEditor
             }
         }
 
-        private void OpenZ64ROM()
+        private void OpenZ64ROM(string PathD = "")
         {
             OpenFileDialog openFile = new OpenFileDialog();
 
             openFile.Filter = "Z64ROM Config File (*.cfg)|*.cfg";
 
-            if (openFile.ShowDialog() == true)
+            if (PathD != "" || openFile.ShowDialog() == true)
             {
+                if (PathD != "")
+                    openFile.FileName = PathD;
+
                 string cfgFolder = Path.GetDirectoryName(openFile.FileName);
                 string[] cfg = File.ReadAllLines(openFile.FileName);
                 string vanillaFolderName = ".vanilla";
@@ -450,6 +473,10 @@ namespace OcarinaTextEditor
                 m_inputFileName = openFile.FileName;
                 m_inputFile = file.GetInputFile();
 
+                Path1 = openFile.FileName;
+                Path2 = "";
+
+
                 ViewSource.Source = MessageList;
                 SelectedMessage = MessageList[0];
 
@@ -460,14 +487,17 @@ namespace OcarinaTextEditor
             }
         }
 
-        private void OpenZZRP()
+        private void OpenZZRP(string PathD = "")
         {
             OpenFileDialog openFile = new OpenFileDialog();
 
             openFile.Filter = "zzromtool Projects (*.zzrp)|*.zzrp";
 
-            if (openFile.ShowDialog() == true)
+            if (PathD != "" || openFile.ShowDialog() == true)
             {
+                if (PathD != "")
+                    openFile.FileName = PathD;
+
                 string zzrpFolder = Path.GetDirectoryName(openFile.FileName);
                 string codeFile = Path.Combine(zzrpFolder, "system", "code");
                 string msgData = Path.Combine(zzrpFolder, "misc", "nes_message_data_static");
@@ -485,6 +515,9 @@ namespace OcarinaTextEditor
                 if (MessageList == null)
                     return;
 
+                Path1 = openFile.FileName;
+                Path2 = "";
+
                 m_inputFileName = openFile.FileName;
                 m_inputFile = file.GetInputFile();
 
@@ -497,32 +530,43 @@ namespace OcarinaTextEditor
                 OldMode = ZZRPLMode = Z64ROMMode = false;
             }
         }
+        
 
-        private void OpenData()
+        private void OpenData(string PathD1 = "", string PathD2 = "")
         {
             OpenFileDialog openFile = new OpenFileDialog();
             string tableFileName;
             string messageDataFileName;
 
-            openFile.Filter = "Table Data (*.tbl)|*.tbl|All files|*";
-            openFile.Title = "Select the MessageTable.tbl file";
+            if (PathD1 == "" || PathD2 == "")
+            {
+                openFile.Filter = "Table Data (*.tbl)|*.tbl|All files|*";
+                openFile.Title = "Select the MessageTable.tbl file";
 
-            if (openFile.ShowDialog() != true)
-                return;
+                if (openFile.ShowDialog() != true)
+                    return;
 
-            tableFileName = openFile.FileName;
+                tableFileName = openFile.FileName;
 
-            openFile.Filter = "String Data (*.bin)|*.bin|All files|*";
-            openFile.Title = "Select the StringData.bin file";
-            openFile.FilterIndex = 0;
+                openFile.Filter = "String Data (*.bin)|*.bin|All files|*";
+                openFile.Title = "Select the StringData.bin file";
+                openFile.FilterIndex = 0;
 
-            if (openFile.ShowDialog() != true)
-                return;
+                if (openFile.ShowDialog() != true)
+                    return;
 
-            messageDataFileName = openFile.FileName;
+                messageDataFileName = openFile.FileName;
+            }
+            else
+            {
+                tableFileName = PathD1;
+                messageDataFileName = PathD2;
+            }
+
 
             Importer file = new Importer(tableFileName, messageDataFileName);
             MessageList = file.GetMessageList();
+
             ViewSource.Source = MessageList;
             SelectedMessage = MessageList[0];
 
@@ -530,6 +574,9 @@ namespace OcarinaTextEditor
 
             OldMode = true;
             ZZRPMode = ZZRPLMode = Z64ROMMode = false;
+
+            Path1 = tableFileName;
+            Path2 = messageDataFileName;
         }
 
         private void SaveToNewRom()
@@ -563,6 +610,28 @@ namespace OcarinaTextEditor
         private void SaveZ64ROM()
         {
             Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.Z64ROM, m_inputFile, Version == ROMVer.Debug);
+        }
+
+        private void Refresh()
+        {
+            try
+            {
+                short Cur = 0;
+                Cur = SelectedMessage.MessageID;
+
+                if (ZZRPLMode)
+                    OpenZZRPL(Path1);
+                else if (ZZRPMode)
+                    OpenZZRP(Path1);
+                else if (OldMode && Path2 == "")
+                    OpenZ64ROM(Path1);
+                else if (OldMode && Path2 != "")
+                    OpenData(Path1, Path2);
+
+                SelectedMessage = MessageList.First(x => x.MessageID == Cur);
+            }
+            catch (Exception)
+            { }
         }
 
         private void SaveToFiles()

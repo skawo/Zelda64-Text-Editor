@@ -124,7 +124,6 @@ namespace OcarinaTextEditor
 
                 if (testByte < 0x7F || testByte > 0x9E)
                 {
-
                     if (Enum.IsDefined(typeof(ControlCode), (int)testByte))
                     {
                         charData.AddRange(GetControlCode((ControlCode)testByte, reader));
@@ -134,7 +133,7 @@ namespace OcarinaTextEditor
 
                 if (!readControlCode)
                 {
-                    if (char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte))
+                    if ((testByte >= 0x20 && testByte < 0x7F) || (char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte)))
                     {
                         charData.Add((char)testByte);
                     }
@@ -143,9 +142,9 @@ namespace OcarinaTextEditor
                         // Never actually used in-game. Appears blank.
                         charData.Add(' ');
                     }    
-                    else if (testByte > 0x7F || testByte <= 0x9E)
-                    {
-                        charData.Add(Enum.GetName(typeof(ControlCode), testByte).First());
+                    else if (testByte >= 0x80 && testByte <= 0x9E)
+                    { 
+                       charData.Add(Enum.GetName(typeof(ControlCode), testByte).First());
                     }
                 }
 
