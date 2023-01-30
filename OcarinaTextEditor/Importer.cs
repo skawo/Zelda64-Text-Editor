@@ -21,12 +21,23 @@ namespace OcarinaTextEditor
             m_messageList = new ObservableCollection<Message>();
         }
 
-        public Importer(string fileName, EditMode Mode, bool Debug)
+        public Importer(string fileName, EditMode Mode, bool Debug, bool Credits = false)
         {
             List<TableRecord> tableRecordList = new List<TableRecord>();
 
-            long offset = Mode == EditMode.ZZRT ? 0x0012E4C0 : Debug ? 0x00BC24C0 : 0x00B849EC;
-            long msgOffset = Mode == EditMode.ZZRT ? 0 : Debug ? 0x8C6000 : 0x92D000;
+            long offset = 0;
+            long msgOffset = 0;
+
+            if (!Credits)
+            {
+                offset = Mode == EditMode.ZZRT ? 0x0012E4C0 : Debug ? 0x00BC24C0 : 0x00B849EC;
+                msgOffset = Mode == EditMode.ZZRT ? 0 : Debug ? 0x8C6000 : 0x92D000;
+            }
+            else
+            {
+                offset = Mode == EditMode.ZZRT ? 0x0012E4C0 : Debug ? 0x00BCA908 : 0x00B88C0C;
+                msgOffset = Mode == EditMode.ZZRT ? 0 : Debug ? 0x0973000 : 0x0966000;
+            }
 
             string zzrpFolder = Path.GetDirectoryName(fileName);
             string codeFilePath = Path.Combine(zzrpFolder, "system", "code");
