@@ -435,7 +435,7 @@ namespace OcarinaTextEditor
         {
             OpenFileDialog openFile = new OpenFileDialog();
 
-            openFile.Filter = "Z64ROM Config File (*.cfg)|*.cfg";
+            openFile.Filter = "Z64ROM Config File (*.toml)|*.toml";
 
             if (PathD != "" || openFile.ShowDialog() == true)
             {
