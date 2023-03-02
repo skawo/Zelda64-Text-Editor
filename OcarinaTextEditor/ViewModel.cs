@@ -334,8 +334,7 @@ namespace OcarinaTextEditor
                     return;
 
 
-                if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                    CreditsMode = true;
+                CreditsMode = Keyboard.IsKeyDown(Key.LeftCtrl);
 
                 Importer file = new Importer(openFile.FileName, EditMode.ROM, Version == ROMVer.Debug, CreditsMode);
                 MessageList = file.GetMessageList();
