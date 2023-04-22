@@ -32,7 +32,7 @@ namespace OcarinaTextEditor
             // We need the char table, with an index of -4, at the start of all the entries. So we'll find it and put it at the top.
             for (int i = 0; i < messageList.Count; i++)
             {
-                if (messageList[i].MessageID == -4)
+                if (ROMInfo.ROMTSFixer.ContainsKey(Version) && messageList[i].MessageID == -4)
                 {
                     // Message is already at the start, we do nothing here
                     if (i == 0)
@@ -52,24 +52,19 @@ namespace OcarinaTextEditor
 
                 foreach (Message mes in messageList)
                 {
-                    mes.WriteMessage(messageTableWriter);
+                    mes.WriteMessage(messageTableWriter, Version);
 
                     messageTableWriter.BaseStream.Seek(-4, SeekOrigin.Current);
 
                     int stringOffset = stringBank.Count();
 
                     byte[] decompOffset = BitConverter.GetBytes(stringOffset);
-                    decompOffset[3] = 0x07;
-
-                    if (mes.MessageID == -3)
-                        alphabetStartOffset = decompOffset;
+                    decompOffset[3] = (byte)(ROMInfo.IsMajoraMask(Version) ? 0x08 : 0x07);
 
                     for (int i = 3; i > -1; i--)
-                    {
                         messageTableWriter.Write(decompOffset[i]);
-                    }
 
-                    stringBank.AddRange(mes.ConvertTextData());
+                    stringBank.AddRange(mes.ConvertTextData(Version));
                     ExtensionMethods.PadByteList4(stringBank);
                 }
 

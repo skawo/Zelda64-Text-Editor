@@ -13,6 +13,7 @@ namespace OcarinaTextEditor
         public short MessageID { get; set; }
         public TextboxType BoxType { get; set; }
         public TextboxPosition BoxPosition { get; set; }
+
         public uint Offset
         {
             get { return offset; }
@@ -22,7 +23,6 @@ namespace OcarinaTextEditor
 
         public TableRecord(EndianBinaryReader reader)
         {
-            
             MessageID = reader.ReadInt16();
 
             byte typePosField = reader.ReadByte();

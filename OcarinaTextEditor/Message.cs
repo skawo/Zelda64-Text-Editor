@@ -86,18 +86,117 @@ namespace OcarinaTextEditor
         private string m_textData;
         #endregion
 
+        #region public short MajoraIcon
+        public short MajoraIcon
+        {
+            get { return m_MajoraIcon; }
+            set
+            {
+                if (value != m_MajoraIcon)
+                {
+                    m_MajoraIcon = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        private short m_MajoraIcon;
+        #endregion
+
+        #region public short MajoraNextMessage
+        public short MajoraNextMessage
+        {
+            get { return m_MajoraNext; }
+            set
+            {
+                if (value != m_MajoraNext)
+                {
+                    m_MajoraNext = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        private short m_MajoraNext;
+
+        #endregion
+
+        #region public short MajoraFirstItemPrice
+        public short MajoraFirstItemPrice
+        {
+            get { return m_MajoraFirstItemPrice; }
+            set
+            {
+                if (value != m_MajoraFirstItemPrice)
+                {
+                    m_MajoraFirstItemPrice = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        private short m_MajoraFirstItemPrice;
+        #endregion
+
+        #region public short MajoraSecondItemPrice
+        public short MajoraSecondItemPrice
+        {
+            get { return m_MajoraSecondItemPrice; }
+            set
+            {
+                if (value != m_MajoraSecondItemPrice)
+                {
+                    m_MajoraSecondItemPrice = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        private short m_MajoraSecondItemPrice;
+        #endregion
+
+        #region public MajoraTextboxType BoxType
+        public MajoraTextboxType MajoraBoxType
+        {
+            get { return m_MajoraBoxType; }
+            set
+            {
+                if (value != m_MajoraBoxType)
+                {
+                    m_MajoraBoxType = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        private MajoraTextboxType m_MajoraBoxType;
+        #endregion
+
+
         public Message()
         {
             TextData = "";
         }
 
-        public Message(EndianBinaryReader reader, TableRecord mesgTableRecord)
+        public Message(EndianBinaryReader reader, TableRecord mesgTableRecord, ROMVer Version = ROMVer.Unknown)
         {
-            MessageID = mesgTableRecord.MessageID;
-            BoxType = mesgTableRecord.BoxType;
-            BoxPosition = mesgTableRecord.BoxPosition;
+            if (ROMInfo.IsMajoraMask(Version))
+            {
+                MessageID = mesgTableRecord.MessageID;
 
-            GetStringData(reader);
+                MajoraBoxType = (MajoraTextboxType)reader.ReadByte();
+                BoxPosition = (TextboxPosition)reader.ReadByte();
+                MajoraIcon = reader.ReadByte();
+                MajoraNextMessage = reader.ReadInt16();
+                MajoraFirstItemPrice = reader.ReadInt16();
+                MajoraSecondItemPrice = reader.ReadInt16();
+                reader.ReadInt16();     // Padding
+
+                GetStringDataMajora(reader);
+            }
+            else
+            {
+                MessageID = mesgTableRecord.MessageID;
+                BoxType = mesgTableRecord.BoxType;
+                BoxPosition = mesgTableRecord.BoxPosition;
+
+                GetStringData(reader);
+            }
         }
 
         public Message(string Message, TextboxType t)
@@ -110,6 +209,51 @@ namespace OcarinaTextEditor
         {
             string printString = string.Format("ID: {0}\nBox Type: {1}\nBox Pos: {2}\nData:\n{3}\n\n", MessageID, BoxType, BoxPosition, TextData);
             Console.Write(printString);
+        }
+
+        private void GetStringDataMajora(EndianBinaryReader reader)
+        {
+            List<char> charData = new List<char>();
+
+            byte testByte = reader.ReadByte();
+
+            while (testByte != (byte)MajoraControlCode.END)
+            {
+                bool readControlCode = false;
+
+                if (testByte < 0x7F || testByte > 0x9E)
+                {
+                    if (Enum.IsDefined(typeof(MajoraControlCode), (int)testByte))
+                    {
+                        charData.AddRange(GetMajoraControlCode((MajoraControlCode)testByte, reader));
+                        readControlCode = true;
+                    }
+                }
+
+                if (!readControlCode)
+                {
+                    if ((testByte >= 0x20 && testByte < 0x7F) || (char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte)))
+                    {
+                        charData.Add((char)testByte);
+                    }
+                    else if (testByte == 0x7F)
+                    {
+                        // Never actually used in-game. Appears blank.
+                        charData.Add(' ');
+                    }
+                    else if (testByte >= 0x80 && testByte <= 0x9E)
+                    {
+                        charData.Add(Enum.GetName(typeof(MajoraControlCode), testByte).First());
+                    }
+                }
+
+                if (reader.BaseStream.Position != reader.BaseStream.Length)
+                    testByte = reader.ReadByte();
+                else
+                    testByte = (byte)MajoraControlCode.END;
+            }
+
+            TextData = new String(charData.ToArray());
         }
 
         private void GetStringData(EndianBinaryReader reader)
@@ -236,21 +380,177 @@ namespace OcarinaTextEditor
             return codeBank.ToArray();
         }
 
-        public void WriteMessage(EndianBinaryWriter writer)
+        private char[] GetMajoraControlCode(MajoraControlCode code, EndianBinaryReader reader)
         {
-            writer.Write(m_messageID);
+            List<char> codeBank = new List<char>();
+            string codeInsides = "";
 
-            int type = (int)BoxType;
-            int pos = (int)BoxPosition;
-            type = type << 4;
-            type = type | pos;
+            switch (code)
+            {
+                case MajoraControlCode.SHIFT:
+                    byte numSpaces = reader.ReadByte();
+                    codeInsides = string.Format("{0}:{1}", ControlCode.SHIFT.ToString(), numSpaces);
+                    break;
+                case MajoraControlCode.DELAY_DC:
+                case MajoraControlCode.DELAY_DI:
+                case MajoraControlCode.DELAY_END:
+                case MajoraControlCode.FADE:
+                    short delay = reader.ReadInt16();
+                    codeInsides = string.Format("{0}:{1}", code.ToString(), delay);
+                    break;
+                case MajoraControlCode.SOUND:
+                    short soundID = reader.ReadInt16();
+                    codeInsides = string.Format("{0}:{1}", ControlCode.SOUND.ToString(), soundID.ToString());
+                    break;
+                default:
+                    codeInsides = code.ToString().Replace("_", " ");
+                    break;
+            }
 
-            writer.Write((byte)type);
-            writer.Write((byte)0);
-            writer.Write((int)0);
+            codeBank.AddRange(string.Format("<{0}>", codeInsides).ToCharArray());
+
+            return codeBank.ToArray();
         }
 
-        public List<byte> ConvertTextData(bool ShowErrors = true)
+        public void WriteMessage(EndianBinaryWriter writer, ROMVer Version)
+        {
+            if (ROMInfo.IsMajoraMask(Version))
+            {
+                writer.Write(m_messageID);
+                writer.Write((short)0);
+                writer.Write((int)0);
+            }
+            else
+            {
+                writer.Write(m_messageID);
+
+                int type = (int)BoxType;
+                int pos = (int)BoxPosition;
+                type = type << 4;
+                type = type | pos;
+
+                writer.Write((byte)type);
+                writer.Write((byte)0);
+                writer.Write((int)0);
+            }
+        }
+
+        public List<byte> ConvertTextData(ROMVer Version, bool ShowErrors = true)
+        {
+            if (ROMInfo.IsMajoraMask(Version))
+                return ConvertMajoraTextData(ShowErrors);
+            else
+                return ConvertTextData(ShowErrors);
+        }
+
+        private List<byte> ConvertMajoraTextData(bool ShowErrors = true)
+        {
+            List<byte> data = new List<byte>();
+            List<string> errors = new List<string>();
+
+            data.Add((byte)this.MajoraBoxType);
+            data.Add((byte)this.BoxPosition);
+            data.Add((byte)this.MajoraIcon);
+
+            byte[] nextMsgBytes = BitConverter.GetBytes(Convert.ToInt16(this.MajoraNextMessage));
+            data.Add(nextMsgBytes[1]);
+            data.Add(nextMsgBytes[0]);
+
+            byte[] firstPriceBytes = BitConverter.GetBytes(Convert.ToInt16(this.MajoraFirstItemPrice));
+            data.Add(firstPriceBytes[1]);
+            data.Add(firstPriceBytes[0]);
+
+            byte[] secondPriceBytes = BitConverter.GetBytes(Convert.ToInt16(this.MajoraSecondItemPrice));
+            data.Add(secondPriceBytes[1]);
+            data.Add(secondPriceBytes[0]);
+
+            data.AddRange(new byte[] { 0xFF, 0xFF });
+
+            for (int i = 0; i < TextData.Length; i++)
+            {
+                // Not a control code, copy char to output buffer
+                if (TextData[i] != '<' && TextData[i] != '>')
+                {
+                    if (Enum.IsDefined(typeof(MajoraControlCode), TextData[i].ToString()))
+                    {
+                        MajoraControlCode Result;
+                        Enum.TryParse(TextData[i].ToString(), out Result);
+                        data.Add((byte)Result);
+                    }
+                    else if (TextData[i] == '\n')
+                        data.Add((byte)MajoraControlCode.LINE_BREAK);
+                    else if (TextData[i] == '\r')
+                    {
+                        // Do nothing
+                    }
+                    else
+                        data.Add((byte)TextData[i]);
+
+                    continue;
+                }
+                // Control code end tag. This should never be encountered on its own.
+                else if (TextData[i] == '>')
+                    errors.Add($"Message formatting is not valid: found stray >");
+                // We've got a control code
+                else
+                {
+                    // Buffer for the control code
+                    List<char> controlCode = new List<char>();
+
+                    while (TextData[i] != '>' && i < TextData.Length - 1)
+                    {
+                        // Add code chars to the buffer
+                        controlCode.Add(TextData[i]);
+                        // Increase i so we can skip the code when we're done parsing
+                        i++;
+                    }
+
+                    if (controlCode.Count == 0)
+                        continue;
+
+                    // Remove the < chevron from the beginning of the code
+                    controlCode.RemoveAt(0);
+
+                    string parsedCode = new string(controlCode.ToArray());
+                    string parsedFixed = parsedCode.Split(':')[0].Replace(" ", "_").ToUpper();
+
+                    if (parsedFixed == MajoraControlCode.NEW_BOX.ToString() || parsedFixed == MajoraControlCode.DELAY_END.ToString())
+                    {
+                        if (data.Count != 0)
+                            if (data[data.Count - 1] == 0x10)
+                                data.RemoveAt(data.Count - 1);
+
+                        if (TextData.Length > i + Environment.NewLine.Length)
+                        {
+                            string s;
+
+                            if (Environment.NewLine.Length == 2)
+                                s = String.Concat(TextData[i + 1], TextData[i + 2]);
+                            else
+                                s = String.Concat(TextData[i + 1]);
+
+                            if (s == Environment.NewLine)
+                                i += Environment.NewLine.Length; // Skips next linebreak
+                        }
+                    }
+
+                    data.AddRange(GetMajoraControlCode(parsedCode.Split(':'), ref errors));
+                }
+            }
+
+            data.Add((byte)MajoraControlCode.END);
+
+            if (ShowErrors && errors.Count != 0)
+                System.Windows.Forms.MessageBox.Show($"Errors parsing message {MessageID}: " + Environment.NewLine + String.Join(Environment.NewLine, errors.ToArray()));
+
+            if (errors.Count == 0)
+                return data;
+            else
+                return new List<byte>();
+        }
+
+
+        private List<byte> ConvertTextData(bool ShowErrors = true)
         {
             List<byte> data = new List<byte>();
             List<string> errors = new List<string>();
@@ -340,8 +640,64 @@ namespace OcarinaTextEditor
                 return new List<byte>();
         }
 
+        private List<byte> GetMajoraControlCode(string[] code, ref List<string> errors)
+        {
+            List<byte> output = new List<byte>();
+            try
+            {
+                for (int i = 0; i < code.Length; i++)
+                    code[i] = code[i].Replace(" ", "_").ToUpper();
 
-        private List<byte> GetControlCode(string[] code, ref List<string> errors)
+                switch (code[0])
+                {
+                    case "SHIFT":
+                        {
+                            output.Add((byte)MajoraControlCode.SHIFT);
+                            output.Add(Convert.ToByte(code[1]));
+                            break;
+                        }
+                    case "DELAY_DC":
+                    case "DELAY_DI":
+                    case "DELAY_END":
+                    case "FADE":
+                        {
+                            output.Add((byte)(int)Enum.Parse(typeof(MajoraControlCode), code[0]));
+                            byte[] fadeAmountBytes = BitConverter.GetBytes(Convert.ToInt16(code[1]));
+                            output.Add(fadeAmountBytes[1]);
+                            output.Add(fadeAmountBytes[0]);
+                            break;
+                        }
+                    case "SOUND":
+                        {
+                            output.Add((byte)MajoraControlCode.SOUND);
+                            short soundValue = Convert.ToInt16(code[1]);
+                            byte[] soundIDBytes = BitConverter.GetBytes(soundValue);
+                            output.Add(soundIDBytes[1]);
+                            output.Add(soundIDBytes[0]);
+
+                            break;
+                        }
+                    default:
+                        {
+                            if (Enum.IsDefined(typeof(MsgColorMajora), code[0]))
+                                output.Add((byte)(int)Enum.Parse(typeof(MsgColorMajora), code[0]));
+                            else if (Enum.IsDefined(typeof(MajoraControlCode), code[0]))
+                                output.Add((byte)(int)Enum.Parse(typeof(MajoraControlCode), code[0]));
+                            else
+                                errors.Add($"{code[0]} is not a valid control code.");
+
+                            break;
+                        }
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            return output;
+        }
+
+    private List<byte> GetControlCode(string[] code, ref List<string> errors)
         {
             List<byte> output = new List<byte>();
 

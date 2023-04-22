@@ -162,7 +162,7 @@ namespace OcarinaTextEditor
 
         public Dictionary<ControlCode, string> m_controlCodes;
 
-        ROMVer Version = ROMVer.Unknown;
+        public ROMVer Version = ROMVer.Unknown;
 
         public int TextboxPosition;
 

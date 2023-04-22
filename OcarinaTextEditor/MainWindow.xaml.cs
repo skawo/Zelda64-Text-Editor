@@ -98,7 +98,7 @@ namespace OcarinaTextEditor
                     return;
 
                 Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
-                byte[] outD = mes.ConvertTextData(false).ToArray();
+                byte[] outD = mes.ConvertTextData(view.Version, false).ToArray();
 
 
                 ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);

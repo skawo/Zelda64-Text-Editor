@@ -64,7 +64,7 @@ namespace OcarinaTextEditor
                     foreach (var mesgRecord in tableRecordList)
                     {
                         reader.BaseStream.Position = msgOffset + mesgRecord.Offset;
-                        Message mes = new Message(reader, mesgRecord);
+                        Message mes = new Message(reader, mesgRecord, ROMVersion);
                         m_messageList.Add(mes);
                     }
                 }

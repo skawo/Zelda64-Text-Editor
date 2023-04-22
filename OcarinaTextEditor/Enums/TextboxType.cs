@@ -14,15 +14,35 @@ namespace OcarinaTextEditor.Enums
         Ocarina,
         None_White,
         None_Black,
-        None0,
-        None1,
-        None2,
-        None3,
-        None4,
-        None5,
-        None6,
-        None7,
-        None8,
-        None9
+        Unknown_1,
+        Unknown_2,
+        Unknown_3,
+        Unknown_4,
+        Unknown_5,
+        Credits,
+        Unknown_6,
+        Unknown_7,
+        Unknown_8,
+        Unknown_9
     }
+    public enum MajoraTextboxType
+    {
+        Black,
+        Wooden,
+        Blue,
+        Ocarina,
+        None_White,
+        None_Black,
+        Black2,
+        None,
+        Blue2,
+        Red,
+        None2,
+        Credits,
+        None3,
+        Bombers_Notebook,
+        None4,
+        Red2
+    }
+
 }

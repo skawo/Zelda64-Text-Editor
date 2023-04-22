@@ -8,6 +8,7 @@ namespace OcarinaTextEditor
 {
     public enum ROMVer
     {
+        Unknown,
         Debug,
         NTSC_0_9,
         NTSC_1_0,
@@ -18,7 +19,6 @@ namespace OcarinaTextEditor
         PAL_MasterQuest,
         NTSC_MasterQuest,
         NTSC_Majora,
-        Unknown,
     }
 
 
@@ -89,7 +89,7 @@ namespace OcarinaTextEditor
             { ROMVer.PAL1_0,  new List<int>()               { 0x00B801DC,     0x00B88624,       0x8BB000,     0x0968000,      16936,    392,    705281,     3920 } },
             { ROMVer.PAL1_1,  new List<int>()               { 0x00B8021C,     0x00B88664,       0x8BB000,     0x0968000,      16936,    392,    705281,     3920 } },
             { ROMVer.PAL_MasterQuest,  new List<int>()      { 0x00B7E8F0,     0x00B86D38,       0x8BA000,     0x0967000,      16936,    392,    704945,     3920 } },
-            { ROMVer.NTSC_Majora,  new List<int>()          { 0x00C5D0D8,     0x00B86D38,       0xAD1000,     0x0967000,      16936,    392,    704945,     3920 } },
+            { ROMVer.NTSC_Majora,  new List<int>()          { 0x00C5D0D8,     0x00B86D38,       0xAD1000,     0x0967000,      36720,    392,    432624,     3920 } },
         };
 
         private enum OffsetsDataIdx
