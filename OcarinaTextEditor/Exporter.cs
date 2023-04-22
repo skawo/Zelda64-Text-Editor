@@ -22,97 +22,7 @@ namespace OcarinaTextEditor
 
         }
 
-        public Exporter(ObservableCollection<Message> messageList, string fileName, ExportType exportType, bool Debug, bool Credits = true)
-        {
-            byte[] alphabetStartOffset;
-
-            m_messageList = messageList;
-            m_fileName = fileName;
-
-            // We need the char table, with an index of -4, at the start of all the entries. So we'll find it and put it at the top.
-            for (int i = 0; i < messageList.Count; i++)
-            {
-                if (messageList[i].MessageID == -4)
-                {
-                    // Message is already at the start, we do nothing here
-                    if (i == 0)
-                        break;
-
-                    Message charTable = messageList[i]; // Copy char table to buffer
-                    messageList.Insert(0, charTable); // Insert at the top of the list
-                    messageList.RemoveAt(i + 1); // Delete the original message
-                }
-            }
-
-            List<byte> stringBank = new List<byte>();
-
-            using (MemoryStream messageTableStream = new MemoryStream())
-            {
-                EndianBinaryWriter messageTableWriter = new EndianBinaryWriter(messageTableStream, Endian.Big);
-
-                foreach (Message mes in messageList)
-                {
-                    mes.WriteMessage(messageTableWriter);
-
-                    messageTableWriter.BaseStream.Seek(-4, SeekOrigin.Current);
-
-                    int stringOffset = stringBank.Count();
-
-                    byte[] decompOffset = BitConverter.GetBytes(stringOffset);
-                    decompOffset[3] = 0x07;
-
-                    if (mes.MessageID == -3)
-                        alphabetStartOffset = decompOffset;
-
-                    for (int i = 3; i > -1; i--)
-                    {
-                        messageTableWriter.Write(decompOffset[i]);
-                    }
-
-                    stringBank.AddRange(mes.ConvertTextData());
-                    ExtensionMethods.PadByteList4(stringBank);
-                }
-
-                messageTableWriter.Write((short)-1);
-                messageTableWriter.Write((short)0);
-                messageTableWriter.Write((int)0);
-
-                messageTableStream.Position = 0;
-
-                using (MemoryStream stringData = new MemoryStream())
-                {
-                    EndianBinaryWriter stringWriter = new EndianBinaryWriter(stringData, Endian.Big);
-                    ExtensionMethods.PadByteList16(stringBank);
-                    stringWriter.Write(stringBank.ToArray());
-
-                    stringData.Position = 0;
-
-                    switch (exportType)
-                    {
-                        case ExportType.File:
-                            ExportToFile(messageTableWriter, stringWriter);
-                            break;
-                        case ExportType.Patch:
-                            ExportToPatch(messageTableStream, stringData, Debug);
-                            break;
-                        case ExportType.OriginalROM:
-                            ExportToOriginalROM(messageTableStream, stringData, Debug, Credits);
-                            break;
-                        case ExportType.ZZRP:
-                            ExportToZZRP(messageTableStream, stringData);
-                            break;
-                        case ExportType.ZZRPL:
-                            ExportToZZRPL(messageTableStream, stringData);
-                            break;
-                        case ExportType.Z64ROM:
-                            ExportToZ64ROM(messageTableStream, stringData);
-                            break;
-                    }
-                }
-            }
-        }
-
-        public Exporter(ObservableCollection<Message> messageList, string fileName, ExportType exportType, MemoryStream inputFile, bool Debug, bool Credits = false)
+        public Exporter(ObservableCollection<Message> messageList, string fileName, ExportType exportType, MemoryStream inputFile, ROMVer Version, bool Credits = false)
         {
             byte[] alphabetStartOffset;
 
@@ -183,16 +93,13 @@ namespace OcarinaTextEditor
                     switch (exportType)
                     {
                         case ExportType.File:
-                            ExportToFile(messageTableWriter, stringWriter);
-                            break;
-                        case ExportType.Patch:
-                            ExportToPatch(messageTableStream, stringData, Debug);
+                            ExportToFile((MemoryStream)messageTableWriter.BaseStream, (MemoryStream)stringWriter.BaseStream);
                             break;
                         case ExportType.OriginalROM:
-                            ExportToOriginalROM(messageTableStream, stringData, Debug, Credits);
+                            ExportToOriginalROM(messageTableStream, stringData, Version, Credits);
                             break;
                         case ExportType.NewROM:
-                            ExportToNewRom(messageTableStream, stringData, inputFile, Debug, Credits);
+                            ExportToNewRom(messageTableStream, stringData, inputFile, Version, Credits);
                             break;
                         case ExportType.ZZRP:
                             ExportToZZRP(messageTableStream, stringData);
@@ -208,85 +115,10 @@ namespace OcarinaTextEditor
             }
         }
 
-        private void ExportToNewRom(MemoryStream table, MemoryStream stringBank, MemoryStream inputFile, bool Debug, bool Credits = false)
+        private bool CheckIfPossibleToInsertToROM(MemoryStream table, MemoryStream stringBank, ROMVer Version, bool Credits = false)
         {
-            try
-            {
-                if (!CheckIfPossibleToInsertToROM(table, stringBank, Debug, Credits))
-                    return;
-
-                using (FileStream romFile = new FileStream(m_fileName, FileMode.Create, FileAccess.Write))
-                {
-                    inputFile.Position = 0;
-                    inputFile.CopyTo(romFile);
-                    romFile.Position = 0;
-                    EndianBinaryWriter writer = new EndianBinaryWriter(romFile, Endian.Big);
-
-                    if (!Credits)
-                        romFile.Position = Debug ? 0x00BC24C0 : 0x00B849EC;
-                    else
-                        romFile.Position = Debug ? 0x00BCA908 : 0x00B88C0C;
-
-
-                    table.CopyTo(romFile);
-
-                    if (!Credits)
-                        romFile.Position = Debug ? 0x8C6000 : 0x92D000;
-                    else
-                        romFile.Position = Debug ? 0x0973000 : 0x0966000;
-
-                    stringBank.CopyTo(romFile);
-
-                    if (Debug && !Credits)
-                    {
-                        // Since OoT uses a character table for the title screen, the file select, and Link's name,
-                        // And we might move this table's offset, we're going to hack the game a bit.
-                        // What we'll do is make the char table the first message (like we did in the constructor above)
-                        // And change the code so that it gets a start address of 0x07000000
-                        // And an end address of 0x07000048.
-
-                        romFile.Position = 0xAE60B6; // Set position to start address LUI lower half
-                        writer.Write((short)0x0700); // Overwrite 0x0704 with 0x0700
-                        romFile.Position = 0xAE60BA; // Set position to start address ADDIU lower half
-                        writer.Write((short)0); // Overwite 0x80D4 with 0
-
-                        romFile.Position = 0xAE60C6; // Set position to LUI lower half
-                        writer.Write((short)0x0700); // Overwite 0x0704 with 0x0700
-                        romFile.Position = 0xAE60F2; // Set position to end address ADDIU lower half
-                        writer.Write((short)0x48); // Overwrite 0x811C with 0x0048
-                    }
-                }
-            }
-            catch (IOException)
-            {
-                MessageBox.Show("The ROM you are trying to save to is open in another program. Please close that program and try to save it again.", "ROM is In Use");
-                return;
-            }
-        }
-
-        private bool CheckIfPossibleToInsertToROM(MemoryStream table, MemoryStream stringBank, bool Debug, bool Credits = false)
-        {
-            int StringBankLimit = 0;
-            int TableLimit = 0;
-
-            if (Credits)
-            {
-                StringBankLimit = 3920;
-                TableLimit = 392;
-            }
-            else
-            {
-                if (Debug)
-                {
-                    StringBankLimit = 704960;
-                    TableLimit = 33860;
-                }
-                else
-                {
-                    StringBankLimit = 231568;
-                    TableLimit = 16928;
-                }
-            }
+            int StringBankLimit = ROMInfo.GetMessagesMaxSize(Version, Credits);
+            int TableLimit = ROMInfo.GetTableMaxSize(Version, Credits);
 
             if (table.Length > TableLimit || stringBank.Length > StringBankLimit)
             {
@@ -297,50 +129,16 @@ namespace OcarinaTextEditor
             return true;
         }
 
-        private void ExportToOriginalROM(MemoryStream table, MemoryStream stringBank, bool Debug, bool Credits = false)
+        private void ExportToOriginalROM(MemoryStream table, MemoryStream stringBank, ROMVer Version, bool Credits = false)
         {
             try
             {
-                if (!CheckIfPossibleToInsertToROM(table, stringBank, Debug, Credits))
+                if (!CheckIfPossibleToInsertToROM(table, stringBank, Version, Credits))
                     return;
 
                 using (FileStream romFile = new FileStream(m_fileName, FileMode.Open))
                 {
-                    EndianBinaryWriter writer = new EndianBinaryWriter(romFile, Endian.Big);
-
-                    if (!Credits)
-                        romFile.Position = Debug ? 0x00BC24C0 : 0x00B849EC;
-                    else
-                        romFile.Position = Debug ? 0x00BCA908 : 0x00B88C0C;
-
-                    table.CopyTo(romFile);
-
-                    if (!Credits)
-                        romFile.Position = Debug ? 0x8C6000 : 0x92D000;
-                    else
-
-                        romFile.Position = Debug ? 0x0973000 : 0x0966000;
-
-                    stringBank.CopyTo(romFile);
-
-                    if (Debug && !Credits)
-                    {
-                        // Since OoT uses a character table for the title screen, the file select, and Link's name,
-                        // And we might move this table's offset, we're going to hack the game a bit.
-                        // What we'll do is make the char table the first message (like we did in the constructor above)
-                        // And change the code so that it gets a start address of 0x07000000
-                        // And an end address of 0x07000048.
-
-                        romFile.Position = 0xAE60B6; // Set position to start address LUI lower half
-                        writer.Write((short)0x0700); // Overwrite 0x0704 with 0x0700
-                        romFile.Position = 0xAE60BA; // Set position to start address ADDIU lower half
-                        writer.Write((short)0); // Overwite 0x80D4 with 0
-
-                        romFile.Position = 0xAE60C6; // Set position to LUI lower half
-                        writer.Write((short)0x0700); // Overwite 0x0704 with 0x0700
-                        romFile.Position = 0xAE60F2; // Set position to end address ADDIU lower half
-                        writer.Write((short)0x48); // Overwrite 0x811C with 0x0048
-                    }
+                    ExportToROMInternal(romFile, table, stringBank, Version, Credits);
                 }
             }
 
@@ -351,112 +149,78 @@ namespace OcarinaTextEditor
             }
         }
 
-        private void ExportToPatch(MemoryStream table, MemoryStream stringBank, bool Debug)
+        private void ExportToNewRom(MemoryStream table, MemoryStream stringBank, MemoryStream inputFile, ROMVer Version, bool Credits = false)
         {
-            EndianBinaryReader tableReader = new EndianBinaryReader(table, Endian.Big);
-            EndianBinaryReader stringReader = new EndianBinaryReader(stringBank, Endian.Big);
-
-            using (FileStream patchFile = new FileStream(m_fileName, FileMode.Create))
+            try
             {
-                EndianBinaryWriter writer = new EndianBinaryWriter(patchFile, Endian.Big);
+                if (!CheckIfPossibleToInsertToROM(table, stringBank, Version, Credits))
+                    return;
 
-                writer.Write("PPF30".ToArray());
-                writer.Write((byte)2);
-                writer.Write("This patch was made by Ocarina Text Editor.       ".ToArray());
-                writer.Write((int)0);
-
-                int numChunks = (int)Math.Floor((double)stringBank.Length / 255) + 1;
-
-                long offset = Debug ? 0x8C6000 : 0x92D000;
-
-                for (int i = 0; i < numChunks; i++)
+                using (FileStream romFile = new FileStream(m_fileName, FileMode.Create, FileAccess.Write))
                 {
-                    writer.CurrentEndian = Endian.Little;
-                    writer.Write(offset);
-                    writer.CurrentEndian = Endian.Big;
-
-                    writer.Write((byte)255);
-
-                    for (int j = 0; j < 255; j++)
-                    {
-                        if (stringReader.BaseStream.Position != stringReader.BaseStream.Length - 1)
-                            writer.Write(stringReader.ReadByte());
-                        else
-                            writer.Write((byte)0);
-                    }
-
-                    offset += 255;
+                    inputFile.Position = 0;
+                    inputFile.CopyTo(romFile);
+                    romFile.Position = 0;
+                    ExportToROMInternal(romFile, table, stringBank, Version, Credits);
                 }
+            }
+            catch (IOException)
+            {
+                MessageBox.Show("The ROM you are trying to save to is open in another program. Please close that program and try to save it again.", "ROM is In Use");
+                return;
+            }
+        }
 
-                numChunks = (int)Math.Floor((double)table.Length / 255) + 1;
+        private void ExportToROMInternal(FileStream romFile, MemoryStream table, MemoryStream stringBank, ROMVer Version, bool Credits = false)
+        {
+            EndianBinaryWriter writer = new EndianBinaryWriter(romFile, Endian.Big);
 
-                offset = Debug ? 0x00BC24C0 : 0x00B849EC;
+            romFile.Position = ROMInfo.GetTableOffset(Version, Credits);
 
-                for (int i = 0; i < numChunks; i++)
+            table.CopyTo(romFile);
+
+            romFile.Position = ROMInfo.GetMessagesOffset(Version, Credits);
+
+            stringBank.CopyTo(romFile);
+
+
+            // Since OoT uses a character table for the title screen, the file select, and Link's name,
+            // And we might move this table's offset, we're going to hack the game a bit.
+            // What we'll do is make the char table the first message (like we did in the constructor above)
+            // And change the code so that it gets a start address of 0x07000000
+            // And an end address of 0x07000048.
+            /*
+                romFile.Position = 0xAE60B6; // Set position to start address LUI lower half
+                writer.Write((short)0x0700); // Overwrite 0x0704 with 0x0700
+                romFile.Position = 0xAE60BA; // Set position to start address ADDIU lower half
+                writer.Write((short)0); // Overwite 0x80D4 with 0
+
+                romFile.Position = 0xAE60C6; // Set position to LUI lower half
+                writer.Write((short)0x0700); // Overwite 0x0704 with 0x0700
+                romFile.Position = 0xAE60F2; // Set position to end address ADDIU lower half
+                writer.Write((short)0x48); // Overwrite 0x811C with 0x0048
+            */
+
+            if (ROMInfo.ROMTSFixer.ContainsKey(Version) && !Credits)
+            {
+                List<int> Data = ROMInfo.ROMTSFixer[Version];
+
+                for (int i = 0; i < Data.Count; i+= 2)
                 {
-                    writer.CurrentEndian = Endian.Little;
-                    writer.Write(offset);
-                    writer.CurrentEndian = Endian.Big;
-
-                    writer.Write((byte)255);
-
-                    for (int j = 0; j < 255; j++)
-                    {
-                        if (tableReader.BaseStream.Position != tableReader.BaseStream.Length - 1)
-                            writer.Write(tableReader.ReadByte());
-                        else
-                            writer.Write((byte)0);
-                    }
-
-                    offset += 255;
-                }
-
-                if (Debug)
-                {
-                    writer.CurrentEndian = Endian.Little;
-                    writer.Write((long)0xAE60B6);
-                    writer.CurrentEndian = Endian.Big;
-                    writer.Write((byte)2);
-                    writer.Write((short)0x0700);
-
-                    writer.CurrentEndian = Endian.Little;
-                    writer.Write((long)0xAE60BA);
-                    writer.CurrentEndian = Endian.Big;
-                    writer.Write((byte)2);
-                    writer.Write((short)0x0000);
-
-                    writer.CurrentEndian = Endian.Little;
-                    writer.Write((long)0xAE60C6);
-                    writer.CurrentEndian = Endian.Big;
-                    writer.Write((byte)2);
-                    writer.Write((short)0x0700);
-
-                    writer.CurrentEndian = Endian.Little;
-                    writer.Write((long)0xAE60F2);
-                    writer.CurrentEndian = Endian.Big;
-                    writer.Write((byte)2);
-                    writer.Write((short)0x0048);
+                    romFile.Position = Data[i];
+                    writer.Write(Convert.ToInt16(Data[i + 1]));
                 }
             }
         }
 
-        private void ExportToFile(EndianBinaryWriter messageTableWriter, EndianBinaryWriter stringWriter)
+        private void ExportToFile(MemoryStream table, MemoryStream stringBank, string TablePath = null, string MsgDataPath = null)
         {
-            using (FileStream tableFile = new FileStream(string.Format(@"{0}\MessageTable.tbl", m_fileName), FileMode.Create))
-            {
-                messageTableWriter.BaseStream.CopyTo(tableFile);
-                tableFile.Close();
-            }
+            if (TablePath == null)
+                TablePath = string.Format(@"{0}\MessageTable.tbl", m_fileName);
 
-            using (FileStream textFile = new FileStream(string.Format(@"{0}\StringData.bin", m_fileName), FileMode.Create))
-            {
-                stringWriter.BaseStream.CopyTo(textFile);
-                textFile.Close();
-            }
-        }
+            if (MsgDataPath == null)
+                MsgDataPath = string.Format(@"{0}\StringData.bin", m_fileName);
 
-        private void ExportToFiles(MemoryStream table, MemoryStream stringBank, string TablePath, string MsgDataPath)
-        {
             try
             {
                 File.Delete(TablePath);
@@ -489,7 +253,7 @@ namespace OcarinaTextEditor
             string msgDataPath = Path.Combine(staticFolder, "message_data_static_NES.bin");
             string tablePath = Path.Combine(staticFolder, "message_data_static_NES.tbl");
 
-            ExportToFiles(table, stringBank, tablePath, msgDataPath);
+            ExportToFile(table, stringBank, tablePath, msgDataPath);
         }
 
         private void ExportToZZRPL(MemoryStream table, MemoryStream stringBank)
@@ -498,7 +262,7 @@ namespace OcarinaTextEditor
             string tablePath = Path.Combine(zzrplFolder, "messages", "MessageTable.tbl");
             string msgDataPath = Path.Combine(zzrplFolder, "messages", "StringData.bin");
 
-            ExportToFiles(table, stringBank, tablePath, msgDataPath);
+            ExportToFile(table, stringBank, tablePath, msgDataPath);
         }
 
         private void ExportToZZRP(MemoryStream table, MemoryStream stringBank)
@@ -514,7 +278,7 @@ namespace OcarinaTextEditor
                     codeFile.Position = 0;
                     EndianBinaryWriter writer = new EndianBinaryWriter(codeFile, Endian.Big);
 
-                    codeFile.Position = 0x0012E4C0;
+                    codeFile.Position = ROMInfo.ZZRPCodeFileTablePostion;
                     table.CopyTo(codeFile);
                     // Since OoT uses a character table for the title screen, the file select, and Link's name,
                     // And we might move this table's offset, we're going to hack the game a bit.
@@ -531,9 +295,9 @@ namespace OcarinaTextEditor
                     writer.Write((short)0x0700); // Overwite 0x0704 with 0x0700
                     codeFile.Position = 0x520F2; // Set position to end address ADDIU lower half
                     writer.Write((short)0x48); // Overwrite 0x811C with 0x0048 */
-                }
+        }
 
-                File.Delete(msgDataPath);
+        File.Delete(msgDataPath);
 
                 using (FileStream msgFile = new FileStream(msgDataPath, FileMode.Create, FileAccess.Write))
                 {

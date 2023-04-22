@@ -103,14 +103,18 @@ namespace OcarinaTextEditor
 
                 ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
 
-                Bitmap bmp = new Bitmap(384, mp.MessageCount * 108);
+                Bitmap bmpTemp = mp.GetPreview(0, true, 1.5f);
+
+                Bitmap bmp = new Bitmap(bmpTemp.Width, mp.MessageCount * bmpTemp.Height);
                 bmp.MakeTransparent();
 
                 using (Graphics grfx = Graphics.FromImage(bmp))
                 {
-                    for (int i = 0; i < mp.MessageCount; i++)
+                    grfx.DrawImage(bmpTemp, 0, 0);
+
+                    for (int i = 1; i < mp.MessageCount; i++)
                     {
-                        Bitmap bmpTemp = mp.GetPreview(i, true, 1.5f);
+                        bmpTemp = mp.GetPreview(i, true, 1.5f);
                         grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
                     }
                 }

@@ -21,22 +21,17 @@ namespace OcarinaTextEditor
             m_messageList = new ObservableCollection<Message>();
         }
 
-        public Importer(string fileName, EditMode Mode, bool Debug, bool Credits = false)
+        public Importer(string fileName, Enums.EditorMode Mode, ROMVer ROMVersion, bool Credits = false)
         {
             List<TableRecord> tableRecordList = new List<TableRecord>();
 
-            long offset = 0;
+            long offset = ROMInfo.ZZRPCodeFileTablePostion;
             long msgOffset = 0;
 
-            if (!Credits)
+            if (Mode != EditorMode.ZZRPMode)
             {
-                offset = Mode == EditMode.ZZRT ? 0x0012E4C0 : Debug ? 0x00BC24C0 : 0x00B849EC;
-                msgOffset = Mode == EditMode.ZZRT ? 0 : Debug ? 0x8C6000 : 0x92D000;
-            }
-            else
-            {
-                offset = Mode == EditMode.ZZRT ? 0x0012E4C0 : Debug ? 0x00BCA908 : 0x00B88C0C;
-                msgOffset = Mode == EditMode.ZZRT ? 0 : Debug ? 0x0973000 : 0x0966000;
+                offset = ROMInfo.GetTableOffset(ROMVersion, Credits);
+                msgOffset = ROMInfo.GetMessagesOffset(ROMVersion, Credits);
             }
 
             string zzrpFolder = Path.GetDirectoryName(fileName);
@@ -45,7 +40,7 @@ namespace OcarinaTextEditor
 
             try
             {
-                using (FileStream stream = new FileStream(Mode == EditMode.ZZRT ? codeFilePath : fileName, FileMode.Open, FileAccess.Read))
+                using (FileStream stream = new FileStream(Mode == EditorMode.ZZRPMode ? codeFilePath : fileName, FileMode.Open, FileAccess.Read))
                 {
                     m_inputFile = new MemoryStream();
                     stream.CopyTo(m_inputFile);
@@ -61,7 +56,7 @@ namespace OcarinaTextEditor
                     }
                 }
 
-                using (FileStream stream = new FileStream(Mode == EditMode.ZZRT ? msgDataPath : fileName, FileMode.Open, FileAccess.Read))
+                using (FileStream stream = new FileStream(Mode == EditorMode.ZZRPMode ? msgDataPath : fileName, FileMode.Open, FileAccess.Read))
                 {
                     m_messageList = new ObservableCollection<Message>();
                     EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);

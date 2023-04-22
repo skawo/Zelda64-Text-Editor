@@ -107,6 +107,7 @@
     <Compile Include="Dicts.cs" />
     <Compile Include="Enums\Color.cs" />
     <Compile Include="Enums\ControlCode.cs" />
+    <Compile Include="Enums\EditorMode.cs" />
     <Compile Include="Enums\ExportType.cs" />
     <Compile Include="Enums\HighScore.cs" />
     <Compile Include="Enums\ROMS.cs" />

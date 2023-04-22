@@ -22,6 +22,7 @@ namespace OcarinaTextEditor
 
         public TableRecord(EndianBinaryReader reader)
         {
+            
             MessageID = reader.ReadInt16();
 
             byte typePosField = reader.ReadByte();
