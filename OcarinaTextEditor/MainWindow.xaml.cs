@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,7 +31,6 @@ namespace OcarinaTextEditor
             BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>();
 
             textBoxMsg.TextChanged += TextBoxMsg_TextChanged;
-            numUpNumBoxes.ValueChanged += NumUpNumBoxes_ValueChanged;
             BoxTypeCombo.SelectionChanged += BoxTypeCombo_SelectionChanged;
 
         }
@@ -64,14 +64,12 @@ namespace OcarinaTextEditor
         private void BoxTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             textBoxMsg.TextChanged -= TextBoxMsg_TextChanged;
-            numUpNumBoxes.ValueChanged -= NumUpNumBoxes_ValueChanged;
             BoxTypeCombo.SelectionChanged -= BoxTypeCombo_SelectionChanged;
 
             SetMsgBackground(BoxTypeCombo.SelectedIndex);
             TextBoxMsg_TextChanged(null, null);
 
             textBoxMsg.TextChanged += TextBoxMsg_TextChanged;
-            numUpNumBoxes.ValueChanged += NumUpNumBoxes_ValueChanged;
             BoxTypeCombo.SelectionChanged += BoxTypeCombo_SelectionChanged;
 
             foreach (var Icon in Enum.GetValues(typeof(Enums.MsgIcon)))
@@ -102,25 +100,22 @@ namespace OcarinaTextEditor
                 Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
                 byte[] outD = mes.ConvertTextData(false).ToArray();
 
-                if (outD.Length != 0 && numUpNumBoxes.Value == 0)
-                    numUpNumBoxes.Value = 1;
-
 
                 ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
 
-                int NumBoxes = mp.MessageCount;
+                Bitmap bmp = new Bitmap(384, mp.MessageCount * 108);
+                bmp.MakeTransparent();
 
-                if (NumBoxes == 0)
-                    numUpNumBoxes.Minimum = 0;
-                else
-                    numUpNumBoxes.Minimum = 1;
+                using (Graphics grfx = Graphics.FromImage(bmp))
+                {
+                    for (int i = 0; i < mp.MessageCount; i++)
+                    {
+                        Bitmap bmpTemp = mp.GetPreview(i, true, 1.5f);
+                        grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
+                    }
+                }
 
-                if (numUpNumBoxes.Value > NumBoxes)
-                    numUpNumBoxes.Value = NumBoxes;
-
-                numUpNumBoxes.Maximum = NumBoxes;
-
-                msgPreview.Source = BitmapToImageSource(mp.GetPreview((int)numUpNumBoxes.Value - 1, true));
+                msgPreview.Source = BitmapToImageSource(bmp);
             }
             catch (Exception)
             {
