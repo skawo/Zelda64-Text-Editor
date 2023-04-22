@@ -47,7 +47,7 @@ namespace OcarinaTextEditor
                 bitmapimage.StreamSource = memory;
                 bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapimage.EndInit();
-               
+
 
                 return bitmapimage;
             }
@@ -56,9 +56,9 @@ namespace OcarinaTextEditor
         private void SetMsgBackground(int Type)
         {
             if (Type == 4)
-              dockMsgPreview.Background = System.Windows.Media.Brushes.Black;
+                dockMsgPreview.Background = System.Windows.Media.Brushes.Black;
             else
-              dockMsgPreview.Background = System.Windows.Media.Brushes.White;
+                dockMsgPreview.Background = System.Windows.Media.Brushes.White;
         }
 
         private void BoxTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -100,32 +100,54 @@ namespace OcarinaTextEditor
                 Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
                 byte[] outD = mes.ConvertTextData(view.Version, false).ToArray();
 
-
-                ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
-
-                Bitmap bmpTemp = mp.GetPreview(0, true, 1.5f);
-
-                Bitmap bmp = new Bitmap(bmpTemp.Width, mp.MessageCount * bmpTemp.Height);
-                bmp.MakeTransparent();
-
-                using (Graphics grfx = Graphics.FromImage(bmp))
+                if (ROMInfo.IsMajoraMask(view.Version))
                 {
-                    grfx.DrawImage(bmpTemp, 0, 0);
+                    ZeldaMessage.MessagePreviewMajora mp = new ZeldaMessage.MessagePreviewMajora(outD);
+                    Bitmap bmpTemp = mp.GetPreview(0, true, 1.5f);
 
-                    for (int i = 1; i < mp.MessageCount; i++)
+                    Bitmap bmp = new Bitmap(bmpTemp.Width, mp.MessageCount * bmpTemp.Height);
+                    bmp.MakeTransparent();
+
+                    using (Graphics grfx = Graphics.FromImage(bmp))
                     {
-                        bmpTemp = mp.GetPreview(i, true, 1.5f);
-                        grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
-                    }
-                }
+                        grfx.DrawImage(bmpTemp, 0, 0);
 
-                msgPreview.Source = BitmapToImageSource(bmp);
+                        for (int i = 1; i < mp.MessageCount; i++)
+                        {
+                            bmpTemp = mp.GetPreview(i, true, 1.5f);
+                            grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
+                        }
+                    }
+
+                    msgPreview.Source = BitmapToImageSource(bmp);
+                }
+                else
+                {
+                    ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
+                    Bitmap bmpTemp = mp.GetPreview(0, true, 1.5f);
+
+                    Bitmap bmp = new Bitmap(bmpTemp.Width, mp.MessageCount * bmpTemp.Height);
+                    bmp.MakeTransparent();
+
+                    using (Graphics grfx = Graphics.FromImage(bmp))
+                    {
+                        grfx.DrawImage(bmpTemp, 0, 0);
+
+                        for (int i = 1; i < mp.MessageCount; i++)
+                        {
+                            bmpTemp = mp.GetPreview(i, true, 1.5f);
+                            grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
+                        }
+                    }
+
+                    msgPreview.Source = BitmapToImageSource(bmp);
+                }   
             }
             catch (Exception)
             {
 
             }
-            
+
         }
 
         private void TextBox_SelectionChanged(object sender, RoutedEventArgs e)
