@@ -30,7 +30,7 @@ namespace OcarinaTextEditor
             InitializeComponent();
 
             BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
-            BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>();
+            BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>().Where(x => x <= TextboxPosition.Bottom);
             MajoraIconCombo.ItemsSource = Enum.GetValues(typeof(MajoraIcons)).Cast<MajoraIcons>();
             MajoraIconCombo.Visibility = Visibility.Hidden;
             MajoraIconLbl.Visibility = Visibility.Hidden;
@@ -197,6 +197,7 @@ namespace OcarinaTextEditor
                     {
                         IsMajoraMode = true;
                         BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(MajoraTextboxType)).Cast<MajoraTextboxType>();
+                        BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>();
                         MajoraIconCombo.Visibility = Visibility.Visible;
                         MajoraIconLbl.Visibility = Visibility.Visible;
                     }
@@ -212,6 +213,7 @@ namespace OcarinaTextEditor
                     {
                         IsMajoraMode = false;
                         BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
+                        BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>().Where(x => x <= TextboxPosition.Top);
                         MajoraIconCombo.Visibility = Visibility.Hidden;
                         MajoraIconLbl.Visibility = Visibility.Hidden;
                     }

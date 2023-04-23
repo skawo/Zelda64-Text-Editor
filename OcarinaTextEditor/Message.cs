@@ -182,6 +182,7 @@ namespace OcarinaTextEditor
                 MajoraBoxType = (MajoraTextboxType)reader.ReadByte();
                 BoxPosition = (TextboxPosition)reader.ReadByte();
                 MajoraIcon = reader.ReadByte();
+
                 MajoraNextMessage = reader.ReadInt16();
                 MajoraFirstItemPrice = reader.ReadInt16();
                 MajoraSecondItemPrice = reader.ReadInt16();
