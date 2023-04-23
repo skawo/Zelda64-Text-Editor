@@ -387,6 +387,17 @@ namespace OcarinaTextEditor
 
             switch (code)
             {
+                case MajoraControlCode.COLOR_DEFAULT:
+                case MajoraControlCode.COLOR_RED:
+                case MajoraControlCode.COLOR_GREEN:
+                case MajoraControlCode.COLOR_BLUE:
+                case MajoraControlCode.COLOR_YELLOW:
+                case MajoraControlCode.COLOR_NAVY:
+                case MajoraControlCode.COLOR_PINK:
+                case MajoraControlCode.COLOR_SILVER:
+                case MajoraControlCode.COLOR_ORANGE:
+                    codeInsides = string.Format("{0}", ((MsgColorMajora)code).ToString());
+                    break;
                 case MajoraControlCode.SHIFT:
                     byte numSpaces = reader.ReadByte();
                     codeInsides = string.Format("{0}:{1}", MajoraControlCode.SHIFT.ToString(), numSpaces);
