@@ -110,7 +110,7 @@
     <Compile Include="Enums\EditorMode.cs" />
     <Compile Include="Enums\ExportType.cs" />
     <Compile Include="Enums\HighScore.cs" />
-    <Compile Include="Enums\ROMS.cs" />
+    <Compile Include="Enums\ROMData.cs" />
     <Compile Include="Enums\SoundType.cs" />
     <Compile Include="Enums\TextboxPosition.cs" />
     <Compile Include="Enums\TextboxType.cs" />

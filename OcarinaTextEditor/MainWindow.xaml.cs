@@ -31,9 +31,22 @@ namespace OcarinaTextEditor
 
             BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
             BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>();
+            MajoraIconCombo.ItemsSource = Enum.GetValues(typeof(MajoraIcons)).Cast<MajoraIcons>();
+            MajoraIconCombo.Visibility = Visibility.Hidden;
+            MajoraIconLbl.Visibility = Visibility.Hidden;
 
             textBoxMsg.TextChanged += TextBoxMsg_TextChanged;
             BoxTypeCombo.SelectionChanged += BoxTypeCombo_SelectionChanged;
+
+            foreach (var Icon in Enum.GetValues(typeof(Enums.MsgIcon)))
+            {
+                var Item = new MenuItem();
+                Item.Header = Icon.ToString();
+                Item.SetBinding(Button.CommandProperty, new Binding("OnRequestAddControl"));
+                Item.CommandParameter = $"ICON:{Icon.ToString()}";
+
+                IconHeader.Items.Add(Item);
+            }
 
         }
 
@@ -65,6 +78,9 @@ namespace OcarinaTextEditor
 
         private void BoxTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (BoxTypeCombo.SelectedItem == null)
+                return;
+
             ViewModel view = (ViewModel)DataContext;
 
             if (IsMajoraMode)
@@ -80,18 +96,6 @@ namespace OcarinaTextEditor
 
             textBoxMsg.TextChanged += TextBoxMsg_TextChanged;
             BoxTypeCombo.SelectionChanged += BoxTypeCombo_SelectionChanged;
-
-
-
-            foreach (var Icon in Enum.GetValues(typeof(Enums.MsgIcon)))
-            {
-                var Item = new MenuItem();
-                Item.Header = Icon.ToString();
-                Item.SetBinding(Button.CommandProperty, new Binding("OnRequestAddControl"));
-                Item.CommandParameter = $"ICON:{Icon.ToString()}";
-
-                IconHeader.Items.Add(Item);
-            }
         }
 
         private void TextBoxMsg_TextChanged(object sender, TextChangedEventArgs e)
@@ -193,9 +197,14 @@ namespace OcarinaTextEditor
                     {
                         IsMajoraMode = true;
                         BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(MajoraTextboxType)).Cast<MajoraTextboxType>();
+                        MajoraIconCombo.Visibility = Visibility.Visible;
+                        MajoraIconLbl.Visibility = Visibility.Visible;
                     }
 
                     BoxTypeCombo.SelectedItem = view.SelectedMessage.MajoraBoxType;
+                    MajoraIconCombo.SelectedItem = (MajoraIcons)view.SelectedMessage.MajoraIcon;
+
+
                 }
                 else if (!MajoraMode)
                 {
@@ -203,6 +212,8 @@ namespace OcarinaTextEditor
                     {
                         IsMajoraMode = false;
                         BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
+                        MajoraIconCombo.Visibility = Visibility.Hidden;
+                        MajoraIconLbl.Visibility = Visibility.Hidden;
                     }
 
                     BoxTypeCombo.SelectedItem = view.SelectedMessage.BoxType;
@@ -210,9 +221,12 @@ namespace OcarinaTextEditor
             }
         }
 
-        private void BoxTypeCombo_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
+        private void MajoraIconCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ViewModel view = (ViewModel)DataContext;
 
+            view.SelectedMessage.MajoraIcon = (byte)(MajoraIcons)MajoraIconCombo.SelectedItem;
+            TextBoxMsg_TextChanged(null, null);
         }
     }
 }

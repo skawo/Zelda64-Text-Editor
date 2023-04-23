@@ -86,8 +86,8 @@ namespace OcarinaTextEditor
         private string m_textData;
         #endregion
 
-        #region public short MajoraIcon
-        public short MajoraIcon
+        #region public byte MajoraIcon
+        public byte MajoraIcon
         {
             get { return m_MajoraIcon; }
             set
@@ -99,7 +99,7 @@ namespace OcarinaTextEditor
                 }
             }
         }
-        private short m_MajoraIcon;
+        private byte m_MajoraIcon;
         #endregion
 
         #region public short MajoraNextMessage
@@ -395,8 +395,8 @@ namespace OcarinaTextEditor
                     return "\n".ToCharArray();
                 case MajoraControlCode.NEW_BOX:
                     return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
-                case MajoraControlCode.NEW_BOX_3L:
-                    return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX_3L.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
+                case MajoraControlCode.NEW_BOX_INCOMPL:
+                    return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX_INCOMPL.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
                 case MajoraControlCode.DELAY_DC:
                 case MajoraControlCode.DELAY_DI:
                 case MajoraControlCode.DELAY_END:
@@ -520,7 +520,7 @@ namespace OcarinaTextEditor
                     string parsedCode = new string(controlCode.ToArray());
                     string parsedFixed = parsedCode.Split(':')[0].Replace(" ", "_").ToUpper();
 
-                    if (parsedFixed == MajoraControlCode.NEW_BOX.ToString() || parsedFixed == MajoraControlCode.DELAY_END.ToString() || parsedFixed == MajoraControlCode.NEW_BOX_3L.ToString())
+                    if (parsedFixed == MajoraControlCode.NEW_BOX.ToString() || parsedFixed == MajoraControlCode.DELAY_END.ToString() || parsedFixed == MajoraControlCode.NEW_BOX_INCOMPL.ToString())
                     {
                         if (data.Count != 0)
                             if (data[data.Count - 1] == 0x11)
