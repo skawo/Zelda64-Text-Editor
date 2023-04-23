@@ -23,6 +23,8 @@ namespace OcarinaTextEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        bool IsMajoraMode = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -63,6 +65,13 @@ namespace OcarinaTextEditor
 
         private void BoxTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ViewModel view = (ViewModel)DataContext;
+
+            if (IsMajoraMode)
+                view.SelectedMessage.MajoraBoxType = (MajoraTextboxType)BoxTypeCombo.SelectedItem;
+            else
+                view.SelectedMessage.BoxType = (TextboxType)BoxTypeCombo.SelectedItem;
+
             textBoxMsg.TextChanged -= TextBoxMsg_TextChanged;
             BoxTypeCombo.SelectionChanged -= BoxTypeCombo_SelectionChanged;
 
@@ -71,6 +80,8 @@ namespace OcarinaTextEditor
 
             textBoxMsg.TextChanged += TextBoxMsg_TextChanged;
             BoxTypeCombo.SelectionChanged += BoxTypeCombo_SelectionChanged;
+
+
 
             foreach (var Icon in Enum.GetValues(typeof(Enums.MsgIcon)))
             {
@@ -83,11 +94,6 @@ namespace OcarinaTextEditor
             }
         }
 
-        private void NumUpNumBoxes_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            TextBoxMsg_TextChanged(null, null);
-        }
-
         private void TextBoxMsg_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
@@ -97,11 +103,17 @@ namespace OcarinaTextEditor
                 if (textBoxMsg.Text == "")
                     return;
 
-                Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
-                byte[] outD = mes.ConvertTextData(view.Version, false).ToArray();
-
                 if (ROMInfo.IsMajoraMask(view.Version))
                 {
+                    if (!IsMajoraMode)
+                    {
+                        IsMajoraMode = true;
+                        BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(MajoraTextboxType)).Cast<MajoraTextboxType>();
+                    }
+
+                    Message mes = view.SelectedMessage;
+                    byte[] outD = mes.ConvertTextData(view.Version, false).ToArray();
+
                     ZeldaMessage.MessagePreviewMajora mp = new ZeldaMessage.MessagePreviewMajora(outD);
                     Bitmap bmpTemp = mp.GetPreview(0, true, 1.5f);
 
@@ -123,6 +135,16 @@ namespace OcarinaTextEditor
                 }
                 else
                 {
+                    if (IsMajoraMode)
+                    {
+                        IsMajoraMode = false;
+                        BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
+                    }
+
+                    Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
+                    byte[] outD = mes.ConvertTextData(view.Version, false).ToArray();
+
+
                     ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
                     Bitmap bmpTemp = mp.GetPreview(0, true, 1.5f);
 
@@ -157,5 +179,40 @@ namespace OcarinaTextEditor
             view.TextboxPosition = box.SelectionStart;
         }
 
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ViewModel view = (ViewModel)DataContext;
+
+            bool MajoraMode = ROMInfo.IsMajoraMask(view.Version);
+
+            if (view.SelectedMessage != null)
+            {
+                if (MajoraMode)
+                {
+                    if (!IsMajoraMode)
+                    {
+                        IsMajoraMode = true;
+                        BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(MajoraTextboxType)).Cast<MajoraTextboxType>();
+                    }
+
+                    BoxTypeCombo.SelectedItem = view.SelectedMessage.MajoraBoxType;
+                }
+                else if (!MajoraMode)
+                {
+                    if (IsMajoraMode)
+                    {
+                        IsMajoraMode = false;
+                        BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
+                    }
+
+                    BoxTypeCombo.SelectedItem = view.SelectedMessage.BoxType;
+                }
+            }
+        }
+
+        private void BoxTypeCombo_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

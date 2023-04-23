@@ -389,8 +389,14 @@ namespace OcarinaTextEditor
             {
                 case MajoraControlCode.SHIFT:
                     byte numSpaces = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", ControlCode.SHIFT.ToString(), numSpaces);
+                    codeInsides = string.Format("{0}:{1}", MajoraControlCode.SHIFT.ToString(), numSpaces);
                     break;
+                case MajoraControlCode.LINE_BREAK:
+                    return "\n".ToCharArray();
+                case MajoraControlCode.NEW_BOX:
+                    return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
+                case MajoraControlCode.NEW_BOX_3L:
+                    return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX_3L.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
                 case MajoraControlCode.DELAY_DC:
                 case MajoraControlCode.DELAY_DI:
                 case MajoraControlCode.DELAY_END:
@@ -514,10 +520,10 @@ namespace OcarinaTextEditor
                     string parsedCode = new string(controlCode.ToArray());
                     string parsedFixed = parsedCode.Split(':')[0].Replace(" ", "_").ToUpper();
 
-                    if (parsedFixed == MajoraControlCode.NEW_BOX.ToString() || parsedFixed == MajoraControlCode.DELAY_END.ToString())
+                    if (parsedFixed == MajoraControlCode.NEW_BOX.ToString() || parsedFixed == MajoraControlCode.DELAY_END.ToString() || parsedFixed == MajoraControlCode.NEW_BOX_3L.ToString())
                     {
                         if (data.Count != 0)
-                            if (data[data.Count - 1] == 0x10)
+                            if (data[data.Count - 1] == 0x11)
                                 data.RemoveAt(data.Count - 1);
 
                         if (TextData.Length > i + Environment.NewLine.Length)

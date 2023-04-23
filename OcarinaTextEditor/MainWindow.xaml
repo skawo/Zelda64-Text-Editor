@@ -26,7 +26,7 @@
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="21*"/>
                 </Grid.ColumnDefinitions>
-                <ListView Margin="10,31,0,10" ItemsSource="{Binding ViewSource.View}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2">
+                <ListView Margin="10,31,0,10" ItemsSource="{Binding ViewSource.View}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" SelectionChanged="ListView_SelectionChanged">
                     <ListView.View>
                         <GridView AllowsColumnReorder="False">
                             <!--<GridViewColumn Header="ID (Dec)" Width="80" DisplayMemberBinding="{Binding MessageID}"/>-->
@@ -110,7 +110,7 @@
                     <Grid HorizontalAlignment="Left" Width="332" Margin="0,0,-2,-10">
                         <Label Content="Box Type:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,10,0,0" Height="26" Width="60"/>
                         <Label Content="Box Position:" HorizontalAlignment="Left" Margin="0,41,0,0" VerticalAlignment="Top" Height="26" Width="77"/>
-                        <ComboBox x:Name="BoxTypeCombo" HorizontalAlignment="Left" Margin="66,14,0,0" VerticalAlignment="Top" Width="120" SelectedItem="{Binding SelectedMessage.BoxType}" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" Height="22"/>
+                        <ComboBox x:Name="BoxTypeCombo" HorizontalAlignment="Left" Margin="66,14,0,0" VerticalAlignment="Top" Width="120" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" Height="22" SelectionChanged="BoxTypeCombo_SelectionChanged"/>
                         <ComboBox x:Name="BoxPositionCombo" HorizontalAlignment="Left" Margin="83,45,0,0" VerticalAlignment="Top" Width="103" SelectedItem="{Binding SelectedMessage.BoxPosition}" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" Height="22"/>
                     </Grid>
                 </GroupBox>

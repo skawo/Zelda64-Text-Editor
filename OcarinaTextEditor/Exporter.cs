@@ -24,8 +24,6 @@ namespace OcarinaTextEditor
 
         public Exporter(ObservableCollection<Message> messageList, string fileName, ExportType exportType, MemoryStream inputFile, ROMVer Version, bool Credits = false)
         {
-            byte[] alphabetStartOffset;
-
             m_messageList = messageList;
             m_fileName = fileName;
 

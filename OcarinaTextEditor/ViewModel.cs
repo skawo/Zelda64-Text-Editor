@@ -68,18 +68,12 @@ namespace OcarinaTextEditor
                 NotifyPropertyChanged();
                 NotifyPropertyChanged("IsSaveAvailable");
                 NotifyPropertyChanged("IsSaveAsEnabled");
-                NotifyPropertyChanged("IsPPFAvailable");
             }
         }
 
         public bool IsSaveAsEnabled
         {
             get { return Mode == EditorMode.ROMMode || Mode == EditorMode.FilesMode; }
-        }
-
-        public bool IsPPFAvailable
-        {
-            get { return Mode == EditorMode.ROMMode; }
         }
 
         public bool IsSaveAvailable
