@@ -48,11 +48,14 @@ namespace OcarinaTextEditor
                     EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
                     reader.BaseStream.Seek(offset, 0);
 
+                   
                     //Read in message table records
                     while (reader.PeekReadInt16() != -1)
                     {
                         TableRecord mesRecord = new TableRecord(reader);
                         tableRecordList.Add(mesRecord);
+
+               
                     }
                 }
 
@@ -74,9 +77,9 @@ namespace OcarinaTextEditor
                 MessageBox.Show(ex.Message);
                 return;
             }
-            catch (Exception)
+            catch (Exception exz)
             {
-                MessageBox.Show("Failed loading messages. Note: ROMs built by zzromtool are not supported directly!");
+                MessageBox.Show("Failed loading messages. Note: ROMs built by zzromtool are not supported directly!" + exz.Message);
                 return;
             }
         }

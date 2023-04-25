@@ -58,6 +58,10 @@ namespace OcarinaTextEditor
             }
         }
 
+        #endregion
+
+        #region Mode
+
         private Enums.EditorMode _Mode = EditorMode.None;
         public Enums.EditorMode Mode
         {
@@ -68,23 +72,21 @@ namespace OcarinaTextEditor
                 NotifyPropertyChanged();
                 NotifyPropertyChanged("IsSaveAvailable");
                 NotifyPropertyChanged("IsSaveAsEnabled");
+                NotifyPropertyChanged("MajoraMaskMode");
             }
         }
 
-        public bool IsSaveAsEnabled
-        {
-            get { return Mode == EditorMode.ROMMode || Mode == EditorMode.FilesMode; }
-        }
+        #endregion
 
-        public bool IsSaveAvailable
-        {
-            get { return Mode != EditorMode.None; }
-        }
+        public bool IsSaveAsEnabled => Mode == EditorMode.ROMMode || Mode == EditorMode.FilesMode;
+
+        public bool MajoraMaskMode => ROMInfo.IsMajoraMask(Version);
+
+        public bool IsSaveAvailable => Mode != EditorMode.None;
 
         public string Path1 { get; set; }
         public string Path2 { get; set; }
 
-        #endregion
 
         #region public Message SelectedMessage
         public Message SelectedMessage

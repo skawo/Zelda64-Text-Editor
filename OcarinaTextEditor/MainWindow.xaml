@@ -10,6 +10,7 @@
     </Window.DataContext>
     <Window.Resources>
         <converters:NullToFalseConverter x:Key="NullToFalseConverter"/>
+        <converters:BoolVisibilityConverter x:Key="BoolVisibilityConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -30,7 +31,7 @@
                     <ListView.View>
                         <GridView AllowsColumnReorder="False">
                             <!--<GridViewColumn Header="ID (Dec)" Width="80" DisplayMemberBinding="{Binding MessageID}"/>-->
-                            <GridViewColumn Header="ID" Width="60" DisplayMemberBinding="{Binding MessageID, StringFormat=0x{0:X4}}"/>
+                            <GridViewColumn Header="ID" Width="Auto" DisplayMemberBinding="{Binding MessageID, StringFormat=0x{0:X4}}"/>
                             <GridViewColumn Header="Text" Width="Auto" DisplayMemberBinding="{Binding TextData}"/>
                         </GridView>
                     </ListView.View>
@@ -50,8 +51,8 @@
                 <MenuItem Header="Close File" IsEnabled="{Binding IsSaveAvailable}" Command="{Binding OnRequestCloseFile}"/>
             </MenuItem>
         </Menu>
-        <DockPanel LastChildFill="True" Margin="0,153,0,10" Grid.Column="2">
-            <TextBox x:Name="textBoxMsg" TextWrapping="Wrap" Text="{Binding SelectedMessage.TextData, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" SelectionChanged="TextBox_SelectionChanged">
+        <DockPanel x:Name ="textBoxMsgDock" LastChildFill="True" Margin="0,241,0,10" Grid.Column="2">
+            <TextBox x:Name="textBoxMsg" Margin="0,0,0,0" TextWrapping="Wrap" Text="{Binding SelectedMessage.TextData, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" SelectionChanged="TextBox_SelectionChanged">
                 <TextBox.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Cut" Command="ApplicationCommands.Cut"/>
@@ -104,18 +105,23 @@
                 </TextBox.ContextMenu>
             </TextBox>
         </DockPanel>
-        <DockPanel Height="97" LastChildFill="True" Margin="4,21,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="2">
-
-                <GroupBox Header="Textbox Options" Margin="0,0,0,-29">
-                    <Grid HorizontalAlignment="Left" Width="332" Margin="0,0,-2,-10">
-                        <Label Content="Box Type:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,10,0,0" Height="26" Width="60"/>
-                        <Label Content="Box Position:" HorizontalAlignment="Left" Margin="0,41,0,0" VerticalAlignment="Top" Height="26" Width="77"/>
-                        <ComboBox x:Name="BoxTypeCombo" HorizontalAlignment="Left" Margin="83,14,0,0" VerticalAlignment="Top" Width="126" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" Height="22" SelectionChanged="BoxTypeCombo_SelectionChanged"/>
-                        <ComboBox x:Name="BoxPositionCombo" HorizontalAlignment="Left" Margin="83,45,0,0" VerticalAlignment="Top" Width="126" SelectedItem="{Binding SelectedMessage.BoxPosition}" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" Height="22"/>
-                    <Label Name="MajoraIconLbl" Content="Icon:" HorizontalAlignment="Left" Margin="0,72,0,0" VerticalAlignment="Top" Height="26" Width="77"/>
-                    <ComboBox x:Name="MajoraIconCombo" HorizontalAlignment="Left" Margin="83,76,0,0" VerticalAlignment="Top" Width="239" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" Height="22" SelectionChanged="MajoraIconCombo_SelectionChanged"/>
+        <DockPanel x:Name ="DockTextBoxOptions" Height="215" LastChildFill="True" Margin="4,21,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="2">
+            <GroupBox Header="Textbox Options">
+                <Grid HorizontalAlignment="Left" Width="332" Margin="0,0,-2,-10">
+                    <Label Content="Box Type:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,10,0,0" Height="26" Width="60"/>
+                    <Label Content="Box Position:" HorizontalAlignment="Left" Margin="0,41,0,0" VerticalAlignment="Top" Height="26" Width="77"/>
+                    <ComboBox x:Name="BoxTypeCombo" HorizontalAlignment="Left" Margin="83,14,0,0" VerticalAlignment="Top" Width="126" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" Height="22" SelectionChanged="BoxTypeCombo_SelectionChanged"/>
+                    <ComboBox x:Name="BoxPositionCombo" HorizontalAlignment="Left" Margin="83,45,0,0" VerticalAlignment="Top" Width="126" SelectedItem="{Binding SelectedMessage.BoxPosition}" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" Height="22"/>
+                    <Label Name="MajoraIconLbl" Visibility="{Binding MajoraMaskMode, Converter={StaticResource BoolVisibilityConverter}}" Content="Icon:" HorizontalAlignment="Left" Margin="0,72,0,0" VerticalAlignment="Top" Height="26" Width="77"/>
+                    <ComboBox x:Name="MajoraIconCombo" Visibility="{Binding MajoraMaskMode, Converter={StaticResource BoolVisibilityConverter}}" HorizontalAlignment="Left" Margin="83,76,0,0" VerticalAlignment="Top" Width="239" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" Height="22" SelectionChanged="MajoraIconCombo_SelectionChanged"/>
+                    <Label x:Name="MajoraLblJumpto" Visibility="{Binding MajoraMaskMode, Converter={StaticResource BoolVisibilityConverter}}" Content="Jump to:" HorizontalAlignment="Left" Margin="0,103,0,0" VerticalAlignment="Top" Height="26" Width="77" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}"/>
+                    <TextBox x:Name="MajoraJumpToTextBox" Visibility="{Binding MajoraMaskMode, Converter={StaticResource BoolVisibilityConverter}}" TextWrapping="Wrap" Margin="83,103,10,73" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" TextChanged="MajoraJumpToTextBox_TextChanged"/>
+                    <TextBox x:Name="MajoraFirstPriceTextBox" Visibility="{Binding MajoraMaskMode, Converter={StaticResource BoolVisibilityConverter}}" TextWrapping="Wrap" Text="" Margin="83,134,10,42" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" TextChanged="MajoraFirstPriceTextBox_TextChanged"/>
+                    <TextBox x:Name="MajoraSecondPriceTextBox" Visibility="{Binding MajoraMaskMode, Converter={StaticResource BoolVisibilityConverter}}" TextWrapping="Wrap" Text="" Margin="83,165,10,11" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" TextChanged="MajoraSecondPriceTextBox_TextChanged"/>
+                    <Label x:Name="MajoraFirstPriceLabel" Visibility="{Binding MajoraMaskMode, Converter={StaticResource BoolVisibilityConverter}}" Content="1st Price:" HorizontalAlignment="Left" Margin="0,134,0,0" VerticalAlignment="Top" Height="26" Width="77" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}"/>
+                    <Label x:Name="MajoraSecondPriceLabel" Visibility="{Binding MajoraMaskMode, Converter={StaticResource BoolVisibilityConverter}}" Content="2nd Price" HorizontalAlignment="Left" Margin="0,165,0,0" VerticalAlignment="Top" Height="26" Width="77" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}"/>
                 </Grid>
-                </GroupBox>
+            </GroupBox>
 
         </DockPanel>
         <Grid Margin="10,379,2,0">

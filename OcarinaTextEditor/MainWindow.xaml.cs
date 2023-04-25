@@ -32,11 +32,12 @@ namespace OcarinaTextEditor
             BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
             BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>().Where(x => x <= TextboxPosition.Bottom);
             MajoraIconCombo.ItemsSource = Enum.GetValues(typeof(MajoraIcons)).Cast<MajoraIcons>();
-            MajoraIconCombo.Visibility = Visibility.Hidden;
-            MajoraIconLbl.Visibility = Visibility.Hidden;
 
             textBoxMsg.TextChanged += TextBoxMsg_TextChanged;
             BoxTypeCombo.SelectionChanged += BoxTypeCombo_SelectionChanged;
+
+            DockTextBoxOptions.Height = 95;
+            textBoxMsgDock.Margin = new Thickness(0, 118, 0, 10);
 
             foreach (var Icon in Enum.GetValues(typeof(Enums.MsgIcon)))
             {
@@ -50,6 +51,7 @@ namespace OcarinaTextEditor
 
         }
 
+        
 
         BitmapImage BitmapToImageSource(System.Drawing.Bitmap bitmap)
         {
@@ -102,19 +104,14 @@ namespace OcarinaTextEditor
         {
             try
             {
+                msgPreview.Opacity = 1;
                 ViewModel view = (ViewModel)DataContext;
 
-                if (textBoxMsg.Text == "")
+                if (view.SelectedMessage == null)
                     return;
 
-                if (ROMInfo.IsMajoraMask(view.Version))
+                if (view.MajoraMaskMode)
                 {
-                    if (!IsMajoraMode)
-                    {
-                        IsMajoraMode = true;
-                        BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(MajoraTextboxType)).Cast<MajoraTextboxType>();
-                    }
-
                     Message mes = view.SelectedMessage;
                     byte[] outD = mes.ConvertTextData(view.Version, false).ToArray();
 
@@ -139,15 +136,8 @@ namespace OcarinaTextEditor
                 }
                 else
                 {
-                    if (IsMajoraMode)
-                    {
-                        IsMajoraMode = false;
-                        BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
-                    }
-
                     Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
                     byte[] outD = mes.ConvertTextData(view.Version, false).ToArray();
-
 
                     ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
                     Bitmap bmpTemp = mp.GetPreview(0, true, 1.5f);
@@ -169,9 +159,9 @@ namespace OcarinaTextEditor
                     msgPreview.Source = BitmapToImageSource(bmp);
                 }   
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                msgPreview.Opacity = 0.5;
             }
 
         }
@@ -198,14 +188,24 @@ namespace OcarinaTextEditor
                         IsMajoraMode = true;
                         BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(MajoraTextboxType)).Cast<MajoraTextboxType>();
                         BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>();
-                        MajoraIconCombo.Visibility = Visibility.Visible;
-                        MajoraIconLbl.Visibility = Visibility.Visible;
+                        DockTextBoxOptions.Height = 215;
+                        textBoxMsgDock.Margin = new Thickness(0, 241, 0, 10);
                     }
 
                     BoxTypeCombo.SelectedItem = view.SelectedMessage.MajoraBoxType;
                     MajoraIconCombo.SelectedItem = (MajoraIcons)view.SelectedMessage.MajoraIcon;
 
+                    MajoraJumpToTextBox.TextChanged -= MajoraJumpToTextBox_TextChanged;
+                    MajoraFirstPriceTextBox.TextChanged -= MajoraFirstPriceTextBox_TextChanged;
+                    MajoraSecondPriceTextBox.TextChanged -= MajoraSecondPriceTextBox_TextChanged;
 
+                    MajoraJumpToTextBox.Text = "0x" + Convert.ToString((ushort)view.SelectedMessage.MajoraNextMessage, 16).ToUpper();
+                    MajoraFirstPriceTextBox.Text = Convert.ToString(view.SelectedMessage.MajoraFirstItemPrice);
+                    MajoraSecondPriceTextBox.Text = Convert.ToString(view.SelectedMessage.MajoraSecondItemPrice);
+
+                    MajoraJumpToTextBox.TextChanged += MajoraJumpToTextBox_TextChanged;
+                    MajoraFirstPriceTextBox.TextChanged += MajoraFirstPriceTextBox_TextChanged;
+                    MajoraSecondPriceTextBox.TextChanged += MajoraSecondPriceTextBox_TextChanged;
                 }
                 else if (!MajoraMode)
                 {
@@ -213,9 +213,9 @@ namespace OcarinaTextEditor
                     {
                         IsMajoraMode = false;
                         BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
-                        BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>().Where(x => x <= TextboxPosition.Top);
-                        MajoraIconCombo.Visibility = Visibility.Hidden;
-                        MajoraIconLbl.Visibility = Visibility.Hidden;
+                        BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>().Where(x => x <= TextboxPosition.Bottom);
+                        DockTextBoxOptions.Height = 95;
+                        textBoxMsgDock.Margin = new Thickness(0, 118, 0, 10);
                     }
 
                     BoxTypeCombo.SelectedItem = view.SelectedMessage.BoxType;
@@ -229,6 +229,51 @@ namespace OcarinaTextEditor
 
             view.SelectedMessage.MajoraIcon = (byte)(MajoraIcons)MajoraIconCombo.SelectedItem;
             TextBoxMsg_TextChanged(null, null);
+        }
+
+        private void MajoraJumpToTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ViewModel view = (ViewModel)DataContext;
+
+            try
+            {
+                view.SelectedMessage.MajoraNextMessage = Convert.ToInt16(MajoraJumpToTextBox.Text.TrimStart(new char[] { '0', 'x' }), 16);
+            }
+            catch (Exception)
+            {
+                view.SelectedMessage.MajoraNextMessage = -1;
+                MajoraJumpToTextBox.Text = "FFFF";
+            }
+        }
+
+        private void MajoraFirstPriceTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ViewModel view = (ViewModel)DataContext;
+
+            try
+            {
+                view.SelectedMessage.MajoraFirstItemPrice = Convert.ToInt16(MajoraFirstPriceTextBox.Text);
+            }
+            catch (Exception)
+            {
+                view.SelectedMessage.MajoraFirstItemPrice = -1;
+                MajoraFirstPriceTextBox.Text = "-1";
+            }
+        }
+
+        private void MajoraSecondPriceTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ViewModel view = (ViewModel)DataContext;
+
+            try
+            {
+                view.SelectedMessage.MajoraSecondItemPrice = Convert.ToInt16(MajoraSecondPriceTextBox.Text);
+            }
+            catch (Exception)
+            {
+                view.SelectedMessage.MajoraFirstItemPrice = -1;
+                MajoraSecondPriceTextBox.Text = "-1";
+            }
         }
     }
 }
