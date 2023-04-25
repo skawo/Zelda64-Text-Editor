@@ -6,5 +6,5 @@ This fork of Sage of Mirror's Ocarina Text Editor adds a bunch of extra features
 * Support for Ocarina of Time versions: PAL1.0, PAL1.1, PAL Gamecube, PAL Master Quest, PAL Beta Master Quest, NTSC0.9, NTSC1.0, NTSC1.1, NTSC1.2, NTSC GameCube, NTSC Master Quest
 * Support for Majora's Mask versions: PAL1.0, PAL1.1, NTSC, NTSC Kiosk Demo, NTSC GameCube, PAL Gamecube, PAL Debug ROM
 
-![image](https://user-images.githubusercontent.com/43761362/234228439-f76153cf-4157-4d7a-8f4e-379445d86cd9.png)
+![image](https://user-images.githubusercontent.com/43761362/234229671-eeae5b22-56f1-4cc8-a6aa-f63cdf1158b6.png)
 
