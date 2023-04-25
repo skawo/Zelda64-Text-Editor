@@ -199,6 +199,10 @@ namespace OcarinaTextEditor
                     MajoraFirstPriceTextBox.TextChanged -= MajoraFirstPriceTextBox_TextChanged;
                     MajoraSecondPriceTextBox.TextChanged -= MajoraSecondPriceTextBox_TextChanged;
 
+                    MajoraJumpToTextBox.Background = System.Windows.Media.Brushes.White;
+                    MajoraFirstPriceTextBox.Background = System.Windows.Media.Brushes.White;
+                    MajoraSecondPriceTextBox.Background = System.Windows.Media.Brushes.White;
+
                     MajoraJumpToTextBox.Text = "0x" + Convert.ToString((ushort)view.SelectedMessage.MajoraNextMessage, 16).ToUpper();
                     MajoraFirstPriceTextBox.Text = Convert.ToString(view.SelectedMessage.MajoraFirstItemPrice);
                     MajoraSecondPriceTextBox.Text = Convert.ToString(view.SelectedMessage.MajoraSecondItemPrice);
@@ -238,11 +242,12 @@ namespace OcarinaTextEditor
             try
             {
                 view.SelectedMessage.MajoraNextMessage = Convert.ToInt16(MajoraJumpToTextBox.Text.TrimStart(new char[] { '0', 'x' }), 16);
+                MajoraJumpToTextBox.Background = System.Windows.Media.Brushes.White;
             }
             catch (Exception)
             {
                 view.SelectedMessage.MajoraNextMessage = -1;
-                MajoraJumpToTextBox.Text = "FFFF";
+                MajoraJumpToTextBox.Background = System.Windows.Media.Brushes.Red;
             }
         }
 
@@ -253,11 +258,12 @@ namespace OcarinaTextEditor
             try
             {
                 view.SelectedMessage.MajoraFirstItemPrice = Convert.ToInt16(MajoraFirstPriceTextBox.Text);
+                MajoraFirstPriceTextBox.Background = System.Windows.Media.Brushes.White;
             }
             catch (Exception)
             {
                 view.SelectedMessage.MajoraFirstItemPrice = -1;
-                MajoraFirstPriceTextBox.Text = "-1";
+                MajoraFirstPriceTextBox.Background = System.Windows.Media.Brushes.Red;
             }
         }
 
@@ -268,11 +274,12 @@ namespace OcarinaTextEditor
             try
             {
                 view.SelectedMessage.MajoraSecondItemPrice = Convert.ToInt16(MajoraSecondPriceTextBox.Text);
+                MajoraSecondPriceTextBox.Background = System.Windows.Media.Brushes.White;
             }
             catch (Exception)
             {
                 view.SelectedMessage.MajoraFirstItemPrice = -1;
-                MajoraSecondPriceTextBox.Text = "-1";
+                MajoraSecondPriceTextBox.Background = System.Windows.Media.Brushes.Red;
             }
         }
     }
