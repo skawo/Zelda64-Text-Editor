@@ -67,7 +67,7 @@ namespace OcarinaTextEditor
                     foreach (var mesgRecord in tableRecordList)
                     {
                         reader.BaseStream.Position = msgOffset + mesgRecord.Offset;
-                        Message mes = new Message(reader, mesgRecord, ROMVersion);
+                        Message mes = new Message(reader, mesgRecord, Credits, ROMVersion);
                         m_messageList.Add(mes);
                     }
                 }
@@ -85,7 +85,7 @@ namespace OcarinaTextEditor
         }
 
 
-        public Importer(string tableFileName, string messageDataFileName)
+        public Importer(string tableFileName, string messageDataFileName, bool Credits)
         {
             m_messageList = new ObservableCollection<Message>();
 
@@ -114,7 +114,7 @@ namespace OcarinaTextEditor
                         continue;
 
                     reader.BaseStream.Position = mesgRecord.Offset;
-                    Message mes = new Message(reader, mesgRecord);
+                    Message mes = new Message(reader, mesgRecord, Credits);
 
                     m_messageList.Add(mes);
                 }

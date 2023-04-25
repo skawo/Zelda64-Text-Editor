@@ -85,7 +85,7 @@ namespace OcarinaTextEditor
 
             ViewModel view = (ViewModel)DataContext;
 
-            if (IsMajoraMode)
+            if (view.MajoraMaskMode)
                 view.SelectedMessage.MajoraBoxType = (MajoraTextboxType)BoxTypeCombo.SelectedItem;
             else
                 view.SelectedMessage.BoxType = (TextboxType)BoxTypeCombo.SelectedItem;
@@ -100,6 +100,66 @@ namespace OcarinaTextEditor
             BoxTypeCombo.SelectionChanged += BoxTypeCombo_SelectionChanged;
         }
 
+        private void Majora_RenderPreview()
+        {
+            ViewModel view = (ViewModel)DataContext;
+
+            Message mes = view.SelectedMessage;
+            byte[] outD = mes.ConvertTextData(view.Version, view.CreditsMode, false).ToArray();
+
+            ZeldaMessage.MessagePreviewMajora mp = new ZeldaMessage.MessagePreviewMajora(outD);
+            Bitmap bmpTemp = mp.GetPreview(0, true, 1.5f);
+
+            Bitmap bmp = new Bitmap(bmpTemp.Width, mp.MessageCount * bmpTemp.Height);
+            bmp.MakeTransparent();
+
+            using (Graphics grfx = Graphics.FromImage(bmp))
+            {
+                grfx.DrawImage(bmpTemp, 0, 0);
+
+                for (int i = 1; i < mp.MessageCount; i++)
+                {
+                    bmpTemp = mp.GetPreview(i, true, 1.5f);
+                    grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
+                }
+            }
+
+            msgPreview.Dispatcher.Invoke(() =>
+            {
+                msgPreview.Source = BitmapToImageSource(bmp);
+            });
+        }
+
+        private void Ocarina_RenderPreview()
+        {
+            ViewModel view = (ViewModel)DataContext;
+
+            Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
+            byte[] outD = mes.ConvertTextData(view.Version, view.CreditsMode, false).ToArray();
+
+            ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
+            Bitmap bmpTemp = mp.GetPreview(0, true, 1.5f);
+
+            Bitmap bmp = new Bitmap(bmpTemp.Width, mp.MessageCount * bmpTemp.Height);
+            bmp.MakeTransparent();
+
+            using (Graphics grfx = Graphics.FromImage(bmp))
+            {
+                grfx.DrawImage(bmpTemp, 0, 0);
+
+                for (int i = 1; i < mp.MessageCount; i++)
+                {
+                    bmpTemp = mp.GetPreview(i, true, 1.5f);
+                    grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
+                }
+            }
+
+            msgPreview.Dispatcher.Invoke(() => 
+            {
+                msgPreview.Source = BitmapToImageSource(bmp);
+            });
+        }
+
         private void TextBoxMsg_TextChanged(object sender, TextChangedEventArgs e)
         {
             try
@@ -111,53 +171,9 @@ namespace OcarinaTextEditor
                     return;
 
                 if (view.MajoraMaskMode)
-                {
-                    Message mes = view.SelectedMessage;
-                    byte[] outD = mes.ConvertTextData(view.Version, false).ToArray();
-
-                    ZeldaMessage.MessagePreviewMajora mp = new ZeldaMessage.MessagePreviewMajora(outD);
-                    Bitmap bmpTemp = mp.GetPreview(0, true, 1.5f);
-
-                    Bitmap bmp = new Bitmap(bmpTemp.Width, mp.MessageCount * bmpTemp.Height);
-                    bmp.MakeTransparent();
-
-                    using (Graphics grfx = Graphics.FromImage(bmp))
-                    {
-                        grfx.DrawImage(bmpTemp, 0, 0);
-
-                        for (int i = 1; i < mp.MessageCount; i++)
-                        {
-                            bmpTemp = mp.GetPreview(i, true, 1.5f);
-                            grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
-                        }
-                    }
-
-                    msgPreview.Source = BitmapToImageSource(bmp);
-                }
+                    Majora_RenderPreview();
                 else
-                {
-                    Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
-                    byte[] outD = mes.ConvertTextData(view.Version, false).ToArray();
-
-                    ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
-                    Bitmap bmpTemp = mp.GetPreview(0, true, 1.5f);
-
-                    Bitmap bmp = new Bitmap(bmpTemp.Width, mp.MessageCount * bmpTemp.Height);
-                    bmp.MakeTransparent();
-
-                    using (Graphics grfx = Graphics.FromImage(bmp))
-                    {
-                        grfx.DrawImage(bmpTemp, 0, 0);
-
-                        for (int i = 1; i < mp.MessageCount; i++)
-                        {
-                            bmpTemp = mp.GetPreview(i, true, 1.5f);
-                            grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
-                        }
-                    }
-
-                    msgPreview.Source = BitmapToImageSource(bmp);
-                }   
+                    Ocarina_RenderPreview();
             }
             catch (Exception ex)
             {
@@ -177,11 +193,9 @@ namespace OcarinaTextEditor
         {
             ViewModel view = (ViewModel)DataContext;
 
-            bool MajoraMode = ROMInfo.IsMajoraMask(view.Version);
-
             if (view.SelectedMessage != null)
             {
-                if (MajoraMode)
+                if (view.MajoraMaskMode)
                 {
                     if (!IsMajoraMode)
                     {
@@ -211,7 +225,7 @@ namespace OcarinaTextEditor
                     MajoraFirstPriceTextBox.TextChanged += MajoraFirstPriceTextBox_TextChanged;
                     MajoraSecondPriceTextBox.TextChanged += MajoraSecondPriceTextBox_TextChanged;
                 }
-                else if (!MajoraMode)
+                else if (!view.MajoraMaskMode)
                 {
                     if (IsMajoraMode)
                     {

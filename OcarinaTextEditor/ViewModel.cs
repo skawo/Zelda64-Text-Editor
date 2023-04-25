@@ -80,7 +80,7 @@ namespace OcarinaTextEditor
 
         public bool IsSaveAsEnabled => Mode == EditorMode.ROMMode || Mode == EditorMode.FilesMode;
 
-        public bool MajoraMaskMode => ROMInfo.IsMajoraMask(Version);
+        public bool MajoraMaskMode => ROMInfo.IsMajoraMask(Version) && !CreditsMode;
 
         public bool IsSaveAvailable => Mode != EditorMode.None;
 
@@ -229,12 +229,12 @@ namespace OcarinaTextEditor
 
                 EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
 
-                byte[] Buffer = new byte[8];
+                byte[] Buffer = new byte[0x11];
 
                 foreach (var i in ROMInfo.ROMBuildDatesOffsets)
                 {
                     reader.BaseStream.Seek(i.Value, 0);
-                    reader.Read(Buffer, 0, 8);
+                    reader.Read(Buffer, 0, 0x11);
                     string Date = Encoding.ASCII.GetString(Buffer);
 
                     ROMVer Out = ROMInfo.GetROMVerFromDate(i.Key, Date);
@@ -261,6 +261,8 @@ namespace OcarinaTextEditor
                 if (PathD != "")
                     openFile.FileName = PathD;
             }
+            else
+                return;
 
             switch (Path.GetExtension(openFile.FileName))
             {
@@ -368,7 +370,7 @@ namespace OcarinaTextEditor
 
                 Mode = EditorMode.ZZRPLMode;
 
-                Importer file = new Importer(tableEd, msgDataEd);
+                Importer file = new Importer(tableEd, msgDataEd, CreditsMode);
                 MessageList = file.GetMessageList();
 
                 // If message list is null, we failed to parse.
@@ -440,7 +442,7 @@ namespace OcarinaTextEditor
 
                 Mode = EditorMode.Z64ROMMode;
 
-                Importer file = new Importer(tableEd, msgDataEd);
+                Importer file = new Importer(tableEd, msgDataEd, CreditsMode);
                 MessageList = file.GetMessageList();
 
                 // If message list is null, we failed to parse.
@@ -537,7 +539,7 @@ namespace OcarinaTextEditor
 
             Mode = EditorMode.FilesMode;
 
-            Importer file = new Importer(tableFileName, messageDataFileName);
+            Importer file = new Importer(tableFileName, messageDataFileName, CreditsMode);
             MessageList = file.GetMessageList();
 
             ViewSource.Source = MessageList;

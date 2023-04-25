@@ -57,12 +57,12 @@ namespace OcarinaTextEditor
                     int stringOffset = stringBank.Count();
 
                     byte[] decompOffset = BitConverter.GetBytes(stringOffset);
-                    decompOffset[3] = (byte)(ROMInfo.IsMajoraMask(Version) ? 0x08 : 0x07);
+                    decompOffset[3] = (byte)(ROMInfo.UseSeg8(Version) ? 0x08 : 0x07);
 
                     for (int i = 3; i > -1; i--)
                         messageTableWriter.Write(decompOffset[i]);
 
-                    stringBank.AddRange(mes.ConvertTextData(Version));
+                    stringBank.AddRange(mes.ConvertTextData(Version, Credits, true));
                     ExtensionMethods.PadByteList4(stringBank);
                 }
 
@@ -115,7 +115,7 @@ namespace OcarinaTextEditor
 
             if (table.Length > TableLimit || stringBank.Length > StringBankLimit)
             {
-                MessageBox.Show("Message data exceeds size possible to insert into ROM.");
+                MessageBox.Show($"Message data exceeds size possible to insert into ROM.\nMessage table: {table.Length}/{TableLimit}\nMessage data:{stringBank.Length}/{StringBankLimit}");
                 return false;
             }
 

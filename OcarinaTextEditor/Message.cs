@@ -173,9 +173,9 @@ namespace OcarinaTextEditor
             TextData = "";
         }
 
-        public Message(EndianBinaryReader reader, TableRecord mesgTableRecord, ROMVer Version = ROMVer.Unknown)
+        public Message(EndianBinaryReader reader, TableRecord mesgTableRecord, bool Credits, ROMVer Version = ROMVer.Unknown)
         {
-            if (ROMInfo.IsMajoraMask(Version))
+            if (ROMInfo.IsMajoraMask(Version) && !Credits)
             {
                 MessageID = mesgTableRecord.MessageID;
 
@@ -453,9 +453,9 @@ namespace OcarinaTextEditor
             }
         }
 
-        public List<byte> ConvertTextData(ROMVer Version, bool ShowErrors = true)
+        public List<byte> ConvertTextData(ROMVer Version, bool Credits, bool ShowErrors = true)
         {
-            if (ROMInfo.IsMajoraMask(Version))
+            if (ROMInfo.IsMajoraMask(Version) && !Credits)
                 return ConvertMajoraTextData(ShowErrors);
             else
                 return ConvertTextData(ShowErrors);
