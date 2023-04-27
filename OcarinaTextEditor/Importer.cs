@@ -13,6 +13,7 @@ namespace OcarinaTextEditor
 {
     class Importer
     {
+        private List<short> lBomberMsgs;
         private ObservableCollection<Message> m_messageList;
         private MemoryStream m_inputFile;
 
@@ -27,11 +28,13 @@ namespace OcarinaTextEditor
 
             long offset = ROMInfo.ZZRPCodeFileTablePostion;
             long msgOffset = 0;
+            long mmBombersOffset = 0;
 
             if (Mode != EditorMode.ZZRPMode)
             {
                 offset = ROMInfo.GetTableOffset(ROMVersion, Credits);
                 msgOffset = ROMInfo.GetMessagesOffset(ROMVersion, Credits);
+                mmBombersOffset = ROMInfo.GetBomberNotebookOffset(ROMVersion);
             }
 
             string zzrpFolder = Path.GetDirectoryName(fileName);
@@ -47,15 +50,12 @@ namespace OcarinaTextEditor
 
                     EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
                     reader.BaseStream.Seek(offset, 0);
-
-                   
+              
                     //Read in message table records
                     while (reader.PeekReadInt16() != -1)
                     {
                         TableRecord mesRecord = new TableRecord(reader);
                         tableRecordList.Add(mesRecord);
-
-               
                     }
                 }
 
@@ -71,6 +71,29 @@ namespace OcarinaTextEditor
                         m_messageList.Add(mes);
                     }
                 }
+
+                if (ROMInfo.IsMajoraMask(ROMVersion) && mmBombersOffset != 0)
+                {
+                    using (FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+                    {
+                        lBomberMsgs = new List<short>();
+                        EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
+
+                        reader.BaseStream.Position = mmBombersOffset;
+
+                        while (true)
+                        {
+                            short MsgID = reader.ReadInt16();
+
+                            if (MsgID == 0)
+                                break;
+                            else
+                                lBomberMsgs.Add(MsgID);
+                        }
+                    }
+                }
+                else
+                    lBomberMsgs = new List<short>();
             }
             catch (IOException ex)
             {
@@ -124,6 +147,11 @@ namespace OcarinaTextEditor
         public ObservableCollection<Message> GetMessageList()
         {
             return m_messageList;
+        }
+
+        public List<short> GetBomberMsgsList()
+        {
+            return lBomberMsgs;
         }
 
         public MemoryStream GetInputFile()

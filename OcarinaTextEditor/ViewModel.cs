@@ -45,6 +45,22 @@ namespace OcarinaTextEditor
         private ObservableCollection<Message> m_messageList;
         #endregion
 
+        #region public List<short> BomberMsgsList
+        public List<short> BomberMsgsList
+        {
+            get { return bomberMessages; }
+            set
+            {
+                if (value != bomberMessages)
+                {
+                    bomberMessages = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        private List<short> bomberMessages;
+        #endregion
+
         #region CreditsMode
 
         private Boolean _CreditsMode;
@@ -300,6 +316,8 @@ namespace OcarinaTextEditor
 
                 Importer file = new Importer(openFile.FileName, Mode, Version, CreditsMode);
                 MessageList = file.GetMessageList();
+                bomberMessages = file.GetBomberMsgsList();
+
 
                 // If message list is null, we failed to open a ROM
                 if (MessageList == null)
@@ -372,6 +390,7 @@ namespace OcarinaTextEditor
 
                 Importer file = new Importer(tableEd, msgDataEd, CreditsMode);
                 MessageList = file.GetMessageList();
+                bomberMessages = file.GetBomberMsgsList();
 
                 // If message list is null, we failed to parse.
                 if (MessageList == null)
@@ -444,6 +463,7 @@ namespace OcarinaTextEditor
 
                 Importer file = new Importer(tableEd, msgDataEd, CreditsMode);
                 MessageList = file.GetMessageList();
+                bomberMessages = file.GetBomberMsgsList();
 
                 // If message list is null, we failed to parse.
                 if (MessageList == null)
@@ -488,6 +508,7 @@ namespace OcarinaTextEditor
 
                 Importer file = new Importer(openFile.FileName, Mode, Version);
                 MessageList = file.GetMessageList();
+                bomberMessages = file.GetBomberMsgsList();
 
                 // If message list is null, we failed to parse.
                 if (MessageList == null)
@@ -541,6 +562,7 @@ namespace OcarinaTextEditor
 
             Importer file = new Importer(tableFileName, messageDataFileName, CreditsMode);
             MessageList = file.GetMessageList();
+            bomberMessages = file.GetBomberMsgsList();
 
             ViewSource.Source = MessageList;
             SelectedMessage = MessageList[0];

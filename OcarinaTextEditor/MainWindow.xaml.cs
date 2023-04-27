@@ -105,7 +105,7 @@ namespace OcarinaTextEditor
             Message mes = view.SelectedMessage;
             byte[] outD = mes.ConvertTextData(view.Version, view.CreditsMode, false).ToArray();
 
-            ZeldaMessage.MessagePreviewMajora mp = new ZeldaMessage.MessagePreviewMajora(outD);
+            ZeldaMessage.MessagePreviewMajora mp = new ZeldaMessage.MessagePreviewMajora(outD, view.BomberMsgsList.Contains(mes.MessageID));
             Bitmap bmpTemp = mp.GetPreview(0, true, 1.5f);
 
             Bitmap bmp = new Bitmap(bmpTemp.Width, mp.MessageCount * bmpTemp.Height);
