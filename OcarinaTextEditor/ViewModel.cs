@@ -721,7 +721,7 @@ namespace OcarinaTextEditor
                 e.Accepted = false;
 
             //test if textbox message doesn't match our filter
-            if (src.TextData != null && !src.TextData.ToUpper().Contains(SearchFilter.ToUpper()))
+            if (src.TextData != null && (!src.TextData.ToUpper().Contains(SearchFilter.ToUpper()) && !src.MessageID.ToString("X").ToUpper().Contains(SearchFilter.ToUpper())))
                 e.Accepted = false;
 
             //test if filter matches a textbox id
