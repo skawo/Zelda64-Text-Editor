@@ -57,6 +57,44 @@ namespace Zelda64TextEditor
                 textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Copy", Command = ApplicationCommands.Copy });
                 textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Paste", Command = ApplicationCommands.Paste });
 
+                MenuItem ControlTagsMenu = new MenuItem() { Header = "Control Tags..." };
+
+                MenuItem ColorTagMenu = new MenuItem() { Header = "Color", ToolTip = "Text until the next Color tag will be of this color. The color will persist even to the next textbox." };
+
+                string[] Colors = new string[] { "Default",   $"{MajoraMsgColor.D}",    "Will appear white in most cases, but black in 'None_White' and 'Bomber Notebook'-type textboxes. Will also appear black inside the Bomber's Notebook itself.",
+                                                 "Red",       $"{MajoraMsgColor.R}",    "Appears orange in 'Wooden'-type textboxes",
+                                                 "Green",     $"{MajoraMsgColor.G}",    "Inexplicably appears blue inside Bomber's Notebook",
+                                                 "Blue",      $"{MajoraMsgColor.B}",    "",
+                                                 "Yellow",    $"{MajoraMsgColor.Y}",    "",
+                                                 "Navy",      $"{MajoraMsgColor.N}",    "",
+                                                 "Silver",    $"{MajoraMsgColor.S}",    "",
+                                                 "Orange",    $"{MajoraMsgColor.O}",    ""};
+
+                AddTagControlsToMenu(ColorTagMenu, Colors);
+                ControlTagsMenu.Items.Add(ColorTagMenu);
+
+                MenuItem ScoreTagMenu = new MenuItem() { Header = "Score", ToolTip = "Prints a player's score." };
+
+                string[] Scores = new string[] { "Required Swamp Cruise Hits",               $"{MajoraControlCode.SWAMP_CRUISE_HITS}",      "Prints the number of hits required to win the Swamp Cruise reward.",
+                                                 "Stray Fairies",                            $"{MajoraControlCode.STRAY_FAIRY_SCORE}",      "Amount of Stray Fairies collected in the current dungeon.",
+                                                 "Gold Skulltulas",                          $"{MajoraControlCode.GOLD_SKULLTULAS}",        "Amount of Gold Skulltula tokens collected in the current spider house.",
+                                               };
+
+                AddTagControlsToMenu(ScoreTagMenu, Scores);
+                ControlTagsMenu.Items.Add(ScoreTagMenu);
+
+
+                string[] GenericTag = new string[] { "Null character",                       $"{MajoraControlCode.NULL_CHAR}",            "Prints nothing, causing the text routine to print out slower.",
+
+                                                   };
+
+                AddTagControlsToMenu(ControlTagsMenu, GenericTag);
+                textBoxMsg.ContextMenu.Items.Add(ControlTagsMenu);
+
+
+
+
+
             }
             else
             {
@@ -77,17 +115,29 @@ namespace Zelda64TextEditor
                 ControlTagsMenu.Items.Add(ColorTagMenu);
 
 
-                MenuItem HighScoreTagMenu = new MenuItem() { Header = "High Score", ToolTip = "Prints one of the High Scores." };
+                MenuItem HighScoreTagMenu = new MenuItem() { Header = "High Score", ToolTip = "Prints a player's high score." };
 
-                string[] HighScores = new string[] { "Archery",                 "HIGH SCORE:ARCHERY",           "",
-                                                     "Poe Salesman Points",     "HIGH SCORE:POE_POINTS",        "",
-                                                     "Fishing",                 "HIGH SCORE:FISHING",           "",
-                                                     "Horse Race",              "HIGH SCORE:HORSE_RACE",        "",
-                                                     "Running Man's Marathon",  "HIGH SCORE:MARATHON",          "",
-                                                     "Dampe Race",              "HIGH SCORE:DAMPE_RACE",        ""};
+                string[] HighScores = new string[] { "Archery",                      $"{OcarinaControlCode.HIGH_SCORE}:ARCHERY",           "",
+                                                     "Poe Salesman Points",          $"{OcarinaControlCode.HIGH_SCORE}:POE_POINTS",        "",
+                                                     "Fish weight",                  $"{OcarinaControlCode.HIGH_SCORE}:FISHING",           "",
+                                                     "Horse race time",              $"{OcarinaControlCode.HIGH_SCORE}:HORSE_RACE",        "",
+                                                     "Running Man's marathon",       $"{OcarinaControlCode.HIGH_SCORE}:MARATHON",          "",
+                                                     "Dampe race",                   $"{OcarinaControlCode.HIGH_SCORE}:DAMPE_RACE",        ""};
 
                 AddTagControlsToMenu(HighScoreTagMenu, HighScores);
                 ControlTagsMenu.Items.Add(HighScoreTagMenu);
+
+                MenuItem ScoreTagMenu = new MenuItem() { Header = "Score", ToolTip = "Prints a player's score." };
+
+                string[] Scores = new string[] { "Running Man's time",               $"{OcarinaControlCode.MARATHON_TIME}",    "Running Man's marathon time result.",
+                                                 "Timer",                            $"{OcarinaControlCode.RACE_TIME}",        "Prints time shown on the last timer.",
+                                                 "Archery points",                   $"{OcarinaControlCode.POINTS}",           "Horseback Archery points result.",
+                                                 "Gold skulltulas",                  $"{OcarinaControlCode.GOLD_SKULLTULAS}",  "Current amount of Gold Skulltulas owned.",
+                                                 "Fish weight",                      $"{OcarinaControlCode.FISH_WEIGHT}",      "Caught fish's weight.",
+                                               };
+
+                AddTagControlsToMenu(ScoreTagMenu, Scores);
+                ControlTagsMenu.Items.Add(ScoreTagMenu);
 
                 MenuItem IconTagMenu = new MenuItem() { Header = "Icon...", ToolTip = "Draws specified icon inside the textbox." };
                 List<string> Icons = new List<string>();
@@ -95,7 +145,7 @@ namespace Zelda64TextEditor
                 foreach (var Icon in Enum.GetValues(typeof(Enums.OcarinaIcon)))
                 {
                     Icons.Add(Icon.ToString());
-                    Icons.Add($"ICON:{Icon}");
+                    Icons.Add($"{OcarinaControlCode.ICON}:{Icon}");
                     Icons.Add("");
                 }
 
@@ -105,23 +155,23 @@ namespace Zelda64TextEditor
                 MenuItem SoundEffectMenu = new MenuItem() { Header = "Sound...", ToolTip = "Plays a sound effect. Only one sound effect can be played per textbox." };
                 SoundEffectMenu.Click += SoundEffectMenu_Click;
 
-                string[] GenericTag = new string[] { "Delay",                   "DELAY:0",      "Waits for the specified number of frames until switching to the next textbox.",
-                                                     "Fade",                    "FADE:0",       "Waits for the specified number of frames until ending the textbox.",
-                                                     "Fade2",                   "FADE2:0",      "Waits for the specified number of frames until ending the textbox. The duration can be made longer than with the FADE tag.",
-                                                     "Offset",                  "SHIFT:0",      "Insert the specified number of spaces into the textbox.",
-                                                     "New textbox",             "NEW_BOX",      "Starts a new message.",
-                                                     "Jump",                    "JUMP:0",       "Jumps to the specified message ID.",
-                                                     "Player name",             "PLAYER",       "Writes out the player's name (set on the file selection screen).",
-                                                     "No skip",                 "NS",           "Disallows skipping the message box it's inserted into using the B button.",
-                                                     "Speed",                   "SPEED:0",      "Sets the amount of frames spent waiting between typing out each character.",
-                                                     "Persistent",              "PERSISTENT",   "Prevents the player from closing the textbox in any way. Used for shop descriptions.",
-                                                     "Event",                   "EVENT",        "Prevents the textbox from closing until a programmed event does so.",
-                                                     "Background",              "BACKGROUND:0", "Used to draw the failure X whenever player plays a song wrong. The variable seems to control the color.",
-                                                     "Draw instantly",          "DI",           "Prints whatever follows this tag instantly until a Draw-Per-Character tag is present.",
-                                                     "Draw per-character",      "DC",           "Prints whatever follows this tag one character at a time. This is the default typing mode.",
-                                                     "Button prompt",           "AWAIT_BUTTON", "Waits until the player presses a button.",
-                                                     "Two choices",             "TWO_CHOICES",  "Displays a prompt which lets the player choose between two choices.",
-                                                     "Three choices",           "THREE_CHOICES","Displays a prompt which lets the player choose between three choices." 
+                string[] GenericTag = new string[] { "Delay",                   $"{OcarinaControlCode.DELAY}:0",            "Waits for the specified number of frames until switching to the next textbox.",
+                                                     "Fade",                    $"{OcarinaControlCode.FADE}:0",             "Waits for the specified number of frames until ending the textbox.",
+                                                     "Fade2",                   $"{OcarinaControlCode.FADE2}:0",            "Waits for the specified number of frames until ending the textbox. The duration can be made longer than with the FADE tag.",
+                                                     "Offset",                  $"{OcarinaControlCode.SHIFT}:0",            "Insert the specified number of spaces into the textbox.",
+                                                     "New textbox",             $"{OcarinaControlCode.NEW_BOX}",            "Starts a new message.",
+                                                     "Jump",                    $"{OcarinaControlCode.JUMP}:0",             "Jumps to the specified message ID.",
+                                                     "Player name",             $"{OcarinaControlCode.PLAYER}",             "Writes out the player's name (set on the file selection screen).",
+                                                     "No skip",                 $"{OcarinaControlCode.NS}",                 "Disallows skipping the message box it's inserted into using the B button.",
+                                                     "Speed",                   $"{OcarinaControlCode.SPEED}:0",            "Sets the amount of frames spent waiting between typing out each character.",
+                                                     "Persistent",              $"{OcarinaControlCode.PERSISTENT}",         "Prevents the player from closing the textbox in any way. Used for shop descriptions.",
+                                                     "Event",                   $"{OcarinaControlCode.EVENT}",              "Prevents the textbox from closing until a programmed event does so.",
+                                                     "Background",              $"{OcarinaControlCode.BACKGROUND}:0",       "Used to draw the failure X whenever player plays a song wrong. The variable seems to control the color.",
+                                                     "Draw instantly",          $"{OcarinaControlCode.DI}",                 "Prints whatever follows this tag instantly until a Draw-Per-Character tag is present.",
+                                                     "Draw per-character",      $"{OcarinaControlCode.DC}",                 "Prints whatever follows this tag one character at a time. This is the default typing mode.",
+                                                     "Button prompt",           $"{OcarinaControlCode.AWAIT_BUTTON}",       "Waits until the player presses a button.",
+                                                     "Two choices",             $"{OcarinaControlCode.TWO_CHOICES}",        "Displays a prompt which lets the player choose between two choices.",
+                                                     "Three choices",           $"{OcarinaControlCode.THREE_CHOICES}",      "Displays a prompt which lets the player choose between three choices.", 
                                                    };
 
                 AddTagControlsToMenu(ControlTagsMenu, GenericTag);

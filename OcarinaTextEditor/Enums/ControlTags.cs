@@ -279,7 +279,7 @@ namespace Zelda64TextEditor.Enums
         COLOR_SILVER = 0x07,
         COLOR_ORANGE = 0x08,
         UNK_09 = 0x09,
-        SLOW_TEXT = 0x0A,
+        NULL_CHAR = 0x0A,
         SWAMP_CRUISE_HITS = 0x0B,
         STRAY_FAIRY_SCORE = 0x0C,
         GOLD_SKULLTULAS = 0x0D,
