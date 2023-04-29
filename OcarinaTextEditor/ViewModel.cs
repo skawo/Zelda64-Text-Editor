@@ -782,7 +782,7 @@ namespace Zelda64TextEditor
         }
         #endregion
 
-        private void InsertControlCode(string code)
+        public void InsertControlCode(string code)
         {
             SelectedMessage.TextData = SelectedMessage.TextData.Insert(TextboxPosition, string.Format("<{0}>", code));
         }

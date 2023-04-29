@@ -53,56 +53,6 @@
         </Menu>
         <DockPanel x:Name ="textBoxMsgDock" LastChildFill="True" Margin="0,241,0,10" Grid.Column="2">
             <TextBox x:Name="textBoxMsg" Margin="0,0,0,0" TextWrapping="Wrap" Text="{Binding SelectedMessage.TextData, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" SelectionChanged="TextBox_SelectionChanged">
-                <TextBox.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Cut" Command="ApplicationCommands.Cut"/>
-                        <MenuItem Header="Copy" Command="ApplicationCommands.Copy"/>
-                        <MenuItem Header="Paste" Command="ApplicationCommands.Paste"/>
-                        <Separator/>
-                        <MenuItem Header="Control Tags..." Name="ControlTagsMenu">
-                            <MenuItem Header="Color">
-                                <MenuItem Header="White" Command="{Binding OnRequestAddControl}" CommandParameter="W"/>
-                                <MenuItem Header="Red" Command="{Binding OnRequestAddControl}" CommandParameter="R"/>
-                                <MenuItem Header="Green" Command="{Binding OnRequestAddControl}" CommandParameter="G"/>
-                                <MenuItem Header="Blue" Command="{Binding OnRequestAddControl}" CommandParameter="B"/>
-                                <MenuItem Header="Cyan" Command="{Binding OnRequestAddControl}" CommandParameter="C"/>
-                                <MenuItem Header="Magenta" Command="{Binding OnRequestAddControl}" CommandParameter="M"/>
-                                <MenuItem Header="Yellow" Command="{Binding OnRequestAddControl}" CommandParameter="Y"/>
-                                <MenuItem Header="Black" Command="{Binding OnRequestAddControl}" CommandParameter="BLK"/>
-                            </MenuItem>
-                            <MenuItem Header="High Score">
-                                <MenuItem Header="Archery" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:ARCHERY"/>
-                                <MenuItem Header="Poe Salesman Points" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:POE_POINTS"/>
-                                <MenuItem Header="Fishing" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:FISHING"/>
-                                <MenuItem Header="Horse Race" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:HORSE_RACE"/>
-                                <MenuItem Header="Running Man's Marathon" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:MARATHON"/>
-                                <MenuItem Header="Dampe Race" Command="{Binding OnRequestAddControl}" CommandParameter="HIGH SCORE:DAMPE_RACE"/>
-                            </MenuItem>
-                            <MenuItem Header="Button prompt" Command="{Binding OnRequestAddControl}" CommandParameter="AWAIT_BUTTON"/>
-                            <MenuItem Header="Sound effect" Command="{Binding OnRequestOpenSFXesMenu}"/>
-                            <MenuItem Header="Delay" Command="{Binding OnRequestAddControl}" CommandParameter="DELAY:0"/>
-                            <MenuItem Header="Fade" Command="{Binding OnRequestAddControl}" CommandParameter="FADE:0"/>
-                            <MenuItem Header="Fade2" Command="{Binding OnRequestAddControl}" CommandParameter="FADE2:0"/>
-                            <MenuItem Header="Pixel offset" Command="{Binding OnRequestAddControl}" CommandParameter="PIXELS RIGHT:0"/>
-                            <MenuItem Header="New Textbox" Command="{Binding OnRequestAddControl}" CommandParameter="NEW BOX"/>
-                            <MenuItem Header="Player name" Command="{Binding OnRequestAddControl}" CommandParameter="PLAYER"/>
-                            <MenuItem Header="No Skip" Command="{Binding OnRequestAddControl}" CommandParameter="NS"/>
-
-                            <MenuItem Header="Icon" Name="IconHeader">
-
-                            </MenuItem>
-
-                            <MenuItem Header="Speed" Command="{Binding OnRequestAddControl}" CommandParameter="SPEED:0"/>
-                            <MenuItem Header="Persistent" Command="{Binding OnRequestAddControl}" CommandParameter="PERSISTENT"/>
-                            <Separator/>
-                            <MenuItem Header="Draw instantly" Command="{Binding OnRequestAddControl}" CommandParameter="DI"/>
-                            <MenuItem Header="Draw per-character" Command="{Binding OnRequestAddControl}" CommandParameter="DC"/>
-                            <Separator/>
-                            <MenuItem Header="Two Choices" Command="{Binding OnRequestAddControl}" CommandParameter="Two Choices"/>
-                            <MenuItem Header="Three Choices" Command="{Binding OnRequestAddControl}" CommandParameter="Three Choices"/>
-                        </MenuItem>
-                    </ContextMenu>
-                </TextBox.ContextMenu>
             </TextBox>
         </DockPanel>
         <DockPanel x:Name ="DockTextBoxOptions" Height="215" LastChildFill="True" Margin="4,21,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.ColumnSpan="2">
