@@ -80,7 +80,16 @@ namespace Zelda64TextEditor
                 ControlTagsMenu.Items.Add(ScoreTagMenu);
 
 
-                string[] GenericTag = new string[] { "Null character",                       $"{MajoraControlCode.NULL_CHAR}",            "Prints nothing, causing the text routine to print out slower.",
+                string[] GenericTag = new string[] { "Null character",                       $"{MajoraControlCode.NULL_CHAR}",              "Prints nothing, causing the text routine to print out slower.",
+                                                     "New textbox",                          $"{MajoraControlCode.NEW_BOX}",                "Starts a new message.",
+                                                     "New textbox and center",               $"{MajoraControlCode.NEW_BOX_INCOMPL}",        "Starts a new message and ignores any extraneous linebreaks if the message has less than 4 lines",
+                                                     "Reset cursor",                         $"{MajoraControlCode.RESET_CURSOR}",           "Used as a filler when there are fewer than four lines of text.",
+                                                     "Offset",                               $"{MajoraControlCode.SHIFT}:0",                "Insert the specified number of spaces into the textbox.",
+                                                     "No skip",                              $"{MajoraControlCode.NOSKIP}",                 "Disallows skipping the message box it's inserted into using the B button.",
+                                                     "No skip with sound",                   $"{MajoraControlCode.NOSKIP_SOUND}",           "Disallows skipping the message box it's inserted into using the B button, and plays the 'sound finished' sound at the end.",
+                                                     "Player name",                          $"{MajoraControlCode.PLAYER}",                 "Writes out the player's name (set on the file selection screen).",
+                                                     "Draw instantly",                       $"{MajoraControlCode.DI}",                     "Prints whatever follows this tag instantly until a Draw-Per-Character tag is present.",
+                                                     "Draw per-character",                   $"{MajoraControlCode.DC}",                     "Prints whatever follows this tag one character at a time. This is the default typing mode.",
 
                                                    };
 
