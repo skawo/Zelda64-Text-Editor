@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32802.440
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcarinaTextEditor", "OcarinaTextEditor\OcarinaTextEditor.csproj", "{B99C42F1-67D0-4ED7-BA66-E0C5A4E23C5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zelda64TextEditor", "OcarinaTextEditor\Zelda64TextEditor.csproj", "{B99C42F1-67D0-4ED7-BA66-E0C5A4E23C5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +18,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6F0F68BC-F165-4C72-BF59-F1D919789F9D}
 	EndGlobalSection
 EndGlobal

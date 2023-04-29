@@ -5,12 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OcarinaTextEditor;
-using OcarinaTextEditor.Enums;
+using Zelda64TextEditor;
+using Zelda64TextEditor.Enums;
 using GameFormatReader.Common;
 using System.Windows;
 
-namespace OcarinaTextEditor
+namespace Zelda64TextEditor
 {
     class Exporter
     {

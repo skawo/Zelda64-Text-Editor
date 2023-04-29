@@ -1,4 +1,4 @@
-﻿using OcarinaTextEditor;
+﻿using Zelda64TextEditor;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,11 +11,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Data;
-using OcarinaTextEditor.Enums;
+using Zelda64TextEditor.Enums;
 using System.IO;
 using GameFormatReader.Common;
 
-namespace OcarinaTextEditor
+namespace Zelda64TextEditor
 {
     public class ViewModel : INotifyPropertyChanged
     {
@@ -133,7 +133,7 @@ namespace OcarinaTextEditor
                 }
             }
         }
-        private string m_windowTitle = "Ocarina of Time Text Editor";
+        private string m_windowTitle = "Zelda 64 Text Editor";
         #endregion
 
         #region public CollectionViewSource ViewSource
@@ -172,7 +172,7 @@ namespace OcarinaTextEditor
         private string m_searchFilter;
         #endregion
 
-        public Dictionary<ControlCode, string> m_controlCodes;
+        public Dictionary<OcarinaControlCode, string> m_controlCodes;
 
         public ROMVer Version = ROMVer.Unknown;
 
@@ -331,7 +331,7 @@ namespace OcarinaTextEditor
                 ViewSource.Source = MessageList;
                 SelectedMessage = MessageList[0];
 
-                WindowTitle = string.Format("{0} - Ocarina of Time Text Editor", openFile.FileName);
+                WindowTitle = string.Format("{0} - Zelda 64 Text Editor", openFile.FileName);
 
             }
         }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace OcarinaTextEditor.Converters
+namespace Zelda64TextEditor.Converters
 {
     /// <summary>
     /// Null-to-Bool converter. If an object is null, Convert returns false.

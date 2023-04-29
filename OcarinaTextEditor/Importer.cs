@@ -6,10 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using GameFormatReader.Common;
 using System.IO;
-using OcarinaTextEditor.Enums;
+using Zelda64TextEditor.Enums;
 using System.Windows;
 
-namespace OcarinaTextEditor
+namespace Zelda64TextEditor
 {
     class Importer
     {

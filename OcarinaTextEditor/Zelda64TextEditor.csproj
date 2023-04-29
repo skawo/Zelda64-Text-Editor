@@ -7,12 +7,13 @@
     <ProjectGuid>{B99C42F1-67D0-4ED7-BA66-E0C5A4E23C5C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OcarinaTextEditor</RootNamespace>
-    <AssemblyName>Ocarina Text Editor</AssemblyName>
+    <RootNamespace>Zelda64TextEditor</RootNamespace>
+    <AssemblyName>Zelda64 Text Editor</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -25,7 +26,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -49,8 +49,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\Ocarina_of_Time_Icon.ico</ApplicationIcon>
+    <ApplicationIcon>z64text.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="EndianBinaryStreams, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -106,7 +107,7 @@
     <Compile Include="Converters\BoolVisibilityConverter.cs" />
     <Compile Include="Converters\NullToFalseConverter.cs" />
     <Compile Include="Dicts.cs" />
-    <Compile Include="Enums\ControlCode.cs" />
+    <Compile Include="Enums\OcarinaControlCode.cs" />
     <Compile Include="Enums\EditorMode.cs" />
     <Compile Include="Enums\ExportType.cs" />
     <Compile Include="Enums\HighScore.cs" />
@@ -188,7 +189,8 @@
     <Content Include="lib\EndianBinaryStreams.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="Resources\Ocarina_of_Time_Icon.ico" />
+    <Resource Include="z64text.ico" />
+    <Resource Include="Resources\z64text.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

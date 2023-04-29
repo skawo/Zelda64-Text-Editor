@@ -1,10 +1,10 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="OcarinaTextEditor.MainWindow"
-        xmlns:local="clr-namespace:OcarinaTextEditor"
-        xmlns:converters="clr-namespace:OcarinaTextEditor.Converters"
-        Title="{Binding WindowTitle}" Height="634" Width="1137" Icon="Resources/Ocarina_of_Time_Icon.ico">
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="Zelda64TextEditor.MainWindow"
+        xmlns:local="clr-namespace:Zelda64TextEditor"
+        xmlns:converters="clr-namespace:Zelda64TextEditor.Converters"
+        Title="{Binding WindowTitle}" Height="634" Width="1137" Icon="Resources/z64text.ico">
     <Window.DataContext>
         <local:ViewModel/>
     </Window.DataContext>

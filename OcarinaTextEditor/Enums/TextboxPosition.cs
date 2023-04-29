@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OcarinaTextEditor.Enums
+namespace Zelda64TextEditor.Enums
 {
     public enum TextboxPosition
     {

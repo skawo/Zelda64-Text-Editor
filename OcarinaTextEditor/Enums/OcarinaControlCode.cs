@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace OcarinaTextEditor.Enums
+namespace Zelda64TextEditor.Enums
 {
-    public enum MsgColor
+    public enum OcarinaMsgColor
     {
         W = 0x40,
         R = 0x41,
@@ -19,7 +19,7 @@ namespace OcarinaTextEditor.Enums
         BLK = 0x47
     }
 
-    public enum ControlCode
+    public enum OcarinaControlCode
     {
         LINE_BREAK = 0x01,
         END = 0x02,
@@ -100,7 +100,7 @@ namespace OcarinaTextEditor.Enums
         D_PAD = 0xAB
     }
 
-    public enum MsgColorMajora
+    public enum MajoraMsgColor
     {
         D = 0x00,
         R = 0x01,
@@ -113,7 +113,7 @@ namespace OcarinaTextEditor.Enums
         O = 0x08,
     }
 
-    public enum MajoraIcons
+    public enum MajoraIcon
     {
         GREEN_RUPEE = 1,
         BLUE_RUPEE = 2,
@@ -415,7 +415,7 @@ namespace OcarinaTextEditor.Enums
         D_PAD = 0xBC
     }
 
-    public enum MsgHighScore
+    public enum OcarinaHighScore
     {
         ARCHERY = 0x00,
         POE_POINTS = 0x01,
@@ -426,7 +426,7 @@ namespace OcarinaTextEditor.Enums
         DAMPE_RACE = 0x06
     }
 
-    public enum MsgIcon
+    public enum OcarinaIcon
     {
         DEKU_STICK,
         DEKU_NUT,

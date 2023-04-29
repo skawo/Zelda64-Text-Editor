@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace OcarinaTextEditor
+namespace Zelda64TextEditor
 {
     /// <summary>
     /// Implements the ICommand interface

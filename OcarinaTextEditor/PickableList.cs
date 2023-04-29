@@ -242,7 +242,7 @@ namespace NPC_Maker
                     Out = String.Concat(Out, Entry.ID.ToString(), ",", Entry.Name, ",", Entry.Description, Environment.NewLine);
 
                 File.WriteAllText(FileName, Out);
-                OcarinaTextEditor.Dicts.ReloadDict(FileName, ref OcarinaTextEditor.Dicts.SFXes);
+                Zelda64TextEditor.Dicts.ReloadDict(FileName, ref Zelda64TextEditor.Dicts.SFXes);
             }
             catch (Exception ex)
             {

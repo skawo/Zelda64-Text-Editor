@@ -1,12 +1,12 @@
 ﻿using GameFormatReader.Common;
-using OcarinaTextEditor.Enums;
+using Zelda64TextEditor.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OcarinaTextEditor
+namespace Zelda64TextEditor
 {
     public class TableRecord
     {

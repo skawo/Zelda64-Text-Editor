@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OcarinaTextEditor
+namespace Zelda64TextEditor
 {
     public static class Dicts
     {

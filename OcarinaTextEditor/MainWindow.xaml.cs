@@ -14,9 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using OcarinaTextEditor.Enums;
+using Zelda64TextEditor.Enums;
 
-namespace OcarinaTextEditor
+namespace Zelda64TextEditor
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -31,12 +31,12 @@ namespace OcarinaTextEditor
 
             BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
             BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>().Where(x => x <= TextboxPosition.Bottom);
-            MajoraIconCombo.ItemsSource = Enum.GetValues(typeof(MajoraIcons)).Cast<MajoraIcons>().OrderByDescending(x => x);
+            MajoraIconCombo.ItemsSource = Enum.GetValues(typeof(MajoraIcon)).Cast<MajoraIcon>().OrderByDescending(x => x);
 
             DockTextBoxOptions.Height = 95;
             textBoxMsgDock.Margin = new Thickness(0, 118, 0, 10);
 
-            foreach (var Icon in Enum.GetValues(typeof(Enums.MsgIcon)))
+            foreach (var Icon in Enum.GetValues(typeof(Enums.OcarinaIcon)))
             {
                 var Item = new MenuItem();
                 Item.Header = Icon.ToString();
@@ -204,7 +204,7 @@ namespace OcarinaTextEditor
                     }
 
                     BoxTypeCombo.SelectedItem = view.SelectedMessage.MajoraBoxType;
-                    MajoraIconCombo.SelectedItem = (MajoraIcons)view.SelectedMessage.MajoraIcon;
+                    MajoraIconCombo.SelectedItem = (MajoraIcon)view.SelectedMessage.MajoraIcon;
 
                     MajoraJumpToTextBox.TextChanged -= MajoraJumpToTextBox_TextChanged;
                     MajoraFirstPriceTextBox.TextChanged -= MajoraFirstPriceTextBox_TextChanged;
@@ -242,7 +242,7 @@ namespace OcarinaTextEditor
         {
             ViewModel view = (ViewModel)DataContext;
 
-            view.SelectedMessage.MajoraIcon = (byte)(MajoraIcons)MajoraIconCombo.SelectedItem;
+            view.SelectedMessage.MajoraIcon = (byte)(MajoraIcon)MajoraIconCombo.SelectedItem;
             TextBoxMsg_TextChanged(null, null);
         }
 

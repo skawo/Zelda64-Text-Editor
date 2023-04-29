@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GameFormatReader.Common;
 
-namespace OcarinaTextEditor
+namespace Zelda64TextEditor
 {
     public static class ExtensionMethods
     {

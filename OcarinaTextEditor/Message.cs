@@ -5,10 +5,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using OcarinaTextEditor.Enums;
+using Zelda64TextEditor.Enums;
 using GameFormatReader.Common;
 
-namespace OcarinaTextEditor
+namespace Zelda64TextEditor
 {
     public class Message : INotifyPropertyChanged
     {
@@ -263,15 +263,15 @@ namespace OcarinaTextEditor
 
             byte testByte = reader.ReadByte();
 
-            while (testByte != (byte)ControlCode.END)
+            while (testByte != (byte)OcarinaControlCode.END)
             {
                 bool readControlCode = false;
 
                 if (testByte < 0x7F || testByte > 0x9E)
                 {
-                    if (Enum.IsDefined(typeof(ControlCode), (int)testByte))
+                    if (Enum.IsDefined(typeof(OcarinaControlCode), (int)testByte))
                     {
-                        charData.AddRange(GetControlCode((ControlCode)testByte, reader));
+                        charData.AddRange(GetControlCode((OcarinaControlCode)testByte, reader));
                         readControlCode = true;
                     }
                 }
@@ -289,7 +289,7 @@ namespace OcarinaTextEditor
                     }    
                     else if (testByte >= 0x80 && testByte <= 0x9E)
                     { 
-                       charData.Add(Enum.GetName(typeof(ControlCode), testByte).First());
+                       charData.Add(Enum.GetName(typeof(OcarinaControlCode), testByte).First());
                     }
                 }
 
@@ -302,73 +302,73 @@ namespace OcarinaTextEditor
             TextData = new String(charData.ToArray());
         }
 
-        private char[] GetControlCode(ControlCode code, EndianBinaryReader reader)
+        private char[] GetControlCode(OcarinaControlCode code, EndianBinaryReader reader)
         {
             List<char> codeBank = new List<char>();
             string codeInsides = "";
 
             switch (code)
             {
-                case ControlCode.COLOR:
-                    MsgColor col = (MsgColor)reader.ReadByte();
+                case OcarinaControlCode.COLOR:
+                    OcarinaMsgColor col = (OcarinaMsgColor)reader.ReadByte();
                     codeInsides = col.ToString();
                     break;
-                case ControlCode.ICON:
+                case OcarinaControlCode.ICON:
                     int iconID = (int)reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", ControlCode.ICON.ToString(), Enum.IsDefined(typeof(MsgIcon), iconID) ? ((MsgIcon)iconID).ToString() : iconID.ToString());
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.ICON.ToString(), Enum.IsDefined(typeof(OcarinaIcon), iconID) ? ((OcarinaIcon)iconID).ToString() : iconID.ToString());
                     break;
-                case ControlCode.LINE_BREAK:
+                case OcarinaControlCode.LINE_BREAK:
                     return "\n".ToCharArray();
-                case ControlCode.SHIFT:
+                case OcarinaControlCode.SHIFT:
                     byte numSpaces = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", ControlCode.SHIFT.ToString(), numSpaces);
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SHIFT.ToString(), numSpaces);
                     break;
-                case ControlCode.DELAY:
+                case OcarinaControlCode.DELAY:
                     byte numFrames = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", ControlCode.DELAY.ToString(), numFrames);
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.DELAY.ToString(), numFrames);
                     break;
-                case ControlCode.FADE:
+                case OcarinaControlCode.FADE:
                     byte numFramesFade = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", ControlCode.FADE.ToString(), numFramesFade);
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.FADE.ToString(), numFramesFade);
                     break;
-                case ControlCode.FADE2:
+                case OcarinaControlCode.FADE2:
                     short numFramesFade2 = reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1}", ControlCode.FADE2.ToString(), numFramesFade2);
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.FADE2.ToString(), numFramesFade2);
                     break;
-                case ControlCode.SOUND:
+                case OcarinaControlCode.SOUND:
                     short soundID = reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1}", ControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : soundID.ToString());
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : soundID.ToString());
                     break;
-                case ControlCode.SPEED:
+                case OcarinaControlCode.SPEED:
                     byte speed = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", ControlCode.SPEED.ToString(), speed);
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SPEED.ToString(), speed);
                     break;
-                case ControlCode.HIGH_SCORE:
+                case OcarinaControlCode.HIGH_SCORE:
                     int scoreID = (int)reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", ControlCode.HIGH_SCORE.ToString().Replace("_", " "), Enum.IsDefined(typeof(HighScore), scoreID) ? ((HighScore)scoreID).ToString() : scoreID.ToString());
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.HIGH_SCORE.ToString().Replace("_", " "), Enum.IsDefined(typeof(HighScore), scoreID) ? ((HighScore)scoreID).ToString() : scoreID.ToString());
                     break;
-                case ControlCode.JUMP:
+                case OcarinaControlCode.JUMP:
                     short msgID = reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1:X4}", ControlCode.JUMP.ToString(), msgID);
+                    codeInsides = string.Format("{0}:{1:X4}", OcarinaControlCode.JUMP.ToString(), msgID);
                     break;
-                case ControlCode.NEW_BOX:
-                    return ($"{Environment.NewLine}<{ControlCode.NEW_BOX.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
-                case ControlCode.NS:
-                    codeInsides = ControlCode.NS.ToString();
+                case OcarinaControlCode.NEW_BOX:
+                    return ($"{Environment.NewLine}<{OcarinaControlCode.NEW_BOX.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
+                case OcarinaControlCode.NS:
+                    codeInsides = OcarinaControlCode.NS.ToString();
                     break;
-                case ControlCode.DI:
-                    codeInsides = ControlCode.DI.ToString();
+                case OcarinaControlCode.DI:
+                    codeInsides = OcarinaControlCode.DI.ToString();
                     break;
-                case ControlCode.DC:
-                    codeInsides = ControlCode.DC.ToString();
+                case OcarinaControlCode.DC:
+                    codeInsides = OcarinaControlCode.DC.ToString();
                     break;
-                case ControlCode.BACKGROUND:
+                case OcarinaControlCode.BACKGROUND:
                     int backgroundID;
                     byte id1 = reader.ReadByte();
                     byte id2 = reader.ReadByte();
                     byte id3 = reader.ReadByte();
                     backgroundID = BitConverter.ToInt32(new byte[] { id3, id2, id1, 0 }, 0 );
-                    codeInsides = string.Format("{0}:{1}", ControlCode.BACKGROUND.ToString(), backgroundID);
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.BACKGROUND.ToString(), backgroundID);
                     break;
 
                 default:
@@ -397,7 +397,7 @@ namespace OcarinaTextEditor
                 case MajoraControlCode.COLOR_PINK:
                 case MajoraControlCode.COLOR_SILVER:
                 case MajoraControlCode.COLOR_ORANGE:
-                    codeInsides = string.Format("{0}", ((MsgColorMajora)code).ToString());
+                    codeInsides = string.Format("{0}", ((MajoraMsgColor)code).ToString());
                     break;
                 case MajoraControlCode.SHIFT:
                     byte numSpaces = reader.ReadByte();
@@ -418,7 +418,7 @@ namespace OcarinaTextEditor
                     break;
                 case MajoraControlCode.SOUND:
                     short soundID = reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1}", ControlCode.SOUND.ToString(), soundID.ToString());
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SOUND.ToString(), soundID.ToString());
                     break;
                 default:
                     codeInsides = code.ToString().Replace("_", " ");
@@ -578,14 +578,14 @@ namespace OcarinaTextEditor
                 // Not a control code, copy char to output buffer
                 if (TextData[i] != '<' && TextData[i] != '>')
                 {
-                    if (Enum.IsDefined(typeof(ControlCode), TextData[i].ToString()))
+                    if (Enum.IsDefined(typeof(OcarinaControlCode), TextData[i].ToString()))
                     {
-                        ControlCode Result;
+                        OcarinaControlCode Result;
                         Enum.TryParse(TextData[i].ToString(), out Result);
                         data.Add((byte)Result);
                     }
                     else if (TextData[i] == '\n')
-                        data.Add((byte)ControlCode.LINE_BREAK);
+                        data.Add((byte)OcarinaControlCode.LINE_BREAK);
                     else if (TextData[i] == '\r')
                     {
                         // Do nothing
@@ -621,7 +621,7 @@ namespace OcarinaTextEditor
                     string parsedCode = new string(controlCode.ToArray());
                     string parsedFixed = parsedCode.Split(':')[0].Replace(" ", "_").ToUpper();
 
-                    if (parsedFixed == ControlCode.NEW_BOX.ToString() || parsedFixed == ControlCode.DELAY.ToString())
+                    if (parsedFixed == OcarinaControlCode.NEW_BOX.ToString() || parsedFixed == OcarinaControlCode.DELAY.ToString())
                     {
                         if (data.Count != 0)
                             if (data[data.Count - 1] == 0x01)
@@ -647,7 +647,7 @@ namespace OcarinaTextEditor
                 }
             }
 
-            data.Add((byte)ControlCode.END);
+            data.Add((byte)OcarinaControlCode.END);
 
             if (ShowErrors && errors.Count != 0)
                 System.Windows.Forms.MessageBox.Show($"Errors parsing message {MessageID}: " + Environment.NewLine + String.Join(Environment.NewLine, errors.ToArray()));
@@ -697,8 +697,8 @@ namespace OcarinaTextEditor
                         }
                     default:
                         {
-                            if (Enum.IsDefined(typeof(MsgColorMajora), code[0]))
-                                output.Add((byte)(int)Enum.Parse(typeof(MsgColorMajora), code[0]));
+                            if (Enum.IsDefined(typeof(MajoraMsgColor), code[0]))
+                                output.Add((byte)(int)Enum.Parse(typeof(MajoraMsgColor), code[0]));
                             else if (Enum.IsDefined(typeof(MajoraControlCode), code[0]))
                                 output.Add((byte)(int)Enum.Parse(typeof(MajoraControlCode), code[0]));
                             else
@@ -728,13 +728,13 @@ namespace OcarinaTextEditor
                 {
                     case "PIXELS_RIGHT":
                         {
-                            output.Add((byte)ControlCode.SHIFT);
+                            output.Add((byte)OcarinaControlCode.SHIFT);
                             output.Add(Convert.ToByte(code[1]));
                             break;
                         }
                     case "JUMP":
                         {
-                            output.Add((byte)ControlCode.JUMP);
+                            output.Add((byte)OcarinaControlCode.JUMP);
                             byte[] jumpIDBytes = BitConverter.GetBytes(short.Parse(code[1], System.Globalization.NumberStyles.HexNumber));
                             output.Add(jumpIDBytes[1]);
                             output.Add(jumpIDBytes[0]);
@@ -745,13 +745,13 @@ namespace OcarinaTextEditor
                     case "SHIFT":
                     case "SPEED":
                         {
-                            output.Add((byte)(int)Enum.Parse(typeof(ControlCode), code[0]));
+                            output.Add((byte)(int)Enum.Parse(typeof(OcarinaControlCode), code[0]));
                             output.Add(Convert.ToByte(code[1]));
                             break;
                         }
                     case "FADE2":
                         {
-                            output.Add((byte)(int)Enum.Parse(typeof(ControlCode), code[0]));
+                            output.Add((byte)(int)Enum.Parse(typeof(OcarinaControlCode), code[0]));
                             byte[] fadeAmountBytes = BitConverter.GetBytes(Convert.ToInt16(code[1]));
                             output.Add(fadeAmountBytes[1]);
                             output.Add(fadeAmountBytes[0]);
@@ -759,13 +759,13 @@ namespace OcarinaTextEditor
                         }
                     case "ICON":
                         {
-                            output.Add((byte)(int)Enum.Parse(typeof(ControlCode), code[0]));
-                            output.Add((byte)(int)Enum.Parse(typeof(MsgIcon), code[1]));
+                            output.Add((byte)(int)Enum.Parse(typeof(OcarinaControlCode), code[0]));
+                            output.Add((byte)(int)Enum.Parse(typeof(OcarinaIcon), code[1]));
                             break;
                         }
                     case "BACKGROUND":
                         {
-                            output.Add((byte)ControlCode.BACKGROUND);
+                            output.Add((byte)OcarinaControlCode.BACKGROUND);
                             byte[] backgroundIDBytes = BitConverter.GetBytes(Convert.ToInt32(code[1]));
                             output.Add(backgroundIDBytes[2]);
                             output.Add(backgroundIDBytes[1]);
@@ -774,13 +774,13 @@ namespace OcarinaTextEditor
                         }
                     case "HIGH_SCORE":
                         {
-                            output.Add((byte)ControlCode.HIGH_SCORE);
-                            output.Add((byte)(int)Enum.Parse(typeof(MsgHighScore), code[1]));
+                            output.Add((byte)OcarinaControlCode.HIGH_SCORE);
+                            output.Add((byte)(int)Enum.Parse(typeof(OcarinaHighScore), code[1]));
                             break;
                         }
                     case "SOUND":
                         {
-                            output.Add((byte)ControlCode.SOUND);
+                            output.Add((byte)OcarinaControlCode.SOUND);
                             short soundValue = 0;
 
                             if (Dicts.SFXes.ContainsKey(code[1]))
@@ -806,13 +806,13 @@ namespace OcarinaTextEditor
                         }
                     default:
                         {
-                            if (Enum.IsDefined(typeof(MsgColor), code[0]))
+                            if (Enum.IsDefined(typeof(OcarinaMsgColor), code[0]))
                             {
-                                output.Add((byte)ControlCode.COLOR);
-                                output.Add((byte)(int)Enum.Parse(typeof(MsgColor), code[0]));
+                                output.Add((byte)OcarinaControlCode.COLOR);
+                                output.Add((byte)(int)Enum.Parse(typeof(OcarinaMsgColor), code[0]));
                             }
-                            else if (Enum.IsDefined(typeof(ControlCode), code[0]))
-                                output.Add((byte)(int)Enum.Parse(typeof(ControlCode), code[0]));
+                            else if (Enum.IsDefined(typeof(OcarinaControlCode), code[0]))
+                                output.Add((byte)(int)Enum.Parse(typeof(OcarinaControlCode), code[0]));
                             else
                                 errors.Add($"{code[0]} is not a valid control code.");
 
