@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Zelda64TextEditor.Enums
 {
-    public enum TextboxType
+    public enum OcarinaTextboxType
     {
         Black,
         Wooden,

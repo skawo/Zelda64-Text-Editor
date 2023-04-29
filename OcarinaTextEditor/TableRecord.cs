@@ -11,7 +11,7 @@ namespace Zelda64TextEditor
     public class TableRecord
     {
         public short MessageID { get; set; }
-        public TextboxType BoxType { get; set; }
+        public OcarinaTextboxType BoxType { get; set; }
         public TextboxPosition BoxPosition { get; set; }
 
         public uint Offset
@@ -27,7 +27,7 @@ namespace Zelda64TextEditor
 
             byte typePosField = reader.ReadByte();
 
-            BoxType = (TextboxType)((typePosField & 0xF0) >> 4);
+            BoxType = (OcarinaTextboxType)((typePosField & 0xF0) >> 4);
             BoxPosition = (TextboxPosition)(typePosField & 0x0F);
 
             reader.SkipByte();

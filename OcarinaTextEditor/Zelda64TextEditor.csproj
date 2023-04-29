@@ -112,14 +112,12 @@
     <Compile Include="Converters\BoolVisibilityConverter.cs" />
     <Compile Include="Converters\NullToFalseConverter.cs" />
     <Compile Include="Dicts.cs" />
-    <Compile Include="Enums\OcarinaControlCode.cs" />
+    <Compile Include="Enums\ControlTags.cs" />
     <Compile Include="Enums\EditorMode.cs" />
     <Compile Include="Enums\ExportType.cs" />
-    <Compile Include="Enums\HighScore.cs" />
     <Compile Include="Enums\ROMData.cs" />
-    <Compile Include="Enums\SoundType.cs" />
     <Compile Include="Enums\TextboxPosition.cs" />
-    <Compile Include="Enums\TextboxType.cs" />
+    <Compile Include="Enums\OcarinaTextboxType.cs" />
     <Compile Include="Exporter.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Importer.cs" />
@@ -183,7 +181,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="SFX.csv">
+    <None Include="SFX_Ocarina.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -210,6 +208,11 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SFX_Majora.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -161,7 +161,6 @@
             this.Controls.Add(this.Btn_OK);
             this.Controls.Add(this.Btn_Search);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "PickableList";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.PickableList_FormClosed);

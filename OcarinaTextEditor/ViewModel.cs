@@ -88,6 +88,11 @@ namespace Zelda64TextEditor
                 NotifyPropertyChanged("IsSaveAvailable");
                 NotifyPropertyChanged("IsSaveAsEnabled");
                 NotifyPropertyChanged("MajoraMaskMode");
+
+                if (MajoraMaskMode)
+                    Dicts.ReloadDict(Dicts.MMSFXesFilename, ref Dicts.SFXes);
+                else
+                    Dicts.ReloadDict(Dicts.OoTSFXesFilename, ref Dicts.SFXes);
             }
         }
 
@@ -799,7 +804,7 @@ namespace Zelda64TextEditor
 
         private void PerformOnRequestOpenSFXesMenu(object commandParameter)
         {
-            NPC_Maker.PickableList SFX = new NPC_Maker.PickableList(Dicts.SFXesFilename, true);
+            NPC_Maker.PickableList SFX = new NPC_Maker.PickableList(MajoraMaskMode ? Dicts.MMSFXesFilename : Dicts.OoTSFXesFilename, true);
             System.Windows.Forms.DialogResult DR = SFX.ShowDialog();
 
             if (DR == System.Windows.Forms.DialogResult.OK)

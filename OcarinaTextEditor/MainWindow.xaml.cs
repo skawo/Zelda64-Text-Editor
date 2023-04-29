@@ -29,7 +29,7 @@ namespace Zelda64TextEditor
         {
             InitializeComponent();
 
-            BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
+            BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(OcarinaTextboxType)).Cast<OcarinaTextboxType>();
             BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>().Where(x => x <= TextboxPosition.Bottom);
             MajoraIconCombo.ItemsSource = Enum.GetValues(typeof(MajoraIcon)).Cast<MajoraIcon>().OrderByDescending(x => x);
 
@@ -88,7 +88,7 @@ namespace Zelda64TextEditor
             if (view.MajoraMaskMode)
                 view.SelectedMessage.MajoraBoxType = (MajoraTextboxType)BoxTypeCombo.SelectedItem;
             else
-                view.SelectedMessage.BoxType = (TextboxType)BoxTypeCombo.SelectedItem;
+                view.SelectedMessage.BoxType = (OcarinaTextboxType)BoxTypeCombo.SelectedItem;
 
             textBoxMsg.TextChanged -= TextBoxMsg_TextChanged;
             BoxTypeCombo.SelectionChanged -= BoxTypeCombo_SelectionChanged;
@@ -134,7 +134,7 @@ namespace Zelda64TextEditor
         {
             ViewModel view = (ViewModel)DataContext;
 
-            Message mes = new Message(textBoxMsg.Text, (TextboxType)BoxTypeCombo.SelectedIndex);
+            Message mes = new Message(textBoxMsg.Text, (OcarinaTextboxType)BoxTypeCombo.SelectedIndex);
             byte[] outD = mes.ConvertTextData(view.Version, view.CreditsMode, false).ToArray();
 
             ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
@@ -230,7 +230,7 @@ namespace Zelda64TextEditor
                     if (IsMajoraMode)
                     {
                         IsMajoraMode = false;
-                        BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
+                        BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(OcarinaTextboxType)).Cast<OcarinaTextboxType>();
                         BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>().Where(x => x <= TextboxPosition.Bottom);
                         DockTextBoxOptions.Height = 95;
                         textBoxMsgDock.Margin = new Thickness(0, 118, 0, 10);

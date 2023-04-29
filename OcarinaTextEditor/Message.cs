@@ -39,7 +39,7 @@ namespace Zelda64TextEditor
         #endregion
 
         #region public TextboxType BoxType
-        public TextboxType BoxType
+        public OcarinaTextboxType BoxType
         {
             get { return m_boxType; }
             set
@@ -51,7 +51,7 @@ namespace Zelda64TextEditor
                 }
             }
         }
-        private TextboxType m_boxType;
+        private OcarinaTextboxType m_boxType;
         #endregion
 
         #region public TextboxPosition BoxPosition
@@ -200,7 +200,7 @@ namespace Zelda64TextEditor
             }
         }
 
-        public Message(string Message, TextboxType t)
+        public Message(string Message, OcarinaTextboxType t)
         {
             TextData = Message;
             BoxType = t;
@@ -345,7 +345,7 @@ namespace Zelda64TextEditor
                     break;
                 case OcarinaControlCode.HIGH_SCORE:
                     int scoreID = (int)reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.HIGH_SCORE.ToString().Replace("_", " "), Enum.IsDefined(typeof(HighScore), scoreID) ? ((HighScore)scoreID).ToString() : scoreID.ToString());
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.HIGH_SCORE.ToString().Replace("_", " "), Enum.IsDefined(typeof(OcarinaHighScore), scoreID) ? ((OcarinaHighScore)scoreID).ToString() : scoreID.ToString());
                     break;
                 case OcarinaControlCode.JUMP:
                     short msgID = reader.ReadInt16();
@@ -418,7 +418,7 @@ namespace Zelda64TextEditor
                     break;
                 case MajoraControlCode.SOUND:
                     short soundID = reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SOUND.ToString(), soundID.ToString());
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : soundID.ToString());
                     break;
                 default:
                     codeInsides = code.ToString().Replace("_", " ");
@@ -688,7 +688,23 @@ namespace Zelda64TextEditor
                     case "SOUND":
                         {
                             output.Add((byte)MajoraControlCode.SOUND);
-                            short soundValue = Convert.ToInt16(code[1]);
+                            UInt16 soundValue = 0;
+
+                            if (Dicts.SFXes.ContainsKey(code[1]))
+                                soundValue = (UInt16)Dicts.SFXes[code[1]];
+                            else
+                            {
+                                try
+                                {
+                                    soundValue = Convert.ToUInt16(code[1]);
+                                }
+                                catch (Exception)
+                                {
+                                    errors.Add($"{code[1]} is not a valid sound.");
+                                    soundValue = 0;
+                                }
+                            }
+
                             byte[] soundIDBytes = BitConverter.GetBytes(soundValue);
                             output.Add(soundIDBytes[1]);
                             output.Add(soundIDBytes[0]);

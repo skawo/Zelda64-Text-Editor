@@ -10,8 +10,9 @@ namespace Zelda64TextEditor
 {
     public static class Dicts
     {
-        public static string SFXesFilename = $"{Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)}/SFX.csv";
-        public static Dictionary<string, int> SFXes = GetDictionary(SFXesFilename);
+        public static string OoTSFXesFilename = $"{Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)}/SFX_Ocarina.csv";
+        public static string MMSFXesFilename = $"{Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)}/SFX_Majora.csv";
+        public static Dictionary<string, int> SFXes = GetDictionary(OoTSFXesFilename);
 
         public static void ReloadDict(string Filename, ref Dictionary<string, int> Dict)
         {
