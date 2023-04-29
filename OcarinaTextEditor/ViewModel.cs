@@ -24,8 +24,7 @@ namespace Zelda64TextEditor
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
 
@@ -94,6 +93,8 @@ namespace Zelda64TextEditor
 
         #endregion
 
+        private static readonly string EditorName = "Zelda 64 Text Editor";
+
         public bool IsSaveAsEnabled => Mode == EditorMode.ROMMode || Mode == EditorMode.FilesMode;
 
         public bool MajoraMaskMode => ROMInfo.IsMajoraMask(Version) && !CreditsMode;
@@ -133,7 +134,7 @@ namespace Zelda64TextEditor
                 }
             }
         }
-        private string m_windowTitle = "Zelda 64 Text Editor";
+        private string m_windowTitle = EditorName;
         #endregion
 
         #region public CollectionViewSource ViewSource
@@ -269,8 +270,10 @@ namespace Zelda64TextEditor
         #region Input/Output
         private void Open(string PathD = "")
         {
-            OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Filter = "All known formats|*.n64;*.z64;*.zzrpl;*.toml;*.zzrp|N64 ROMs (*.n64, *.z64)|*.n64;*.z64|zzrtl Projects (*.zzrpl)|*.zzrpl|Z64ROM Config File (*.toml)|*.toml|zzromtool Projects (*.zzrp)|*.zzrp|All files|*";
+            OpenFileDialog openFile = new OpenFileDialog
+            {
+                Filter = "All known formats|*.n64;*.z64;*.zzrpl;*.toml;*.zzrp|N64 ROMs (*.n64, *.z64)|*.n64;*.z64|zzrtl Projects (*.zzrpl)|*.zzrpl|Z64ROM Config File (*.toml)|*.toml|zzromtool Projects (*.zzrp)|*.zzrp|All files|*"
+            };
 
             if (PathD != "" || openFile.ShowDialog() == true)
             {
@@ -297,8 +300,10 @@ namespace Zelda64TextEditor
 
         private void OpenROM(string PathD = "")
         {
-            OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Filter = "N64 ROMs (*.n64, *.z64)|*.n64;*.z64|All files|*";
+            OpenFileDialog openFile = new OpenFileDialog
+            {
+                Filter = "N64 ROMs (*.n64, *.z64)|*.n64;*.z64|All files|*"
+            };
 
             if (PathD != "" || openFile.ShowDialog() == true)
             {
@@ -331,15 +336,17 @@ namespace Zelda64TextEditor
                 ViewSource.Source = MessageList;
                 SelectedMessage = MessageList[0];
 
-                WindowTitle = string.Format("{0} - Zelda 64 Text Editor", openFile.FileName);
+                WindowTitle = string.Format("{0} - {1}", openFile.FileName, EditorName);
 
             }
         }
 
         private void OpenZZRPL(string PathD = "")
         {
-            OpenFileDialog openFile = new OpenFileDialog();
-            openFile.Filter = "zzrtl Projects (*.zzrpl)|*.zzrpl";
+            OpenFileDialog openFile = new OpenFileDialog
+            {
+                Filter = "zzrtl Projects (*.zzrpl)|*.zzrpl"
+            };
 
             if (PathD != "" || openFile.ShowDialog() == true)
             {
@@ -404,16 +411,17 @@ namespace Zelda64TextEditor
                 SelectedMessage = MessageList[0];
 
 
-                WindowTitle = Path.GetFileNameWithoutExtension(openFile.FileName) + " - Ocarina of Time Text Editor";
+                WindowTitle = string.Format("{0} - {1}", Path.GetFileNameWithoutExtension(openFile.FileName), EditorName);
 
             }
         }
 
         private void OpenZ64ROM(string PathD = "")
         {
-            OpenFileDialog openFile = new OpenFileDialog();
-
-            openFile.Filter = "Z64ROM Config File (*.toml)|*.toml";
+            OpenFileDialog openFile = new OpenFileDialog
+            {
+                Filter = "Z64ROM Config File (*.toml)|*.toml"
+            };
 
             if (PathD != "" || openFile.ShowDialog() == true)
             {
@@ -479,15 +487,16 @@ namespace Zelda64TextEditor
                 ViewSource.Source = MessageList;
                 SelectedMessage = MessageList[0];
 
-                WindowTitle = Path.GetFileNameWithoutExtension(openFile.FileName) + " - Ocarina of Time Text Editor";
+                WindowTitle = string.Format("{0} - {1}", Path.GetFileNameWithoutExtension(openFile.FileName), EditorName);
             }
         }
 
         private void OpenZZRP(string PathD = "")
         {
-            OpenFileDialog openFile = new OpenFileDialog();
-
-            openFile.Filter = "zzromtool Projects (*.zzrp)|*.zzrp";
+            OpenFileDialog openFile = new OpenFileDialog
+            {
+                Filter = "zzromtool Projects (*.zzrp)|*.zzrp"
+            };
 
             if (PathD != "" || openFile.ShowDialog() == true)
             {
@@ -523,7 +532,7 @@ namespace Zelda64TextEditor
                 ViewSource.Source = MessageList;
                 SelectedMessage = MessageList[0];
 
-                WindowTitle = Path.GetFileNameWithoutExtension(openFile.FileName) + " - Ocarina of Time Text Editor";
+                WindowTitle = string.Format("{0} - {1}", Path.GetFileNameWithoutExtension(openFile.FileName), EditorName);
             }
         }
 
@@ -567,7 +576,7 @@ namespace Zelda64TextEditor
             ViewSource.Source = MessageList;
             SelectedMessage = MessageList[0];
 
-            WindowTitle = string.Format("{0} - Ocarina of Time Text Editor", tableFileName);
+            WindowTitle = string.Format("{0} - {1}", tableFileName, EditorName);
 
 
             Path1 = tableFileName;
@@ -576,14 +585,16 @@ namespace Zelda64TextEditor
 
         private void SaveToNewRom()
         {
-            SaveFileDialog saveFile = new SaveFileDialog();
-            saveFile.Filter = "N64 ROMs (*.n64, *.z64)|*.n64;*.z64|All files|*";
+            SaveFileDialog saveFile = new SaveFileDialog
+            {
+                Filter = "N64 ROMs (*.n64, *.z64)|*.n64;*.z64|All files|*"
+            };
 
             if (saveFile.ShowDialog() == true)
             {
-                Exporter export = new Exporter(m_messageList, saveFile.FileName, Enums.ExportType.NewROM, m_inputFile, Version, CreditsMode);
+                _ = new Exporter(m_messageList, saveFile.FileName, Enums.ExportType.NewROM, m_inputFile, Version, CreditsMode);
                 m_inputFileName = saveFile.FileName;
-                WindowTitle = string.Format("{0} - Ocarina of Time Text Editor", m_inputFileName);
+                WindowTitle = string.Format("{0} - {1}", m_inputFileName, EditorName);
             }
         }
 
@@ -617,22 +628,22 @@ namespace Zelda64TextEditor
 
         private void SaveToOriginalRom()
         {
-            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.OriginalROM, m_inputFile, Version, CreditsMode);
+            _ = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.OriginalROM, m_inputFile, Version, CreditsMode);
         }
 
         private void SaveZZRP()
         {
-            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRP, m_inputFile, Version);
+            _ = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRP, m_inputFile, Version);
         }
 
         private void SaveZZRPL()
         {
-            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRPL, m_inputFile, Version);
+            _ = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRPL, m_inputFile, Version);
         }
 
         private void SaveZ64ROM()
         {
-            Exporter export = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.Z64ROM, m_inputFile, Version);
+            _ = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.Z64ROM, m_inputFile, Version);
         }
 
         private void Refresh()
@@ -664,21 +675,23 @@ namespace Zelda64TextEditor
 
         private void SaveToFiles()
         {
-            var ofd = new CommonOpenFileDialog();
-            ofd.Title = "Choose Directory";
-            ofd.IsFolderPicker = true;
-            ofd.AddToMostRecentlyUsedList = false;
-            ofd.AllowNonFileSystemItems = false;
-            ofd.EnsureFileExists = true;
-            ofd.EnsurePathExists = true;
-            ofd.EnsureReadOnly = false;
-            ofd.EnsureValidNames = true;
-            ofd.Multiselect = false;
-            ofd.ShowPlacesList = true;
+            var ofd = new CommonOpenFileDialog
+            {
+                Title = "Choose Directory",
+                IsFolderPicker = true,
+                AddToMostRecentlyUsedList = false,
+                AllowNonFileSystemItems = false,
+                EnsureFileExists = true,
+                EnsurePathExists = true,
+                EnsureReadOnly = false,
+                EnsureValidNames = true,
+                Multiselect = false,
+                ShowPlacesList = true
+            };
 
             if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                Exporter export = new Exporter(m_messageList, ofd.FileName, Enums.ExportType.File, null, Version);
+                _ = new Exporter(m_messageList, ofd.FileName, Enums.ExportType.File, null, Version);
             }
         }
 
@@ -688,7 +701,7 @@ namespace Zelda64TextEditor
             m_inputFile = null;
             m_inputFileName = "";
             ViewSource.Source = null;
-            WindowTitle = "Ocarina of Time Text Editor";
+            WindowTitle = EditorName;
             Mode = EditorMode.None;
 
         }
@@ -697,8 +710,10 @@ namespace Zelda64TextEditor
         #region Adding and Removing Messages
         private void AddMessage()
         {
-            Message newMes = new Message();
-            newMes.MessageID = GetHighestID();
+            Message newMes = new Message
+            {
+                MessageID = GetHighestID()
+            };
             MessageList.Insert(MessageList.Count - 1, newMes);
             ViewSource.View.Refresh();
         }
@@ -734,22 +749,21 @@ namespace Zelda64TextEditor
         #region Search Filtering
         private void Filter(object sender, FilterEventArgs e)
         {
-            short findId;
 
             // see Notes on Filter Methods:
-            var src = e.Item as Message;
+            Message src = e.Item as Message;
 
             if (src == null)
                 e.Accepted = false;
 
             //test if textbox message doesn't match our filter
-            if (src.TextData != null && (!src.TextData.ToUpper().Contains(SearchFilter.ToUpper()) && !src.MessageID.ToString("X").ToUpper().Contains(SearchFilter.ToUpper())))
+            if (src.TextData != null && !src.TextData.ToUpper().Contains(SearchFilter.ToUpper()) && !src.MessageID.ToString("X").ToUpper().Contains(SearchFilter.ToUpper()))
                 e.Accepted = false;
 
             //test if filter matches a textbox id
             if (SearchFilter.StartsWith("0x")
                 && short.TryParse(SearchFilter.Substring(2), System.Globalization.NumberStyles.HexNumber,
-                System.Globalization.CultureInfo.InvariantCulture, out findId))
+                System.Globalization.CultureInfo.InvariantCulture, out short findId))
             {
                 if (src.MessageID == findId)
                     e.Accepted = true;

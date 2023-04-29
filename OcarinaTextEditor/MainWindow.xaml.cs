@@ -38,10 +38,13 @@ namespace Zelda64TextEditor
 
             foreach (var Icon in Enum.GetValues(typeof(Enums.OcarinaIcon)))
             {
-                var Item = new MenuItem();
-                Item.Header = Icon.ToString();
+                var Item = new MenuItem
+                {
+                    Header = Icon.ToString()
+                };
+
                 Item.SetBinding(Button.CommandProperty, new Binding("OnRequestAddControl"));
-                Item.CommandParameter = $"ICON:{Icon.ToString()}";
+                Item.CommandParameter = $"ICON:{Icon}";
 
                 IconHeader.Items.Add(Item);
             }
@@ -172,7 +175,7 @@ namespace Zelda64TextEditor
                 else
                     Ocarina_RenderPreview();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 msgPreview.Opacity = 0.5;
             }
