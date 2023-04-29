@@ -53,10 +53,6 @@ namespace Zelda64TextEditor
 
             if (IsMajoraMode)
             {
-                textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Cut", Command = ApplicationCommands.Cut });
-                textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Copy", Command = ApplicationCommands.Copy });
-                textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Paste", Command = ApplicationCommands.Paste });
-
                 MenuItem ControlTagsMenu = new MenuItem() { Header = "Control Tags..." };
 
                 MenuItem ColorTagMenu = new MenuItem() { Header = "Color", ToolTip = "Text until the next Color tag will be of this color. The color will persist even to the next textbox." };
