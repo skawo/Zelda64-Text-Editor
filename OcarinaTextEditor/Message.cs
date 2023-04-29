@@ -310,7 +310,7 @@ namespace OcarinaTextEditor
             switch (code)
             {
                 case ControlCode.COLOR:
-                    Color col = (Color)reader.ReadByte();
+                    MsgColor col = (MsgColor)reader.ReadByte();
                     codeInsides = col.ToString();
                     break;
                 case ControlCode.ICON:

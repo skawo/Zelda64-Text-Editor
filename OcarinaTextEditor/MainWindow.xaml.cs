@@ -31,9 +31,8 @@ namespace OcarinaTextEditor
 
             BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(TextboxType)).Cast<TextboxType>();
             BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>().Where(x => x <= TextboxPosition.Bottom);
-            MajoraIconCombo.ItemsSource = Enum.GetValues(typeof(MajoraIcons)).Cast<MajoraIcons>();
+            MajoraIconCombo.ItemsSource = Enum.GetValues(typeof(MajoraIcons)).Cast<MajoraIcons>().OrderByDescending(x => x);
 
-   
             DockTextBoxOptions.Height = 95;
             textBoxMsgDock.Margin = new Thickness(0, 118, 0, 10);
 
