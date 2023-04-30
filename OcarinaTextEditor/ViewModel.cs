@@ -666,7 +666,7 @@ namespace Zelda64TextEditor
 
         private void SaveZ64ROM()
         {
-            _ = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.Z64ROM, m_inputFile, Version);
+            _ = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.Z64ROM, m_inputFile, Version, CreditsMode);
         }
 
         private void Refresh()

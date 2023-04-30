@@ -101,7 +101,7 @@ namespace Zelda64TextEditor
                             ExportToZZRPL(messageTableStream, stringData);
                             break;
                         case ExportType.Z64ROM:
-                            ExportToZ64ROM(messageTableStream, stringData);
+                            ExportToZ64ROM(messageTableStream, stringData, Credits);
                             break;
                     }
                 }
@@ -239,12 +239,16 @@ namespace Zelda64TextEditor
             }
         }
 
-        private void ExportToZ64ROM(MemoryStream table, MemoryStream stringBank)
+        private void ExportToZ64ROM(MemoryStream table, MemoryStream stringBank, bool CreditsMode)
         {
             string cfgFolder = Path.GetDirectoryName(m_fileName);
             string staticFolder = Path.Combine(cfgFolder, "rom", "system", "static");
-            string msgDataPath = Path.Combine(staticFolder, "message_data_static_NES.bin");
-            string tablePath = Path.Combine(staticFolder, "message_data_static_NES.tbl");
+
+            string msgDataFn = CreditsMode ? "message_data_static_staff.bin" : "message_data_static_NES.bin";
+            string tableFn = CreditsMode ? "message_data_static_staff.tbl" : "message_data_static_NES.tbl";
+
+            string msgDataPath = Path.Combine(staticFolder, msgDataFn);
+            string tablePath = Path.Combine(staticFolder, tableFn);
 
             ExportToFile(table, stringBank, tablePath, msgDataPath);
         }
