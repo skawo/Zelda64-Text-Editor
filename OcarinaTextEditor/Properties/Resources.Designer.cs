@@ -59,5 +59,15 @@ namespace Zelda64TextEditor.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon z64text {
+            get {
+                object obj = ResourceManager.GetObject("z64text", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

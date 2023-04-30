@@ -38,7 +38,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UICulture>en-US</UICulture>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -48,7 +47,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <UICulture>en-US</UICulture>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>z64text.ico</ApplicationIcon>
@@ -109,6 +107,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="About.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="About.designer.cs">
+      <DependentUpon>About.cs</DependentUpon>
+    </Compile>
     <Compile Include="Converters\BoolVisibilityConverter.cs" />
     <Compile Include="Converters\NullToFalseConverter.cs" />
     <Compile Include="Dicts.cs" />
@@ -123,6 +127,7 @@
     <Compile Include="Importer.cs" />
     <Compile Include="InputBox.cs" />
     <Compile Include="Message.cs" />
+    <Compile Include="MessageBoxManager.cs" />
     <Compile Include="PickableList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -165,6 +170,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="About.resx">
+      <DependentUpon>About.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PickableList.resx">
       <DependentUpon>PickableList.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -214,6 +222,9 @@
     <None Include="SFX_Majora.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Image1.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

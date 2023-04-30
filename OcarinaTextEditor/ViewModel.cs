@@ -182,7 +182,23 @@ namespace Zelda64TextEditor
 
         public Dictionary<OcarinaControlCode, string> m_controlCodes;
 
-        public ROMVer Version = ROMVer.Unknown;
+        #region public string Version
+        public ROMVer Version
+        {
+            get { return m_Version; }
+            set
+            {
+                if (value != m_Version)
+                {
+                    m_Version = value;
+                    NotifyPropertyChanged();
+                    NotifyPropertyChanged("MajoraMaskMode");
+                    ROMVersionChanged?.Invoke();
+                }
+            }
+        }
+        private ROMVer m_Version = ROMVer.Unknown;
+        #endregion
 
         public int TextboxPosition;
 
@@ -240,6 +256,25 @@ namespace Zelda64TextEditor
         public ICommand OnRequestSaveAsFiles
         {
             get { return new RelayCommand(x => SaveToFiles(), x => MessageList != null); }
+        }
+
+        public ICommand OnRequestSortEntries
+        {
+            get { return new RelayCommand(x => SortEntries(), x => MessageList != null); }
+        }
+
+        public ICommand OnRequestRemoveEmptyEntries
+        {
+            get { return new RelayCommand(x => RemoveEmptyEntries(), x => MessageList != null); }
+        }
+        public ICommand OnRequestShowAbout
+        {
+            get { return new RelayCommand(x => ShowAbout()); }
+        }
+
+        public ICommand OnRequestImportData
+        {
+            get { return new RelayCommand(x => ImportData(), x => MessageList != null); }
         }
 
         #endregion
@@ -412,8 +447,9 @@ namespace Zelda64TextEditor
                 Path2 = "";
 
                 Mode = EditorMode.ZZRPLMode;
+                Version = ROMVer.Debug;
 
-                Importer file = new Importer(tableEd, msgDataEd, CreditsMode);
+                Importer file = new Importer(tableEd, msgDataEd, Version, CreditsMode);
                 MessageList = file.GetMessageList();
                 bomberMessages = file.GetBomberMsgsList();
 
@@ -491,8 +527,9 @@ namespace Zelda64TextEditor
                 }
 
                 Mode = EditorMode.Z64ROMMode;
+                Version = ROMVer.Debug;
 
-                Importer file = new Importer(tableEd, msgDataEd, CreditsMode);
+                Importer file = new Importer(tableEd, msgDataEd, Version, CreditsMode);
                 MessageList = file.GetMessageList();
                 bomberMessages = file.GetBomberMsgsList();
 
@@ -537,6 +574,7 @@ namespace Zelda64TextEditor
                 }
 
                 Mode = EditorMode.ZZRPMode;
+                Version = ROMVer.Debug;
 
                 Importer file = new Importer(openFile.FileName, Mode, Version);
                 MessageList = file.GetMessageList();
@@ -558,6 +596,37 @@ namespace Zelda64TextEditor
                 WindowTitle = string.Format("{0} - {1}", Path.GetFileNameWithoutExtension(openFile.FileName), EditorName);
             }
         }
+
+        private void ImportData()
+        {
+            OpenFileDialog openFile = new OpenFileDialog();
+            string tableFileName;
+            string messageDataFileName;
+
+
+            openFile.Filter = "Table Data (*.tbl)|*.tbl|All files|*";
+            openFile.Title = "Select the MessageTable.tbl file";
+
+            if (openFile.ShowDialog() != true)
+                return;
+
+            tableFileName = openFile.FileName;
+
+            openFile.Filter = "String Data (*.bin)|*.bin|All files|*";
+            openFile.Title = "Select the StringData.bin file";
+            openFile.FilterIndex = 0;
+
+            if (openFile.ShowDialog() != true)
+                return;
+
+            messageDataFileName = openFile.FileName;
+
+            Importer file = new Importer(tableFileName, messageDataFileName, Version, CreditsMode);
+            MessageList = file.GetMessageList();
+            ViewSource.Source = MessageList;
+            SelectedMessage = MessageList[0];
+        }
+
 
         private void OpenData(string PathD1 = "", string PathD2 = "")
         {
@@ -592,7 +661,24 @@ namespace Zelda64TextEditor
 
             Mode = EditorMode.FilesMode;
 
-            Importer file = new Importer(tableFileName, messageDataFileName, CreditsMode);
+            System.Windows.Forms.MessageBoxManager.Yes = "Ocarina";
+            System.Windows.Forms.MessageBoxManager.No = "Majora";
+            System.Windows.Forms.MessageBoxManager.Cancel = "Credits";
+            System.Windows.Forms.MessageBoxManager.Register();
+            var res = System.Windows.Forms.MessageBox.Show("These files are...", "Game Version Selection", System.Windows.Forms.MessageBoxButtons.YesNoCancel);
+            System.Windows.Forms.MessageBoxManager.Unregister();
+
+            switch (res)
+            {
+                case System.Windows.Forms.DialogResult.Yes:
+                    Version = ROMVer.NTSC_1_0; break;
+                case System.Windows.Forms.DialogResult.No:
+                    Version = ROMVer.NTSC_Majora; break;
+                case System.Windows.Forms.DialogResult.Cancel:
+                    Version = ROMVer.NTSC_1_0; CreditsMode = true; break;
+            }
+
+            Importer file = new Importer(tableFileName, messageDataFileName, Version, CreditsMode);
             MessageList = file.GetMessageList();
             bomberMessages = file.GetBomberMsgsList();
 
@@ -657,6 +743,56 @@ namespace Zelda64TextEditor
         private void SaveZZRP()
         {
             _ = new Exporter(m_messageList, m_inputFileName, Enums.ExportType.ZZRP, m_inputFile, Version);
+        }
+
+        private void SortEntries()
+        {
+            MessageList = new ObservableCollection<Message>(MessageList.OrderBy(x => (UInt16)x.MessageID));
+
+            ViewSource.Source = MessageList;
+            if (MessageList.Count != 0)
+                SelectedMessage = MessageList[0];
+
+            ViewSource.View.Refresh();
+        }
+
+        private void RemoveEmptyEntries()
+        {
+            List<Message> ToRemove = new List<Message>();
+
+            if (System.Windows.Forms.MessageBox.Show("This function will remove messages with blank or placeholder data (with a few exceptions needed for the game to function). Proceed?", "Empty message removal", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            {
+                foreach (Message m in MessageList)
+                {
+                    UInt16 Res = 0;
+
+                    bool MayBeOcarinaEmptyMsg = false;
+
+                    if (UInt16.TryParse(m.TextData.TrimStart('0'), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out Res))
+                        MayBeOcarinaEmptyMsg = true;
+
+                    // 0x11A is used NPC Maker
+                    // 0xFFFC is used as the alphabet
+                    // 0xFFFD, 0xFFFF are used as the end marker
+                    List<UInt16> DoNotRemove = new List<UInt16>() { 0x11A, 0xFFFC, 0xFFFD, 0xFFFF };
+
+                    if ((m.TextData == "" || (Res == m.MessageID && MayBeOcarinaEmptyMsg)) && !DoNotRemove.Contains((ushort)m.MessageID))
+                        ToRemove.Add(m);
+                }
+
+                foreach (Message m in ToRemove)
+                    MessageList.Remove(m);
+
+                if (MessageList.Count != 0)
+                    SelectedMessage = MessageList[0];
+            }
+
+        }
+
+        private void ShowAbout()
+        {
+            About a = new About();
+            a.ShowDialog();
         }
 
         private void SaveZZRPL()

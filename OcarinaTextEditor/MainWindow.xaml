@@ -51,6 +51,15 @@
                 <Separator/>
                 <MenuItem Header="Close File" IsEnabled="{Binding IsSaveAvailable}" Command="{Binding OnRequestCloseFile}"/>
             </MenuItem>
+            <MenuItem Header="Tools">
+                <MenuItem Header="Resort entries" Command="{Binding OnRequestSortEntries}"/>
+                <MenuItem Header="Import data" Command="{Binding OnRequestImportData}"/>
+                <MenuItem Header="Remove empty entries" Command="{Binding OnRequestRemoveEmptyEntries}"/>
+            </MenuItem>
+            <MenuItem Header="About" Command="{Binding OnRequestShowAbout}">
+                
+            </MenuItem>
+                      
         </Menu>
         <DockPanel x:Name ="textBoxMsgDock" LastChildFill="True" Margin="0,241,0,10" Grid.Column="2">
             <TextBox x:Name="textBoxMsg" Margin="0,0,0,0" TextWrapping="Wrap" Text="{Binding SelectedMessage.TextData, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" SelectionChanged="TextBox_SelectionChanged">

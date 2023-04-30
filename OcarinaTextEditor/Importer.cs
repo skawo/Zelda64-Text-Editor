@@ -108,7 +108,7 @@ namespace Zelda64TextEditor
         }
 
 
-        public Importer(string tableFileName, string messageDataFileName, bool Credits)
+        public Importer(string tableFileName, string messageDataFileName, ROMVer Version, bool Credits = false)
         {
             m_messageList = new ObservableCollection<Message>();
 
@@ -137,7 +137,7 @@ namespace Zelda64TextEditor
                         continue;
 
                     reader.BaseStream.Position = mesgRecord.Offset;
-                    Message mes = new Message(reader, mesgRecord, Credits);
+                    Message mes = new Message(reader, mesgRecord, Credits, Version);
 
                     m_messageList.Add(mes);
                 }
@@ -151,7 +151,7 @@ namespace Zelda64TextEditor
 
         public List<short> GetBomberMsgsList()
         {
-            return lBomberMsgs;
+            return lBomberMsgs == null ? new List<short>() : lBomberMsgs;
         }
 
         public MemoryStream GetInputFile()
