@@ -458,9 +458,11 @@ namespace Zelda64TextEditor
                         vanillaFolderName = setting[1];
                 }
 
+                CreditsMode = Keyboard.IsKeyDown(Key.LeftCtrl);
+
                 string staticFolder = Path.Combine(cfgFolder, "rom", "system", "static");
-                string msgDataEd = Path.Combine(staticFolder, "message_data_static_NES.bin");
-                string tableEd = Path.Combine(staticFolder, "message_data_static_NES.tbl");
+                string msgDataEd = CreditsMode ? Path.Combine(staticFolder, "message_data_static_staff.bin") : Path.Combine(staticFolder, "message_data_static_NES.bin");
+                string tableEd = CreditsMode ? Path.Combine(staticFolder, "message_data_static_staff.tbl") :  Path.Combine(staticFolder, "message_data_static_NES.tbl");
 
                 if ((File.Exists(msgDataEd) && !File.Exists(tableEd)) || (!File.Exists(msgDataEd) && File.Exists(tableEd)))
                 {
@@ -470,8 +472,8 @@ namespace Zelda64TextEditor
 
                 if (!File.Exists(msgDataEd) || !File.Exists(tableEd))
                 {
-                    string msgData = Path.Combine(staticFolder, vanillaFolderName, "message_data_static_NES.bin");
-                    string table = Path.Combine(staticFolder, vanillaFolderName, "message_data_static_NES.tbl");
+                    string msgData = CreditsMode ? Path.Combine(staticFolder, vanillaFolderName, "message_data_static_staff.bin") : Path.Combine(staticFolder, vanillaFolderName, "message_data_static_NES.bin");
+                    string table = CreditsMode ? Path.Combine(staticFolder, vanillaFolderName, "message_data_static_staff.tbl") : Path.Combine(staticFolder, vanillaFolderName, "message_data_static_NES.tbl");
 
                     if (!File.Exists(msgData) || !File.Exists(table))
                     {
