@@ -36,10 +36,52 @@ namespace Zelda64TextEditor
             DockTextBoxOptions.Height = 95;
             textBoxMsgDock.Margin = new Thickness(0, 118, 0, 10);
 
+            ViewModel view = (ViewModel)DataContext;
+            view.MessageAdded += View_MessageAdded;
+            view.ROMVersionChanged += View_ROMVersionChanged;
+
+
             ConstructContextMenu();
 
         }
 
+        private void View_ROMVersionChanged()
+        {
+            ViewModel view = (ViewModel)DataContext;
+
+            if (view.MajoraMaskMode)
+            {
+                if (!IsMajoraMode)
+                {
+                    IsMajoraMode = true;
+                    BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(MajoraTextboxType)).Cast<MajoraTextboxType>();
+                    BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>();
+                    DockTextBoxOptions.Height = 215;
+                    textBoxMsgDock.Margin = new Thickness(0, 241, 0, 10);
+                    ConstructContextMenu();
+                }
+            }
+            else if (!view.MajoraMaskMode)
+            {
+                if (IsMajoraMode)
+                {
+                    IsMajoraMode = false;
+                    BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(OcarinaTextboxType)).Cast<OcarinaTextboxType>();
+                    BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>().Where(x => x <= TextboxPosition.Bottom);
+                    DockTextBoxOptions.Height = 95;
+                    textBoxMsgDock.Margin = new Thickness(0, 118, 0, 10);
+                    ConstructContextMenu();
+                }
+            }
+        }
+
+        private void View_MessageAdded(Message AddedMsg)
+        {
+            messageListView.UpdateLayout();
+            int Index = messageListView.Items.IndexOf(AddedMsg);
+            messageListView.ScrollIntoView(messageListView.Items[Index]);
+            messageListView.SelectedItem = messageListView.Items[Index];
+        }
 
         private void ConstructContextMenu()
         {
@@ -370,16 +412,6 @@ namespace Zelda64TextEditor
             {
                 if (view.MajoraMaskMode)
                 {
-                    if (!IsMajoraMode)
-                    {
-                        IsMajoraMode = true;
-                        BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(MajoraTextboxType)).Cast<MajoraTextboxType>();
-                        BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>();
-                        DockTextBoxOptions.Height = 215;
-                        textBoxMsgDock.Margin = new Thickness(0, 241, 0, 10);
-                        ConstructContextMenu();
-                    }
-
                     BoxTypeCombo.SelectedItem = view.SelectedMessage.MajoraBoxType;
                     MajoraIconCombo.SelectedItem = (MajoraIcon)view.SelectedMessage.MajoraIcon;
 
@@ -401,16 +433,6 @@ namespace Zelda64TextEditor
                 }
                 else if (!view.MajoraMaskMode)
                 {
-                    if (IsMajoraMode)
-                    {
-                        IsMajoraMode = false;
-                        BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(OcarinaTextboxType)).Cast<OcarinaTextboxType>();
-                        BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>().Where(x => x <= TextboxPosition.Bottom);
-                        DockTextBoxOptions.Height = 95;
-                        textBoxMsgDock.Margin = new Thickness(0, 118, 0, 10);
-                        ConstructContextMenu();
-                    }
-
                     BoxTypeCombo.SelectedItem = view.SelectedMessage.BoxType;
                 }
             }

@@ -121,6 +121,7 @@
     <Compile Include="Exporter.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Importer.cs" />
+    <Compile Include="InputBox.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="PickableList.cs">
       <SubType>Form</SubType>

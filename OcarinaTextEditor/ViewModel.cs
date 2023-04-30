@@ -89,6 +89,8 @@ namespace Zelda64TextEditor
                 NotifyPropertyChanged("IsSaveAsEnabled");
                 NotifyPropertyChanged("MajoraMaskMode");
 
+                ROMVersionChanged?.Invoke();
+
                 if (MajoraMaskMode)
                     Dicts.ReloadDict(Dicts.MMSFXesFilename, ref Dicts.SFXes);
                 else
@@ -210,6 +212,11 @@ namespace Zelda64TextEditor
         {
             get { return new RelayCommand(x => RemoveMessage(), x => MessageList != null); }
         }
+
+        public ICommand OnRequestChangeID
+        {
+            get { return new RelayCommand(x => ChangeID(), x => MessageList != null); }
+        }
         public ICommand OnRequestAddControl
         {
             get { return new RelayCommand(x => InsertControlCode((string)x), x => SelectedMessage != null); }
@@ -236,6 +243,12 @@ namespace Zelda64TextEditor
         }
 
         #endregion
+
+        public delegate void ListViewUpdated(Message Index);
+        public event ListViewUpdated MessageAdded;
+
+        public delegate void ROMChanged();
+        public event ROMChanged ROMVersionChanged;
 
         public ViewModel()
         {
@@ -720,7 +733,9 @@ namespace Zelda64TextEditor
                 MessageID = GetHighestID()
             };
             MessageList.Insert(MessageList.Count - 1, newMes);
+            
             ViewSource.View.Refresh();
+            MessageAdded?.Invoke(newMes);
         }
 
         private void RemoveMessage()
@@ -735,6 +750,33 @@ namespace Zelda64TextEditor
                 SelectedMessage = MessageList[0];
             else
                 SelectedMessage = MessageList[selectedIndex - 1];
+        }
+
+        private void ChangeID()
+        {
+            int selectedIndex = MessageList.IndexOf(SelectedMessage);
+
+            string Out = "0x" + MessageList[selectedIndex].MessageID.ToString("X");
+
+        restart:
+            if (InputBox.ShowInputDialog("Enter new ID", ref Out) == System.Windows.Forms.DialogResult.OK)
+            {
+                short NewID;
+
+                if (Int16.TryParse(Out.TrimStart(new char[] { '0', 'x' }), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out NewID))
+                {
+                    if (MessageList.FirstOrDefault(x => x.MessageID == NewID) != null)
+                    {
+                        System.Windows.Forms.MessageBox.Show("That ID already exists!");
+                        goto restart;
+                    }
+                    else
+                        MessageList[selectedIndex].MessageID = NewID;
+                }
+                else
+                    System.Windows.Forms.MessageBox.Show("Invalid message ID.");
+            }
+
         }
 
         private short GetHighestID()

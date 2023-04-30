@@ -27,8 +27,9 @@
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="21*"/>
                 </Grid.ColumnDefinitions>
-                <ListView Margin="10,31,0,10" ItemsSource="{Binding ViewSource.View}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" SelectionChanged="ListView_SelectionChanged">
+                <ListView Name="messageListView" Margin="10,31,0,10" ItemsSource="{Binding ViewSource.View}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" SelectionChanged="ListView_SelectionChanged">
                     <ListView.View>
+
                         <GridView AllowsColumnReorder="False">
                             <!--<GridViewColumn Header="ID (Dec)" Width="80" DisplayMemberBinding="{Binding MessageID}"/>-->
                             <GridViewColumn Header="ID" Width="Auto" DisplayMemberBinding="{Binding MessageID, StringFormat=0x{0:X4}}"/>
@@ -79,8 +80,9 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Content="Add" Margin="0,0,7,10" Command="{Binding OnRequestAddMessage}" Height="22" VerticalAlignment="Bottom"/>
-            <Button Content="Remove" Margin="8,0,0,10" Command="{Binding OnRequestRemoveMessage}" Height="22" VerticalAlignment="Bottom" Grid.Column="1"/>
+            <Button Content="Add" Margin="0,0,78,10" Command="{Binding OnRequestAddMessage}" Height="22" VerticalAlignment="Bottom"/>
+            <Button Content="Remove" Margin="69,0,0,10" Command="{Binding OnRequestRemoveMessage}" Height="22" VerticalAlignment="Bottom" Grid.Column="1"/>
+            <Button Content="Change ID" Margin="121,0,130,10" Command="{Binding OnRequestChangeID}" Height="22" VerticalAlignment="Bottom" Grid.ColumnSpan="2"/>
         </Grid>
         <ScrollViewer x:Name="dockMsgPreview"  Margin="5,26,10,10" Grid.Column="3" VerticalScrollBarVisibility="Auto">
             <Image x:Name="msgPreview"/>
