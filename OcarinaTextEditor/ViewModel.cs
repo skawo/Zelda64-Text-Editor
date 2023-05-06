@@ -14,6 +14,7 @@ using System.Windows.Data;
 using Zelda64TextEditor.Enums;
 using System.IO;
 using GameFormatReader.Common;
+using System.Text.RegularExpressions;
 
 namespace Zelda64TextEditor
 {
@@ -943,6 +944,25 @@ namespace Zelda64TextEditor
 
             if (src == null)
                 e.Accepted = false;
+
+            if (SearchFilter.ToUpper().StartsWith("REGEX:{") && SearchFilter.EndsWith("}"))
+            {
+                int l = "REGEX:{".Length;
+                string Regex = SearchFilter.Substring(l, SearchFilter.Length - 1 - l);
+
+                Regex rg = new Regex(Regex, RegexOptions.IgnoreCase | RegexOptions.Multiline);
+
+                if (rg.IsMatch(src.TextData))
+                {
+                    e.Accepted = true;
+                    return;
+                }
+                else
+                {
+                    e.Accepted = false;
+                    return;
+                }
+            }
 
             //test if textbox message doesn't match our filter
             if (src.TextData != null && !src.TextData.ToUpper().Contains(SearchFilter.ToUpper()) && !src.MessageID.ToString("X").ToUpper().Contains(SearchFilter.ToUpper()))
