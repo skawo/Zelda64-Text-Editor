@@ -27,7 +27,7 @@
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="21*"/>
                 </Grid.ColumnDefinitions>
-                <ListView Name="messageListView" Margin="10,31,0,10" ItemsSource="{Binding ViewSource.View}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" SelectionChanged="ListView_SelectionChanged">
+                <ListView Name="messageListView" Margin="10,31,0,10" ItemsSource="{Binding ViewSource.View}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" SelectionChanged="ListView_SelectionChanged" KeyDown="messageListView_KeyDown">
                     <ListView.View>
 
                         <GridView AllowsColumnReorder="False">
@@ -37,7 +37,7 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
-                <xctk:WatermarkTextBox Margin="10,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Watermark="Type to search..." Text="{Binding SearchFilter, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding MessageList, Converter={StaticResource NullToFalseConverter}}" Grid.ColumnSpan="2"/>
+                <xctk:WatermarkTextBox Margin="10,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Watermark="Type to search..." Text="{Binding SearchFilter, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding MessageList, Converter={StaticResource NullToFalseConverter}}" Grid.ColumnSpan="2" TextChanged="WatermarkTextBox_TextChanged"/>
             </Grid>
         </DockPanel>
         <Menu VerticalAlignment="Top" Grid.ColumnSpan="4" Height="21">

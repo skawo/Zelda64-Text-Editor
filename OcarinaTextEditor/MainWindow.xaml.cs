@@ -40,10 +40,10 @@ namespace Zelda64TextEditor
             view.MessageAdded += View_MessageAdded;
             view.ROMVersionChanged += View_ROMVersionChanged;
 
-
             ConstructContextMenu();
 
         }
+
 
         private void View_ROMVersionChanged()
         {
@@ -79,8 +79,12 @@ namespace Zelda64TextEditor
         {
             messageListView.UpdateLayout();
             int Index = messageListView.Items.IndexOf(AddedMsg);
-            messageListView.ScrollIntoView(messageListView.Items[Index]);
-            messageListView.SelectedItem = messageListView.Items[Index];
+
+            if (Index >= 0)
+            {
+                messageListView.ScrollIntoView(messageListView.Items[Index]);
+                messageListView.SelectedItem = messageListView.Items[Index];
+            }
         }
 
         private void ConstructContextMenu()
@@ -110,6 +114,25 @@ namespace Zelda64TextEditor
 
                 AddTagControlsToMenu(ColorTagMenu, Colors);
                 ControlTagsMenu.Items.Add(ColorTagMenu);
+
+                MenuItem ButtonTagMenu = new MenuItem() { Header = "Buttons", ToolTip = "Add a button icon to the textbox." };
+
+                string[] Button = new string[] { "A Button",         $"{MajoraControlCode.A_BUTTON}",           "",
+                                                 "B Button",         $"{MajoraControlCode.B_BUTTON}",           "",
+                                                 "C Button",         $"{MajoraControlCode.C_BUTTON}",           "",
+                                                 "C-Up Button",      $"{MajoraControlCode.C_UP}",               "",
+                                                 "C-Down Button",    $"{MajoraControlCode.C_DOWN}",             "",
+                                                 "C-Left Button",    $"{MajoraControlCode.C_LEFT}",             "",
+                                                 "C-Right Button",   $"{MajoraControlCode.C_RIGHT}",            "",
+                                                 "L Button",         $"{MajoraControlCode.L_BUTTON}",           "",
+                                                 "R Button",         $"{MajoraControlCode.R_BUTTON}",           "",
+                                                 "Z Button",         $"{MajoraControlCode.Z_BUTTON}",           "",
+                                                 "Triangle",         $"{MajoraControlCode.TRIANGLE}",           "",
+                                                 "Control Stick",    $"{MajoraControlCode.CONTROL_STICK}",      "",
+                                                 "D-Pad",            $"{MajoraControlCode.D_PAD}",              "Crashes the game",};
+
+                AddTagControlsToMenu(ButtonTagMenu, Button);
+                ControlTagsMenu.Items.Add(ButtonTagMenu);
 
                 MenuItem ScoreTagMenu = new MenuItem() { Header = "Score", ToolTip = "Prints a player's score." };
 
@@ -173,6 +196,25 @@ namespace Zelda64TextEditor
 
                 AddTagControlsToMenu(HighScoreTagMenu, HighScores);
                 ControlTagsMenu.Items.Add(HighScoreTagMenu);
+
+                MenuItem ButtonTagMenu = new MenuItem() { Header = "Buttons", ToolTip = "Add a button icon to the textbox." };
+
+                string[] Button = new string[] { "A Button",         $"{OcarinaControlCode.A_BUTTON}",           "",
+                                                 "B Button",         $"{OcarinaControlCode.B_BUTTON}",           "",
+                                                 "C Button",         $"{OcarinaControlCode.C_BUTTON}",           "",
+                                                 "C-Up Button",      $"{OcarinaControlCode.C_UP}",               "",
+                                                 "C-Down Button",    $"{OcarinaControlCode.C_DOWN}",             "",
+                                                 "C-Left Button",    $"{OcarinaControlCode.C_LEFT}",             "",
+                                                 "C-Right Button",   $"{OcarinaControlCode.C_RIGHT}",            "",
+                                                 "L Button",         $"{OcarinaControlCode.L_BUTTON}",           "",
+                                                 "R Button",         $"{OcarinaControlCode.R_BUTTON}",           "",
+                                                 "Z Button",         $"{OcarinaControlCode.Z_BUTTON}",           "",
+                                                 "Triangle",         $"{OcarinaControlCode.TRIANGLE}",           "",
+                                                 "Control Stick",    $"{OcarinaControlCode.CONTROL_STICK}",      "",
+                                                 "D-Pad",            $"{OcarinaControlCode.D_PAD}",              "",};
+
+                AddTagControlsToMenu(ButtonTagMenu, Button);
+                ControlTagsMenu.Items.Add(ButtonTagMenu);
 
                 MenuItem ScoreTagMenu = new MenuItem() { Header = "Score", ToolTip = "Prints a player's score." };
 
@@ -491,6 +533,30 @@ namespace Zelda64TextEditor
             {
                 view.SelectedMessage.MajoraFirstItemPrice = -1;
                 MajoraSecondPriceTextBox.Background = System.Windows.Media.Brushes.Red;
+            }
+        }
+
+        private void WatermarkTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ViewModel view = (ViewModel)DataContext;
+            int Index = messageListView.Items.IndexOf(view.SelectedMessage);
+
+            if (Index >= 0)
+            {
+                messageListView.ScrollIntoView(messageListView.Items[Index]);
+                messageListView.SelectedItem = messageListView.Items[Index];
+            }
+        }
+
+        private void messageListView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete && Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                ViewModel view = (ViewModel)DataContext;
+
+                if (view.SelectedMessage != null)
+                    view.RemoveMessage();
+
             }
         }
     }

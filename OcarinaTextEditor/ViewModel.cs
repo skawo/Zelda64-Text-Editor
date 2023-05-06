@@ -879,7 +879,7 @@ namespace Zelda64TextEditor
             MessageAdded?.Invoke(newMes);
         }
 
-        private void RemoveMessage()
+        public void RemoveMessage()
         {
             int selectedIndex = MessageList.IndexOf(SelectedMessage);
             MessageList.Remove(SelectedMessage);
