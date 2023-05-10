@@ -24,10 +24,11 @@
         <DockPanel LastChildFill="True" Margin="0,21,2,32">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="21*"/>
+                    <ColumnDefinition Width="15*"/>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="363*"/>
                 </Grid.ColumnDefinitions>
-                <ListView Name="messageListView" Margin="10,31,0,10" ItemsSource="{Binding ViewSource.View}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" SelectionChanged="ListView_SelectionChanged" KeyDown="MessageListView_KeyDown">
+                <ListView Name="messageListView" Margin="10,31,0,10" ItemsSource="{Binding ViewSource.View}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="3" SelectionChanged="ListView_SelectionChanged" KeyDown="MessageListView_KeyDown">
                     <ListView.View>
 
                         <GridView AllowsColumnReorder="False">
@@ -37,13 +38,13 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
-                <xctk:WatermarkTextBox Margin="10,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Watermark="Type to search..." Text="{Binding SearchFilter, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding MessageList, Converter={StaticResource NullToFalseConverter}}" Grid.ColumnSpan="2" TextChanged="WatermarkTextBox_TextChanged"/>
+                <xctk:WatermarkTextBox Margin="10,2,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Watermark="Type to search..." Text="{Binding SearchFilter, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding MessageList, Converter={StaticResource NullToFalseConverter}}" Grid.ColumnSpan="3" TextChanged="WatermarkTextBox_TextChanged"/>
             </Grid>
         </DockPanel>
         <Menu VerticalAlignment="Top" Grid.ColumnSpan="4" Height="21">
             <MenuItem Header="File">
                 <MenuItem Header="Open..." Command="{Binding OnRequestOpenFile}"/>
-                <MenuItem Header="Open Generated Data..." Command="{Binding OnRequestOpenData}"/>
+                <MenuItem Header="Open extracted data..." Command="{Binding OnRequestOpenData}"/>
                 <Separator/>
                 <MenuItem Header="Save" IsEnabled="{Binding IsSaveAvailable}" Command="{Binding OnRequestSave}"/>
                 <MenuItem Header="Save as..." IsEnabled="{Binding IsSaveAsEnabled}" Command="{Binding OnRequestSaveAs}"/>
@@ -52,14 +53,14 @@
                 <MenuItem Header="Close File" IsEnabled="{Binding IsSaveAvailable}" Command="{Binding OnRequestCloseFile}"/>
             </MenuItem>
             <MenuItem Header="Tools">
-                <MenuItem Header="Resort entries" Command="{Binding OnRequestSortEntries}"/>
+                <MenuItem Header="Re-sort entries" Command="{Binding OnRequestSortEntries}"/>
                 <MenuItem Header="Import data" Command="{Binding OnRequestImportData}"/>
                 <MenuItem Header="Remove empty entries" Command="{Binding OnRequestRemoveEmptyEntries}"/>
             </MenuItem>
             <MenuItem Header="About" Command="{Binding OnRequestShowAbout}">
-                
+
             </MenuItem>
-                      
+
         </Menu>
         <DockPanel x:Name ="textBoxMsgDock" LastChildFill="True" Margin="0,241,0,10" Grid.Column="2">
             <TextBox x:Name="textBoxMsg" Margin="0,0,0,0" TextWrapping="Wrap" Text="{Binding SelectedMessage.TextData, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" IsEnabled="{Binding SelectedMessage, Converter={StaticResource NullToFalseConverter}}" SelectionChanged="TextBox_SelectionChanged">
