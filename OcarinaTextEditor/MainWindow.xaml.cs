@@ -288,15 +288,17 @@ namespace Zelda64TextEditor
         {
             for (int i = 0; i < Tags.Length; i += 3)
             {
-                MenuItem t = new MenuItem();
-                t.Header = Tags[i];
-                t.Tag = Tags[i + 1];
+                MenuItem t = new MenuItem
+                {
+                    Header = Tags[i],
+                    Tag = Tags[i + 1]
+                };
 
                 if (Tags[i + 2] != "")
                     t.ToolTip = Tags[i + 2];
 
                 t.Click += InsertControlCode;
-                DstItem.Items.Add(t);
+                _ = DstItem.Items.Add(t);
             }
         }
 
@@ -602,7 +604,7 @@ namespace Zelda64TextEditor
             }
         }
 
-        private void messageListView_KeyDown(object sender, KeyEventArgs e)
+        private void MessageListView_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Delete && Keyboard.IsKeyDown(Key.LeftCtrl))
             {

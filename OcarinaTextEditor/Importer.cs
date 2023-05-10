@@ -15,7 +15,7 @@ namespace Zelda64TextEditor
     {
         private List<short> lBomberMsgs;
         private ObservableCollection<Message> m_messageList;
-        private MemoryStream m_inputFile;
+        private readonly MemoryStream m_inputFile;
 
         public Importer()
         {
@@ -151,7 +151,7 @@ namespace Zelda64TextEditor
 
         public List<short> GetBomberMsgsList()
         {
-            return lBomberMsgs == null ? new List<short>() : lBomberMsgs;
+            return lBomberMsgs ?? new List<short>();
         }
 
         public MemoryStream GetInputFile()

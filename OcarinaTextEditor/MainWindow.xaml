@@ -27,7 +27,7 @@
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="21*"/>
                 </Grid.ColumnDefinitions>
-                <ListView Name="messageListView" Margin="10,31,0,10" ItemsSource="{Binding ViewSource.View}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" SelectionChanged="ListView_SelectionChanged" KeyDown="messageListView_KeyDown">
+                <ListView Name="messageListView" Margin="10,31,0,10" ItemsSource="{Binding ViewSource.View}" SelectedItem="{Binding SelectedMessage, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" SelectionChanged="ListView_SelectionChanged" KeyDown="MessageListView_KeyDown">
                     <ListView.View>
 
                         <GridView AllowsColumnReorder="False">

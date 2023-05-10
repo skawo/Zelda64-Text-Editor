@@ -443,8 +443,8 @@ namespace Zelda64TextEditor
 
                 int type = (int)BoxType;
                 int pos = (int)BoxPosition;
-                type = type << 4;
-                type = type | pos;
+                type <<= 4;
+                type |= pos;
 
                 writer.Write((byte)type);
                 writer.Write((byte)0);
@@ -490,8 +490,7 @@ namespace Zelda64TextEditor
                 {
                     if (Enum.IsDefined(typeof(MajoraControlCode), TextData[i].ToString()))
                     {
-                        MajoraControlCode Result;
-                        Enum.TryParse(TextData[i].ToString(), out Result);
+                        _ = Enum.TryParse(TextData[i].ToString(), out MajoraControlCode Result);
                         data.Add((byte)Result);
                     }
                     else if (TextData[i] == '\n')
@@ -579,8 +578,7 @@ namespace Zelda64TextEditor
                 {
                     if (Enum.IsDefined(typeof(OcarinaControlCode), TextData[i].ToString()))
                     {
-                        OcarinaControlCode Result;
-                        Enum.TryParse(TextData[i].ToString(), out Result);
+                        _ = Enum.TryParse(TextData[i].ToString(), out OcarinaControlCode Result);
                         data.Add((byte)Result);
                     }
                     else if (TextData[i] == '\n')

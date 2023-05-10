@@ -12,10 +12,9 @@ using System.Windows;
 
 namespace Zelda64TextEditor
 {
-    class Exporter
+    internal class Exporter
     {
-        private ObservableCollection<Message> m_messageList;
-        private string m_fileName;
+        private readonly string m_fileName;
 
         public Exporter()
         {
@@ -24,7 +23,6 @@ namespace Zelda64TextEditor
 
         public Exporter(ObservableCollection<Message> messageList, string fileName, ExportType exportType, MemoryStream inputFile, ROMVer Version, bool Credits = false)
         {
-            m_messageList = messageList;
             m_fileName = fileName;
 
             // We need the char table, with an index of -4, at the start of all the entries. So we'll find it and put it at the top.

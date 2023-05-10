@@ -765,11 +765,10 @@ namespace Zelda64TextEditor
             {
                 foreach (Message m in MessageList)
                 {
-                    UInt16 Res = 0;
 
                     bool MayBeOcarinaEmptyMsg = false;
 
-                    if (UInt16.TryParse(m.TextData.TrimStart('0'), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out Res))
+                    if (ushort.TryParse(m.TextData.TrimStart('0'), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out ushort Res))
                         MayBeOcarinaEmptyMsg = true;
 
                     // 0x11A is used NPC Maker
@@ -903,9 +902,7 @@ namespace Zelda64TextEditor
         restart:
             if (InputBox.ShowInputDialog("Enter new ID", ref Out) == System.Windows.Forms.DialogResult.OK)
             {
-                short NewID;
-
-                if (Int16.TryParse(Out.TrimStart(new char[] { '0', 'x' }), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out NewID))
+                if (short.TryParse(Out.TrimStart(new char[] { '0', 'x' }), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out short NewID))
                 {
                     if (MessageList.FirstOrDefault(x => x.MessageID == NewID) != null)
                     {
