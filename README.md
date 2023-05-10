@@ -15,7 +15,7 @@ To open credits messages, hold left CTRL while opening a ROM or Z64ROM filesyste
 You can search through the messages by typing in the top-left corner textbox. You can also filter messages with a regex pattern by encasing it with "REGEX:{}".
 <br><br>
 Right click the message input textbox to open a context menu containing all the control codes available. Hover over one to receive an explanation.
-
+<br><br>
 Supports custom fonts as exported from <a href="https://github.com/z64me/z64font">z64font</a>. Simply put both files exported from the program in the same directory as the dll - named ''font.font_static'' and ''font.width_table'' and they will be automatically loaded and used for the preview.
 
 ![image](https://user-images.githubusercontent.com/43761362/235342098-543cefcc-fac7-4b52-8fd7-6e07aa51c7c5.png)
