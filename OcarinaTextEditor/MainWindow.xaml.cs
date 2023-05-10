@@ -42,6 +42,9 @@ namespace Zelda64TextEditor
             view.MessageAdded += View_MessageAdded;
             view.ROMVersionChanged += View_ROMVersionChanged;
 
+
+
+
             ConstructContextMenu();
 
         }
