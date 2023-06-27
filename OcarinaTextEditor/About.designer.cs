@@ -44,7 +44,7 @@
             this.CreditsHeader.AutoSize = true;
             this.CreditsHeader.BackColor = System.Drawing.Color.White;
             this.CreditsHeader.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CreditsHeader.Location = new System.Drawing.Point(252, 129);
+            this.CreditsHeader.Location = new System.Drawing.Point(252, 103);
             this.CreditsHeader.Name = "CreditsHeader";
             this.CreditsHeader.Size = new System.Drawing.Size(50, 13);
             this.CreditsHeader.TabIndex = 4;
@@ -55,17 +55,17 @@
             this.Credits.AutoSize = true;
             this.Credits.BackColor = System.Drawing.Color.White;
             this.Credits.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Credits.Location = new System.Drawing.Point(252, 142);
+            this.Credits.Location = new System.Drawing.Point(252, 127);
             this.Credits.Name = "Credits";
-            this.Credits.Size = new System.Drawing.Size(154, 91);
+            this.Credits.Size = new System.Drawing.Size(154, 130);
             this.Credits.TabIndex = 5;
             this.Credits.Text = "Programming:\r\nSageofMirrors, Skawo\r\n\r\nSpecial Thanks:\r\nZelda 64 Decompilation Tea" +
-    "ms\r\nCloudmodding Wiki\r\nHylian Modding Server";
+    "ms\r\nCloudmodding Wiki\r\nHylian Modding Server\r\n\r\nDedicated to CrookedPoe\r\nR.I.P";
             // 
             // Logo
             // 
             this.Logo.Image = ((System.Drawing.Image)(resources.GetObject("Logo.Image")));
-            this.Logo.Location = new System.Drawing.Point(12, 12);
+            this.Logo.Location = new System.Drawing.Point(13, 36);
             this.Logo.Name = "Logo";
             this.Logo.Size = new System.Drawing.Size(233, 221);
             this.Logo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -121,7 +121,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(414, 242);
+            this.ClientSize = new System.Drawing.Size(414, 270);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.LblVersion);
