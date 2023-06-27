@@ -208,7 +208,7 @@ namespace Zelda64TextEditor
 
                 string[] GenericTag = new string[] { "Null character",                       $"{MajoraControlCode.NULL_CHAR}",              "Prints nothing, causing the text routine to print out slower.",
                                                      "New textbox",                          $"{MajoraControlCode.NEW_BOX}",                "Starts a new message.",
-                                                     "New textbox and center",               $"{MajoraControlCode.NEW_BOX_3L}",             "Starts a new message and ignores any extraneous linebreaks if the message has less than 4 lines",
+                                                     "New textbox and center",               $"{MajoraControlCode.NEW_BOX_CENTER}",         "Starts a new message and ignores any extraneous linebreaks if the message has less than 4 lines",
                                                      "Reset cursor",                         $"{MajoraControlCode.RESET_CURSOR}",           "Used as a filler when there are fewer than four lines of text.",
                                                      "Offset",                               $"{MajoraControlCode.SHIFT}:0",                "Insert the specified number of spaces into the textbox.",
                                                      "No skip",                              $"{MajoraControlCode.NOSKIP}",                 "Disallows skipping the message box it's inserted into using the B button.",
