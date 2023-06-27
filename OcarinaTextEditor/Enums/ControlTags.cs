@@ -287,7 +287,7 @@ namespace Zelda64TextEditor.Enums
         UNK_0F = 0xF,
         NEW_BOX = 0x10,
         LINE_BREAK = 0x11,
-        NEW_BOX_INCOMPL = 0x12,
+        NEW_BOX_3L = 0x12,
         RESET_CURSOR = 0x13,
         SHIFT = 0x14,
         NOSKIP = 0x15,

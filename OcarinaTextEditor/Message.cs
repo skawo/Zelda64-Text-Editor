@@ -406,8 +406,8 @@ namespace Zelda64TextEditor
                     return "\n".ToCharArray();
                 case MajoraControlCode.NEW_BOX:
                     return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
-                case MajoraControlCode.NEW_BOX_INCOMPL:
-                    return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX_INCOMPL.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
+                case MajoraControlCode.NEW_BOX_3L:
+                    return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX_3L.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
                 case MajoraControlCode.DELAY_DC:
                 case MajoraControlCode.DELAY_DI:
                 case MajoraControlCode.DELAY_END:
@@ -530,7 +530,7 @@ namespace Zelda64TextEditor
                     string parsedCode = new string(controlCode.ToArray());
                     string parsedFixed = parsedCode.Split(':')[0].Replace(" ", "_").ToUpper();
 
-                    if (parsedFixed == MajoraControlCode.NEW_BOX.ToString() || parsedFixed == MajoraControlCode.DELAY_END.ToString() || parsedFixed == MajoraControlCode.NEW_BOX_INCOMPL.ToString())
+                    if (parsedFixed == MajoraControlCode.NEW_BOX.ToString() || parsedFixed == MajoraControlCode.DELAY_END.ToString() || parsedFixed == MajoraControlCode.NEW_BOX_3L.ToString())
                     {
                         if (data.Count != 0)
                             if (data[data.Count - 1] == 0x11)
