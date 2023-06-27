@@ -372,13 +372,13 @@ namespace Zelda64TextEditor
         private void InsertControlCode(string s)
         {
             ViewModel view = (ViewModel)DataContext;
-            view.SelectedMessage.TextData = view.SelectedMessage.TextData.Insert(view.TextboxPosition, string.Format("<{0}>", s));
+            view.SelectedMessage.TextData = view.SelectedMessage.TextData.Insert(view.TextboxPosition, string.Format("<{0}>", s.Replace("_", " ")));
         }
 
         private void InsertControlCode(object sender, RoutedEventArgs e)
         {
             ViewModel view = (ViewModel)DataContext;
-            view.SelectedMessage.TextData = view.SelectedMessage.TextData.Insert(view.TextboxPosition, string.Format("<{0}>", (sender as Control).Tag));
+            view.SelectedMessage.TextData = view.SelectedMessage.TextData.Insert(view.TextboxPosition, string.Format("<{0}>", ((sender as Control).Tag as string).Replace("_", " ")));
         }
 
         BitmapImage BitmapToImageSource(System.Drawing.Bitmap bitmap)
