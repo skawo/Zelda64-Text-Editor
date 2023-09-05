@@ -1,3 +1,5 @@
+<h1>Zelda 64 Text Editor</h1>
+
 This fork of Sage of Mirror's Ocarina Text Editor adds a bunch of extra features:
 
 * A message previewer
