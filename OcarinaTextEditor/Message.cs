@@ -221,7 +221,7 @@ namespace Zelda64TextEditor
             {
                 bool readControlCode = false;
 
-                if (testByte < 0x7F || testByte > 0x9E)
+                if (testByte < 0x7F || testByte > 0xAF)
                 {
                     if (Enum.IsDefined(typeof(MajoraControlCode), (int)testByte))
                     {
@@ -232,19 +232,29 @@ namespace Zelda64TextEditor
 
                 if (!readControlCode)
                 {
-                    if ((testByte >= 0x20 && testByte < 0x7F) || (char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte)))
-                    {
-                        charData.Add((char)testByte);
-                    }
-                    else if (testByte == 0x7F)
+                    if (testByte == 0x7F)
                     {
                         // Never actually used in-game. Appears blank.
                         charData.Add(' ');
                     }
-                    else if (testByte >= 0x80 && testByte <= 0x9E)
+                    else if(testByte >= 0x80 && testByte <= 0xAF)
                     {
-                        charData.Add(Enum.GetName(typeof(MajoraControlCode), testByte).First());
+                        if (testByte == 0xAD)
+                            charData.Add('¡');
+                        else if (testByte == 0xAE)
+                            charData.Add('¿');
+                        else
+                            charData.Add(Enum.GetName(typeof(MajoraControlCode), testByte).First());
                     }
+                    else if ((testByte >= 0x20 && testByte < 0x7F) || char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte))
+                    {
+                        charData.Add((char)testByte);
+                    }
+                    else
+                    {
+                        charData.AddRange($"<UNK {testByte}>");
+                    }
+    
                 }
 
                 if (reader.BaseStream.Position != reader.BaseStream.Length)
@@ -429,9 +439,9 @@ namespace Zelda64TextEditor
             return codeBank.ToArray();
         }
 
-        public void WriteMessage(EndianBinaryWriter writer, ROMVer Version)
+        public void WriteMessage(EndianBinaryWriter writer, ROMVer Version, bool Credits)
         {
-            if (ROMInfo.IsMajoraMask(Version))
+            if (ROMInfo.IsMajoraMask(Version) && !Credits)
             {
                 writer.Write(m_messageID);
                 writer.Write((short)0);
@@ -488,7 +498,15 @@ namespace Zelda64TextEditor
                 // Not a control code, copy char to output buffer
                 if (TextData[i] != '<' && TextData[i] != '>')
                 {
-                    if (Enum.IsDefined(typeof(MajoraControlCode), TextData[i].ToString()))
+                    if (TextData[i] == '¡')
+                    {
+                        data.Add(0xAD);
+                    }
+                    else if (TextData[i] == '¿')
+                    {
+                        data.Add(0xAE);
+                    }
+                    else if (Enum.IsDefined(typeof(MajoraControlCode), TextData[i].ToString()))
                     {
                         _ = Enum.TryParse(TextData[i].ToString(), out MajoraControlCode Result);
                         data.Add((byte)Result);

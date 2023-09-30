@@ -48,7 +48,7 @@ namespace Zelda64TextEditor
 
                 foreach (Message mes in messageList)
                 {
-                    mes.WriteMessage(messageTableWriter, Version);
+                    mes.WriteMessage(messageTableWriter, Version, Credits);
 
                     messageTableWriter.BaseStream.Seek(-4, SeekOrigin.Current);
 

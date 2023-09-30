@@ -850,7 +850,7 @@ namespace Zelda64TextEditor
 
             if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                _ = new Exporter(m_messageList, ofd.FileName, Enums.ExportType.File, null, Version);
+                _ = new Exporter(m_messageList, ofd.FileName, Enums.ExportType.File, null, Version, CreditsMode);
             }
         }
 
