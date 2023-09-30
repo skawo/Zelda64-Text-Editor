@@ -1,3 +1,5 @@
+<h1>Zelda 64 Text Editor</h1>
+
 This fork of Sage of Mirror's Ocarina Text Editor adds a bunch of extra features:
 
 * A message previewer
@@ -18,4 +20,5 @@ Right click the message input textbox to open a context menu containing all the 
 <br><br>
 Supports custom fonts as exported from <a href="https://github.com/z64me/z64font">z64font</a>. Simply put both files exported from the program in the same directory as the dll - named ''font.font_static'' and ''font.width_table'' and they will be automatically loaded and used for the preview.
 
-![image](https://user-images.githubusercontent.com/43761362/235342098-543cefcc-fac7-4b52-8fd7-6e07aa51c7c5.png)
+![image](https://github.com/skawo/Zelda64-Text-Editor/assets/43761362/57cc981d-0b8c-42d1-91ef-90d45fbf89e3)
+
