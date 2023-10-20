@@ -221,6 +221,7 @@ namespace Zelda64TextEditor
             {
                 bool readControlCode = false;
 
+                // Control tags
                 if (testByte < 0x7F || testByte > 0xAF)
                 {
                     if (Enum.IsDefined(typeof(MajoraControlCode), (int)testByte))
@@ -237,8 +238,10 @@ namespace Zelda64TextEditor
                         // Never actually used in-game. Appears blank.
                         charData.Add(' ');
                     }
-                    else if(testByte >= 0x80 && testByte <= 0xAF)
+                    // Stressed characters that don't map to ASCII directly
+                    else if (testByte >= 0x80 && testByte <= 0xAF)
                     {
+                        // Can't be used as indice names in the enum. Ugh.
                         if (testByte == 0xAD)
                             charData.Add('¡');
                         else if (testByte == 0xAE)
@@ -246,13 +249,14 @@ namespace Zelda64TextEditor
                         else
                             charData.Add(Enum.GetName(typeof(MajoraControlCode), testByte).First());
                     }
+                    // The rest~
                     else if ((testByte >= 0x20 && testByte < 0x7F) || char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte))
                     {
                         charData.Add((char)testByte);
                     }
                     else
                     {
-                        charData.AddRange($"<UNK {testByte}>");
+                        charData.AddRange($"<UNK {testByte:X}>");
                     }
     
                 }
@@ -287,18 +291,24 @@ namespace Zelda64TextEditor
 
                 if (!readControlCode)
                 {
-                    if ((testByte >= 0x20 && testByte < 0x7F) || (char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte)))
-                    {
-                        charData.Add((char)testByte);
-                    }
-                    else if (testByte == 0x7F)
+                    if (testByte == 0x7F)
                     {
                         // Never actually used in-game. Appears blank.
                         charData.Add(' ');
-                    }    
+                    }
+                    // Stressed characters
                     else if (testByte >= 0x80 && testByte <= 0x9E)
-                    { 
-                       charData.Add(Enum.GetName(typeof(OcarinaControlCode), testByte).First());
+                    {
+                        charData.Add(Enum.GetName(typeof(OcarinaControlCode), testByte).First());
+                    }
+                    // ASCII-mapped characters
+                    else if((testByte >= 0x20 && testByte < 0x7F) || (char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte)))
+                    {
+                        charData.Add((char)testByte);
+                    }
+                    else
+                    {
+                        charData.AddRange($"<UNK {testByte:X}>");
                     }
                 }
 
