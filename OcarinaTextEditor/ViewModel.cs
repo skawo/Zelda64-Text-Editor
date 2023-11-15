@@ -268,6 +268,12 @@ namespace Zelda64TextEditor
         {
             get { return new RelayCommand(x => RemoveEmptyEntries(), x => MessageList != null); }
         }
+
+        public ICommand OnRequestInsertEntriesFromJSON
+        {
+            get { return new RelayCommand(x => InsertEntriesFromJSON(), x => MessageList != null); }
+        }
+
         public ICommand OnRequestShowAbout
         {
             get { return new RelayCommand(x => ShowAbout()); }
@@ -757,34 +763,94 @@ namespace Zelda64TextEditor
             ViewSource.View.Refresh();
         }
 
+        private void InsertEntriesFromJSON()
+        {
+            OpenFileDialog openJSON = new OpenFileDialog();
+
+
+            try
+            {
+                if (openJSON.ShowDialog() == true)
+                {
+                    string Text = File.ReadAllText(openJSON.FileName);
+                    List<Message> ToAdd = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Message>>(Text);
+
+                    foreach (Message msg in ToAdd)
+                    {
+                        Message ms = MessageList.FirstOrDefault(x => x.MessageID == msg.MessageID);
+
+                        if (ms != null)
+                        {
+                            if (System.Windows.Forms.MessageBox.Show("You're trying to add a message with the same ID. Replace the one currently in the list?", "Duplicate ID", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                                MessageList[MessageList.IndexOf(ms)] = msg;
+                        }
+                        else
+                        {
+                            MessageList.Add(msg);
+                            
+                        }
+
+
+                        ViewSource.View.Refresh();
+
+                        if (MessageList.Count != 0)
+                            MessageAdded?.Invoke(MessageList.Last());
+                    }
+                    
+                }
+                else
+                    return;
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(ex.Message);
+                return;
+            }
+        }
+
         private void RemoveEmptyEntries()
         {
             List<Message> ToRemove = new List<Message>();
 
-            if (System.Windows.Forms.MessageBox.Show("This function will remove messages with blank or placeholder data (with a few exceptions needed for the game to function). Proceed?", "Empty message removal", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            try
             {
-                foreach (Message m in MessageList)
+
+                if (System.Windows.Forms.MessageBox.Show("This function will remove messages with blank or placeholder data (with a few exceptions needed for the game to function). Proceed?", "Empty message removal", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                 {
+                    foreach (Message m in MessageList)
+                    {
 
-                    bool MayBeOcarinaEmptyMsg = false;
+                        bool MayBeOcarinaEmptyMsg = false;
 
-                    if (ushort.TryParse(m.TextData.TrimStart('0'), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out ushort Res))
-                        MayBeOcarinaEmptyMsg = true;
+                        if (ushort.TryParse(m.TextData.TrimStart('0'), System.Globalization.NumberStyles.HexNumber, System.Globalization.CultureInfo.InvariantCulture, out ushort Res))
+                            MayBeOcarinaEmptyMsg = true;
 
-                    // 0x11A is used NPC Maker
-                    // 0xFFFC is used as the alphabet
-                    // 0xFFFD, 0xFFFF are used as the end marker
-                    List<UInt16> DoNotRemove = new List<UInt16>() { 0x11A, 0xFFFC, 0xFFFD, 0xFFFF };
+                        // 0x11A is used NPC Maker
+                        // 0xFFFC is used as the alphabet
+                        // 0xFFFD, 0xFFFF are used as the end marker
+                        List<UInt16> DoNotRemove = new List<UInt16>() { 0x11A, 0xFFFC, 0xFFFD, 0xFFFF };
 
-                    if ((m.TextData == "" || (Res == m.MessageID && MayBeOcarinaEmptyMsg)) && !DoNotRemove.Contains((ushort)m.MessageID))
-                        ToRemove.Add(m);
+                        if ((m.TextData == "" || (Res == m.MessageID && MayBeOcarinaEmptyMsg)) && !DoNotRemove.Contains((ushort)m.MessageID))
+                            ToRemove.Add(m);
+                    }
+
+                    foreach (Message m in ToRemove)
+                    {
+                        MessageList.Remove(m);
+                    }
+
+                    File.WriteAllText("DELETED.json", Newtonsoft.Json.JsonConvert.SerializeObject(ToRemove, Newtonsoft.Json.Formatting.Indented));
+                    System.Windows.Forms.MessageBox.Show("The removed entries were stored in DELETED.json in case you want to reinsert them.");
+
+
+                    if (MessageList.Count != 0)
+                        SelectedMessage = MessageList[0];
                 }
-
-                foreach (Message m in ToRemove)
-                    MessageList.Remove(m);
-
-                if (MessageList.Count != 0)
-                    SelectedMessage = MessageList[0];
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show(ex.Message);
+                return;
             }
 
         }
