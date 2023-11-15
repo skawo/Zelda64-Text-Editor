@@ -274,6 +274,11 @@ namespace Zelda64TextEditor
             get { return new RelayCommand(x => InsertEntriesFromJSON(), x => MessageList != null); }
         }
 
+        public ICommand OnRequestExportJSON
+        {
+            get { return new RelayCommand(x => ExportJSON(), x => MessageList != null); }
+        }
+
         public ICommand OnRequestShowAbout
         {
             get { return new RelayCommand(x => ShowAbout()); }
@@ -763,10 +768,26 @@ namespace Zelda64TextEditor
             ViewSource.View.Refresh();
         }
 
+        private void ExportJSON()
+        {
+            SaveFileDialog saveFile = new SaveFileDialog
+            {
+                Filter = "JSON Files (*.json)|*.json|All files|*"
+            };
+
+            if (saveFile.ShowDialog() == true)
+            {
+                File.WriteAllText(saveFile.FileName, Newtonsoft.Json.JsonConvert.SerializeObject(MessageList, Newtonsoft.Json.Formatting.Indented));
+
+            }
+        }
+
         private void InsertEntriesFromJSON()
         {
-            OpenFileDialog openJSON = new OpenFileDialog();
-
+            OpenFileDialog openJSON = new OpenFileDialog
+            {
+                Filter = "JSON Files (*.json)|*.json|All files|*"
+            };
 
             try
             {
