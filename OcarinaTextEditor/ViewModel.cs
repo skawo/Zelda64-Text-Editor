@@ -796,14 +796,19 @@ namespace Zelda64TextEditor
                     string Text = File.ReadAllText(openJSON.FileName);
                     List<Message> ToAdd = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Message>>(Text);
 
+                    bool ReplaceAccepted = false;
+
                     foreach (Message msg in ToAdd)
                     {
                         Message ms = MessageList.FirstOrDefault(x => x.MessageID == msg.MessageID);
 
                         if (ms != null)
                         {
-                            if (System.Windows.Forms.MessageBox.Show("You're trying to add a message with the same ID. Replace the one currently in the list?", "Duplicate ID", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                            if (ReplaceAccepted || System.Windows.Forms.MessageBox.Show("You're trying to add message(s) with duplicate IDs. Replace the messages currently in the list?", "Duplicate ID", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                            {
+                                ReplaceAccepted = true;
                                 MessageList[MessageList.IndexOf(ms)] = msg;
+                            }
                         }
                         else
                         {
@@ -849,7 +854,9 @@ namespace Zelda64TextEditor
                         // 0x11A is used NPC Maker
                         // 0xFFFC is used as the alphabet
                         // 0xFFFD, 0xFFFF are used as the end marker
-                        List<UInt16> DoNotRemove = new List<UInt16>() { 0x11A, 0xFFFC, 0xFFFD, 0xFFFF };
+                        // 0x0 is for Majora's Mask
+                        // 0x1B5B is for Majora's Mask Ocarina prompts
+                        List<UInt16> DoNotRemove = new List<UInt16>() { 0x0, 0x11A, 0x1B5B, 0xFFFC, 0xFFFD, 0xFFFF };
 
                         if ((m.TextData == "" || (Res == m.MessageID && MayBeOcarinaEmptyMsg)) && !DoNotRemove.Contains((ushort)m.MessageID))
                             ToRemove.Add(m);
