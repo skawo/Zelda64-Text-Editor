@@ -65,6 +65,8 @@ namespace Zelda64TextEditor
                     textBoxMsgDock.Margin = new Thickness(0, 241, 0, 10);
                     ConstructContextMenu();
                 }
+
+                Dicts.ReloadDict(Dicts.MMSFXesFilename, ref Dicts.SFXes);
             }
             else if (!view.MajoraMaskMode)
             {
@@ -77,7 +79,11 @@ namespace Zelda64TextEditor
                     textBoxMsgDock.Margin = new Thickness(0, 118, 0, 10);
                     ConstructContextMenu();
                 }
+
+                Dicts.ReloadDict(Dicts.OoTSFXesFilename, ref Dicts.SFXes);
             }
+
+
         }
 
         private void View_MessageAdded(Message AddedMsg)

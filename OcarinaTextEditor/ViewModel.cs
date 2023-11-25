@@ -92,10 +92,6 @@ namespace Zelda64TextEditor
 
                 ROMVersionChanged?.Invoke();
 
-                if (MajoraMaskMode)
-                    Dicts.ReloadDict(Dicts.MMSFXesFilename, ref Dicts.SFXes);
-                else
-                    Dicts.ReloadDict(Dicts.OoTSFXesFilename, ref Dicts.SFXes);
             }
         }
 
