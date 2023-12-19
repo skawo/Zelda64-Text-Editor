@@ -210,6 +210,7 @@ namespace Zelda64TextEditor
 
                 MenuItem SoundEffectMenu = new MenuItem() { Header = "Sound...", ToolTip = "Plays a sound effect." };
                 SoundEffectMenu.Click += SoundEffectMenu_Click;
+                ControlTagsMenu.Items.Add(SoundEffectMenu);
 
 
                 string[] GenericTag = new string[] { "Null character",                       $"{MajoraControlCode.NULL_CHAR}",              "Prints nothing, causing the text routine to print out slower.",
@@ -318,6 +319,7 @@ namespace Zelda64TextEditor
 
                 MenuItem SoundEffectMenu = new MenuItem() { Header = "Sound...", ToolTip = "Plays a sound effect. Only one sound effect can be played per textbox." };
                 SoundEffectMenu.Click += SoundEffectMenu_Click;
+                ControlTagsMenu.Items.Add(SoundEffectMenu);
 
                 string[] GenericTag = new string[] { "Delay",                   $"{OcarinaControlCode.DELAY}:0",            "Waits for the specified number of frames until switching to the next textbox.",
                                                      "Fade",                    $"{OcarinaControlCode.FADE}:0",             "Waits for the specified number of frames until ending the textbox.",
