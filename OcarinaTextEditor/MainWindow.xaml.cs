@@ -163,6 +163,7 @@ namespace Zelda64TextEditor
                                                  "Hours remain",                             $"{MajoraControlCode.MOON_CRASH_HOURS_REMAIN}",        "Print time remaining in hours",
                                                  "Hours remain until morning",               $"{MajoraControlCode.UNTIL_MORNING}",                  "Print time remaining until sunrise in hours & minutes",
                                                  "Horseback Archery High Score",             $"{MajoraControlCode.EPONA_ARCHERY_HIGHSCORE}",        "Print the Epona Archery high score (Romani Ranch Balloon Game)",
+                                                 "Fish weight",                              $"{MajoraControlCode.FISH_WEIGHT}",                    "Caught fish's weight. Unused two-digit minigame score.",
                                                  "Deku Flying Highscore 1",                  $"{MajoraControlCode.DEKU_HIGHSCORE_DAY1}",            "Print the Deku Flying Highscore from Day 1)",
                                                  "Deku Flying Highscore 2",                  $"{MajoraControlCode.DEKU_HIGHSCORE_DAY2}",            "Print the Deku Flying Highscore from Day 2)",
                                                  "Deku Flying Highscore 3",                  $"{MajoraControlCode.DEKU_HIGHSCORE_DAY3}",            "Print the Deku Flying Highscore from Day 3)",
