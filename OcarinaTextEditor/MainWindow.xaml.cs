@@ -42,11 +42,7 @@ namespace Zelda64TextEditor
             view.MessageAdded += View_MessageAdded;
             view.ROMVersionChanged += View_ROMVersionChanged;
 
-
-
-
             ConstructContextMenu();
-
         }
 
 
@@ -104,20 +100,20 @@ namespace Zelda64TextEditor
 
             textBoxMsg.ContextMenu = new ContextMenu();
 
-            _ = textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Cut", Command = ApplicationCommands.Cut });
-            _ = textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Copy", Command = ApplicationCommands.Copy });
+            _ = textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Cut",   Command = ApplicationCommands.Cut });
+            _ = textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Copy",  Command = ApplicationCommands.Copy });
             _ = textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Paste", Command = ApplicationCommands.Paste });
 
             if (IsMajoraMode)
             {
-                MenuItem ControlTagsMenu = new MenuItem() { Header = "Control Tags..." };
+                MenuItem ControlTagsMenu = new MenuItem() {     Header = "Control Tags..." };
 
-                MenuItem ColorTagMenu = new MenuItem() { Header = "Color", ToolTip = "Text until the next Color tag will be of this color. The color will persist even to the next textbox." };
-                MenuItem ButtonTagMenu = new MenuItem() { Header = "Buttons", ToolTip = "Add a button icon to the textbox." };
-                MenuItem ScoreTagMenu = new MenuItem() { Header = "Scores and timers", ToolTip = "Various scores and timers." };
-                MenuItem PromptTagMenu = new MenuItem() { Header = "Prompts", ToolTip = "Tags relating to player input." };
-                MenuItem CompletionTagMenu = new MenuItem() { Header = "Completion-related", ToolTip = "Tags relating to quest completion." };
-                MenuItem SoundEffectMenu = new MenuItem() { Header = "Sound...", ToolTip = "Plays a sound effect." };
+                MenuItem ColorTagMenu = new MenuItem() {        Header = "Color",               ToolTip = "Text until the next Color tag will be of this color. The color will persist even to the next textbox." };
+                MenuItem ButtonTagMenu = new MenuItem() {       Header = "Buttons",             ToolTip = "Add a button icon to the textbox." };
+                MenuItem ScoreTagMenu = new MenuItem() {        Header = "Scores and timers",   ToolTip = "Various scores and timers." };
+                MenuItem PromptTagMenu = new MenuItem() {       Header = "Prompts",             ToolTip = "Tags relating to player input." };
+                MenuItem CompletionTagMenu = new MenuItem() {   Header = "Completion-related",  ToolTip = "Tags relating to quest completion." };
+                MenuItem SoundEffectMenu = new MenuItem() {     Header = "Sound...",            ToolTip = "Plays a sound effect." };
 
                 AddTagControlsToMenu(ColorTagMenu, ContextMenuData.MajoraColors);
                 AddTagControlsToMenu(ButtonTagMenu, ContextMenuData.ButtonsMajora);
@@ -139,14 +135,14 @@ namespace Zelda64TextEditor
             }
             else
             {
-                MenuItem ControlTagsMenu = new MenuItem() { Header = "Control Tags..." };
+                MenuItem ControlTagsMenu = new MenuItem() {     Header = "Control Tags..." };
 
-                MenuItem ColorTagMenu = new MenuItem() { Header = "Color", ToolTip = "Text until the next Color tag (or until the end of the textbox if none are present) will be of this color." };
-                MenuItem HighScoreTagMenu = new MenuItem() { Header = "High Score", ToolTip = "Prints a player's high score." };
-                MenuItem ButtonTagMenu = new MenuItem() { Header = "Buttons", ToolTip = "Add a button icon to the textbox." };
-                MenuItem ScoreTagMenu = new MenuItem() { Header = "Score", ToolTip = "Prints a player's score." };
-                MenuItem IconTagMenu = new MenuItem() { Header = "Icon...", ToolTip = "Draws specified icon inside the textbox." };
-                MenuItem SoundEffectMenu = new MenuItem() { Header = "Sound...", ToolTip = "Plays a sound effect. Only one sound effect can be played per textbox." };
+                MenuItem ColorTagMenu = new MenuItem() {        Header = "Color",       ToolTip = "Text until the next Color tag (or until the end of the textbox if none are present) will be of this color." };
+                MenuItem HighScoreTagMenu = new MenuItem() {    Header = "High Score",  ToolTip = "Prints a player's high score." };
+                MenuItem ButtonTagMenu = new MenuItem() {       Header = "Buttons",     ToolTip = "Add a button icon to the textbox." };
+                MenuItem ScoreTagMenu = new MenuItem() {        Header = "Score",       ToolTip = "Prints a player's score." };
+                MenuItem IconTagMenu = new MenuItem() {         Header = "Icon...",     ToolTip = "Draws specified icon inside the textbox." };
+                MenuItem SoundEffectMenu = new MenuItem() {     Header = "Sound...",    ToolTip = "Plays a sound effect. Only one sound effect can be played per textbox." };
 
                 AddTagControlsToMenu(ColorTagMenu, ContextMenuData.ColorsOcarina);
                 AddTagControlsToMenu(HighScoreTagMenu, ContextMenuData.HighScoresOcarina);

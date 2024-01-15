@@ -38,11 +38,11 @@ namespace Zelda64TextEditor
 
 
 
-        public static string[] ScoresMajora = new string[] { "Required Swamp Cruise Hits",               $"{MajoraControlCode.SWAMP_CRUISE_HITS}",              "Prints the number of hits required to win the Swamp Cruise reward.",
-                                                             "Stray Fairies",                            $"{MajoraControlCode.STRAY_FAIRY_SCORE}",              "Amount of Stray Fairies collected in the current dungeon.",
-                                                             "Gold Skulltulas",                          $"{MajoraControlCode.GOLD_SKULLTULAS}",                "Amount of Gold Skulltula tokens collected in the current spider house.",
-                                                             "Postman Minigame Time",                    $"{MajoraControlCode.POSTMAN_RESULTS}",                "Time score attained in the postman minigame.",
-                                                             "Timer",                                    $"{MajoraControlCode.TIMER}",                          "Prints time shown on the last timer.",
+        public static string[] ScoresMajora = new string[] { "Required Swamp Cruise Hits",               $"{MajoraControlCode.SWAMP_CRUISE_HITS}",              "Print the number of hits required to win the Swamp Cruise reward.",
+                                                             "Stray Fairies",                            $"{MajoraControlCode.STRAY_FAIRY_SCORE}",              "Print the amount of Stray Fairies collected in the current dungeon.",
+                                                             "Gold Skulltulas",                          $"{MajoraControlCode.GOLD_SKULLTULAS}",                "Print the amount of Gold Skulltula tokens collected in the current spider house.",
+                                                             "Postman Minigame Time",                    $"{MajoraControlCode.POSTMAN_RESULTS}",                "Print the time score attained in the postman minigame.",
+                                                             "Timer",                                    $"{MajoraControlCode.TIMER}",                          "Print the time shown on the last timer.",
                                                              "Moon Crash Time Left",                     $"{MajoraControlCode.MOON_CRASH_TIME}",                "Print remaining time until Moon Crash (as on the Clock Tower roof)",
                                                              "Deku Flying Time",                         $"{MajoraControlCode.DEKU_RESULTS}",                   "Print time attained in the Deku Flying minigame",
                                                              "Town Shooting Gallery High Score",         $"{MajoraControlCode.TOWN_SHOOTING_HIGHSCORE}",        "Print the Town Shooting Gallery High Score",
@@ -54,10 +54,10 @@ namespace Zelda64TextEditor
                                                              "Hours remain",                             $"{MajoraControlCode.MOON_CRASH_HOURS_REMAIN}",        "Print time remaining in hours",
                                                              "Hours remain until morning",               $"{MajoraControlCode.UNTIL_MORNING}",                  "Print time remaining until sunrise in hours & minutes",
                                                              "Horseback Archery High Score",             $"{MajoraControlCode.EPONA_ARCHERY_HIGHSCORE}",        "Print the Epona Archery high score (Romani Ranch Balloon Game)",
-                                                             "Fish weight",                              $"{MajoraControlCode.FISH_WEIGHT}",                    "Caught fish's weight. Unused two-digit minigame score.",
-                                                             "Deku Flying Highscore 1",                  $"{MajoraControlCode.DEKU_HIGHSCORE_DAY1}",            "Print the Deku Flying Highscore from Day 1)",
-                                                             "Deku Flying Highscore 2",                  $"{MajoraControlCode.DEKU_HIGHSCORE_DAY2}",            "Print the Deku Flying Highscore from Day 2)",
-                                                             "Deku Flying Highscore 3",                  $"{MajoraControlCode.DEKU_HIGHSCORE_DAY3}",            "Print the Deku Flying Highscore from Day 3)"
+                                                             "Fish weight",                              $"{MajoraControlCode.FISH_WEIGHT}",                    "Print the caught fish's weight. Unused two-digit minigame score.",
+                                                             "Deku Flying Highscore 1",                  $"{MajoraControlCode.DEKU_HIGHSCORE_DAY1}",            "Print the Deku Flying high score from Day 1)",
+                                                             "Deku Flying Highscore 2",                  $"{MajoraControlCode.DEKU_HIGHSCORE_DAY2}",            "Print the Deku Flying high score from Day 2)",
+                                                             "Deku Flying Highscore 3",                  $"{MajoraControlCode.DEKU_HIGHSCORE_DAY3}",            "Print the Deku Flying high score from Day 3)"
         };
 
         public static string[] PromptsMajora = new string[] { "Bank Prompt",                              $"{MajoraControlCode.BANK_PROMPT}",                    "Print the withdraw/deposit rupees prompt",
@@ -67,7 +67,7 @@ namespace Zelda64TextEditor
                                                               "Lottery Number Prompt",                    $"{MajoraControlCode.LOTTERY_NUMBER_PROMPT}",          "Print the Lottery Number prompt",
                                                               "Bomber's Code Prompt",                     $"{MajoraControlCode.BOMBER_CODE_PROMPT}",             "Print the Bomber's Code prompt",
                                                               "Item prompt",                              $"{MajoraControlCode.ITEM_PROMPT}",                    "Used in the Open-Menu-And-Choose-An-Item Message",
-                                                              "Song of Soaring Destination",              $"{MajoraControlCode.SOARING_DESTINATION}",            "Print Song of Soaring destination chosen"
+                                                              "Song of Soaring Destination",              $"{MajoraControlCode.SOARING_DESTINATION}",            "Print the chosen Song of Soaring destination"
         };
 
         public static string[] CompletionMajora = new string[] { "Oceanside House Order",                    $"{MajoraControlCode.OCEANSIDE_HOUSE_ORDER}",           "Unused: print the entire Oceanside House Mask order",
