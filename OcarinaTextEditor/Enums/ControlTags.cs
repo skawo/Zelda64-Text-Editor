@@ -283,7 +283,7 @@ namespace Zelda64TextEditor.Enums
         SWAMP_CRUISE_HITS = 0x0B,
         STRAY_FAIRY_SCORE = 0x0C,
         GOLD_SKULLTULAS = 0x0D,
-        UNK_0E = 0xE,
+        FISH_WEIGHT = 0x0E,
         UNK_0F = 0xF,
         NEW_BOX = 0x10,
         LINE_BREAK = 0x11,
