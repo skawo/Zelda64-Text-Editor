@@ -364,14 +364,14 @@ namespace Zelda64TextEditor
                     break;
                 case OcarinaControlCode.HIGH_SCORE:
                     int scoreID = (int)reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.HIGH_SCORE.ToString().Replace("_", " "), Enum.IsDefined(typeof(OcarinaHighScore), scoreID) ? ((OcarinaHighScore)scoreID).ToString() : scoreID.ToString());
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.HIGH_SCORE.ToString(), Enum.IsDefined(typeof(OcarinaHighScore), scoreID) ? ((OcarinaHighScore)scoreID).ToString() : scoreID.ToString());
                     break;
                 case OcarinaControlCode.JUMP:
                     short msgID = reader.ReadInt16();
                     codeInsides = string.Format("{0}:{1:X4}", OcarinaControlCode.JUMP.ToString(), msgID);
                     break;
                 case OcarinaControlCode.NEW_BOX:
-                    return ($"{Environment.NewLine}<{OcarinaControlCode.NEW_BOX.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
+                    return ($"{Environment.NewLine}<{OcarinaControlCode.NEW_BOX.ToString()}>{Environment.NewLine}").ToCharArray();
                 case OcarinaControlCode.NS:
                     codeInsides = OcarinaControlCode.NS.ToString();
                     break;
@@ -391,7 +391,7 @@ namespace Zelda64TextEditor
                     break;
 
                 default:
-                    codeInsides = code.ToString().Replace("_", " ");
+                    codeInsides = code.ToString();
                     break;
             }
 
@@ -425,9 +425,9 @@ namespace Zelda64TextEditor
                 case MajoraControlCode.LINE_BREAK:
                     return "\n".ToCharArray();
                 case MajoraControlCode.NEW_BOX:
-                    return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
+                    return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX.ToString()}>{Environment.NewLine}").ToCharArray();
                 case MajoraControlCode.NEW_BOX_CENTER:
-                    return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX_CENTER.ToString().Replace("_", " ")}>{Environment.NewLine}").ToCharArray();
+                    return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX_CENTER.ToString()}>{Environment.NewLine}").ToCharArray();
                 case MajoraControlCode.DELAY_DC:
                 case MajoraControlCode.DELAY_DI:
                 case MajoraControlCode.DELAY_END:
@@ -440,7 +440,7 @@ namespace Zelda64TextEditor
                     codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : soundID.ToString());
                     break;
                 default:
-                    codeInsides = code.ToString().Replace("_", " ");
+                    codeInsides = code.ToString();
                     break;
             }
 
