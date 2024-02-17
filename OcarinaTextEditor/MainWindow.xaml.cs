@@ -273,7 +273,7 @@ namespace Zelda64TextEditor
 
             ZeldaMessage.MessagePreviewMajora mp = new ZeldaMessage.MessagePreviewMajora(outD, view.BomberMsgsList.Contains(mes.MessageID));
 
-            if (mp.Message.Count == BoxesData.Count && CurrentPreview != null)
+            if (mp.Message.Count == BoxesData.Count && CurrentPreview != null && !mp.InBombersNotebook)
             {
                 using (Graphics grfx = Graphics.FromImage(CurrentPreview))
                 {

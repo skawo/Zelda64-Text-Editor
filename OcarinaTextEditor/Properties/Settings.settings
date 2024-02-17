@@ -1,7 +1,12 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Zelda64TextEditor.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="TableFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">message_data_static_NES.tbl</Value>
+    </Setting>
+    <Setting Name="MessagesFileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">message_data_static_NES.bin</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

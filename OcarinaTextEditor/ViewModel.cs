@@ -252,7 +252,7 @@ namespace Zelda64TextEditor
 
         public ICommand OnRequestSaveAsFiles
         {
-            get { return new RelayCommand(x => SaveToFiles(), x => MessageList != null); }
+            get { return new RelayCommand(x => SaveToFiles(true), x => MessageList != null); }
         }
 
         public ICommand OnRequestSortEntries
@@ -728,7 +728,7 @@ namespace Zelda64TextEditor
                 case EditorMode.ZZRPMode:
                     SaveZZRP(); break;
                 case EditorMode.FilesMode:
-                    SaveToFiles(); break;
+                    SaveToFiles(false); break;
             }
         }
 
@@ -739,7 +739,7 @@ namespace Zelda64TextEditor
                 case EditorMode.ROMMode:
                     SaveToNewRom(); break;
                 case EditorMode.FilesMode:
-                    SaveToFiles(); break;
+                    SaveToFiles(true); break;
             }
         }
 
@@ -922,25 +922,33 @@ namespace Zelda64TextEditor
             { }
         }
 
-        private void SaveToFiles()
+        private void SaveToFiles(bool SaveAs)
         {
-            var ofd = new CommonOpenFileDialog
+            if (SaveAs)
             {
-                Title = "Choose Directory",
-                IsFolderPicker = true,
-                AddToMostRecentlyUsedList = false,
-                AllowNonFileSystemItems = false,
-                EnsureFileExists = true,
-                EnsurePathExists = true,
-                EnsureReadOnly = false,
-                EnsureValidNames = true,
-                Multiselect = false,
-                ShowPlacesList = true
-            };
+                var ofd = new CommonOpenFileDialog
+                {
+                    Title = "Choose Directory",
+                    IsFolderPicker = true,
+                    AddToMostRecentlyUsedList = false,
+                    AllowNonFileSystemItems = false,
+                    EnsureFileExists = true,
+                    EnsurePathExists = true,
+                    EnsureReadOnly = false,
+                    EnsureValidNames = true,
+                    Multiselect = false,
+                    ShowPlacesList = true
+                };
 
-            if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
+                if (ofd.ShowDialog() == CommonFileDialogResult.Ok)
+                {
+                    _ = new Exporter(m_messageList, ofd.FileName, Enums.ExportType.File, null, Version, CreditsMode);
+                }
+
+            }
+            else
             {
-                _ = new Exporter(m_messageList, ofd.FileName, Enums.ExportType.File, null, Version, CreditsMode);
+                _ = new Exporter(m_messageList, "", Enums.ExportType.File, null, Version, CreditsMode, Path1, Path2);
             }
         }
 

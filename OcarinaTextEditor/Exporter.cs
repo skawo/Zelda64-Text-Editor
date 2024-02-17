@@ -21,9 +21,11 @@ namespace Zelda64TextEditor
 
         }
 
-        public Exporter(ObservableCollection<Message> messageList, string fileName, ExportType exportType, MemoryStream inputFile, ROMVer Version, bool Credits = false)
+        public Exporter(ObservableCollection<Message> messageList, string path, ExportType exportType, 
+                                            MemoryStream inputFile, ROMVer Version, bool Credits = false,
+                                            string tablePath = null, string messagePath = null)
         {
-            m_fileName = fileName;
+            m_fileName = path;
 
             // We need the char table, with an index of -4, at the start of all the entries. So we'll find it and put it at the top.
             for (int i = 0; i < messageList.Count; i++)
@@ -84,7 +86,7 @@ namespace Zelda64TextEditor
                     switch (exportType)
                     {
                         case ExportType.File:
-                            ExportToFile((MemoryStream)messageTableWriter.BaseStream, (MemoryStream)stringWriter.BaseStream);
+                            ExportToFile((MemoryStream)messageTableWriter.BaseStream, (MemoryStream)stringWriter.BaseStream, tablePath, messagePath);
                             break;
                         case ExportType.OriginalROM:
                             ExportToOriginalROM(messageTableStream, stringData, Version, Credits);
@@ -207,10 +209,10 @@ namespace Zelda64TextEditor
         private void ExportToFile(MemoryStream table, MemoryStream stringBank, string TablePath = null, string MsgDataPath = null)
         {
             if (TablePath == null)
-                TablePath = string.Format(@"{0}\MessageTable.tbl", m_fileName);
+                TablePath = string.Format(@"{0}\{1}", m_fileName, Properties.Settings.Default.TableFileName);
 
             if (MsgDataPath == null)
-                MsgDataPath = string.Format(@"{0}\StringData.bin", m_fileName);
+                MsgDataPath = string.Format(@"{0}\{1}", m_fileName, Properties.Settings.Default.MessagesFileName);
 
             try
             {

@@ -22,5 +22,29 @@ namespace Zelda64TextEditor.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("message_data_static_NES.tbl")]
+        public string TableFileName {
+            get {
+                return ((string)(this["TableFileName"]));
+            }
+            set {
+                this["TableFileName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("message_data_static_NES.bin")]
+        public string MessagesFileName {
+            get {
+                return ((string)(this["MessagesFileName"]));
+            }
+            set {
+                this["MessagesFileName"] = value;
+            }
+        }
     }
 }
