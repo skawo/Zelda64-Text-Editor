@@ -679,9 +679,9 @@ namespace Zelda64TextEditor
             switch (res)
             {
                 case System.Windows.Forms.DialogResult.Yes:
-                    Version = ROMVer.NTSC_1_0; break;
+                    Version = ROMVer.NTSC_1_0; CreditsMode = false; break;
                 case System.Windows.Forms.DialogResult.No:
-                    Version = ROMVer.NTSC_Majora; break;
+                    Version = ROMVer.NTSC_Majora; CreditsMode = false; break;
                 case System.Windows.Forms.DialogResult.Cancel:
                     Version = ROMVer.NTSC_1_0; CreditsMode = true; break;
             }
