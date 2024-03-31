@@ -8,5 +8,8 @@
     <Setting Name="MessagesFileName" Type="System.String" Scope="User">
       <Value Profile="(Default)">message_data_static_NES.bin</Value>
     </Setting>
+    <Setting Name="MsgMaxSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1280</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

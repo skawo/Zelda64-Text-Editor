@@ -691,7 +691,9 @@ namespace Zelda64TextEditor
             bomberMessages = file.GetBomberMsgsList();
 
             ViewSource.Source = MessageList;
-            SelectedMessage = MessageList[0];
+
+            if (MessageList.Count != 0)
+                SelectedMessage = MessageList[0];
 
             WindowTitle = string.Format("{0} - {1}", tableFileName, EditorName);
 

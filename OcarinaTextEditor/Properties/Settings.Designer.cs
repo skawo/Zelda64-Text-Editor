@@ -46,5 +46,17 @@ namespace Zelda64TextEditor.Properties {
                 this["MessagesFileName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1280")]
+        public int MsgMaxSize {
+            get {
+                return ((int)(this["MsgMaxSize"]));
+            }
+            set {
+                this["MsgMaxSize"] = value;
+            }
+        }
     }
 }

@@ -55,7 +55,13 @@ namespace Zelda64TextEditor
                     while (reader.PeekReadInt16() != -1)
                     {
                         TableRecord mesRecord = new TableRecord(reader);
+
+                        if (tableRecordList.Find(x => x.MessageID == mesRecord.MessageID) != null)
+                            throw new Exception("Duplicate message entry.");
+
                         tableRecordList.Add(mesRecord);
+
+                        
                     }
                 }
 
@@ -67,7 +73,16 @@ namespace Zelda64TextEditor
                     foreach (var mesgRecord in tableRecordList)
                     {
                         reader.BaseStream.Position = msgOffset + mesgRecord.Offset;
+
+                        long savedPos = reader.BaseStream.Position;
+
                         Message mes = new Message(reader, mesgRecord, Credits, ROMVersion);
+
+                        long byteSz = reader.BaseStream.Position - savedPos;
+
+                        if (byteSz > Properties.Settings.Default.MsgMaxSize)
+                            throw new Exception("Entry exceeded maximum message size.");
+    
                         m_messageList.Add(mes);
                     }
                 }
@@ -102,7 +117,7 @@ namespace Zelda64TextEditor
             }
             catch (Exception exz)
             {
-                MessageBox.Show("Failed loading messages. Note: ROMs built by zzromtool are not supported directly!" + exz.Message);
+                MessageBox.Show($"Failed loading messages: {exz.Message} Are you sure your ROM is decompressed?");
                 return;
             }
         }
@@ -114,33 +129,56 @@ namespace Zelda64TextEditor
 
             List<TableRecord> tableRecordList = new List<TableRecord>();
 
-            //Read in message table records
-            using (FileStream stream = new FileStream(tableFileName, FileMode.Open))
+            try
             {
-                EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
 
-                while (reader.BaseStream.Position != reader.BaseStream.Length && reader.PeekReadInt16() != -1)
+                //Read in message table records
+                using (FileStream stream = new FileStream(tableFileName, FileMode.Open))
                 {
-                    TableRecord mesRecord = new TableRecord(reader);
-                    tableRecordList.Add(mesRecord);
+                    EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
+
+                    while (reader.BaseStream.Position != reader.BaseStream.Length && reader.PeekReadInt16() != -1)
+                    {
+                        TableRecord mesRecord = new TableRecord(reader);
+
+                        if (tableRecordList.Find(x => x.MessageID == mesRecord.MessageID) != null)
+                            throw new Exception("Duplicate message entry.");
+
+                        tableRecordList.Add(mesRecord);
+                    }
+                }
+
+                //Read in message data
+                using (FileStream stream = new FileStream(messageDataFileName, FileMode.Open))
+                {
+                    EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
+
+                    foreach (var mesgRecord in tableRecordList)
+                    {
+                        if (mesgRecord.Offset >= reader.BaseStream.Length)
+                            continue;
+
+                        reader.BaseStream.Position = mesgRecord.Offset;
+                        Message mes = new Message(reader, mesgRecord, Credits, Version);
+
+                        long byteSz = reader.BaseStream.Position - mesgRecord.Offset;
+
+                        if (byteSz > Properties.Settings.Default.MsgMaxSize)
+                            throw new Exception("Entry exceeded maximum message size.");
+
+                        m_messageList.Add(mes);
+                    }
                 }
             }
-
-            //Read in message data
-            using (FileStream stream = new FileStream(messageDataFileName, FileMode.Open))
+            catch (IOException ex)
             {
-                EndianBinaryReader reader = new EndianBinaryReader(stream, Endian.Big);
-
-                foreach (var mesgRecord in tableRecordList)
-                {
-                    if (mesgRecord.Offset >= reader.BaseStream.Length)
-                        continue;
-
-                    reader.BaseStream.Position = mesgRecord.Offset;
-                    Message mes = new Message(reader, mesgRecord, Credits, Version);
-
-                    m_messageList.Add(mes);
-                }
+                MessageBox.Show(ex.Message);
+                return;
+            }
+            catch (Exception exz)
+            {
+                MessageBox.Show($"Failed loading messages: {exz.Message} Are you sure you chose the right game?");
+                return;
             }
         }
 

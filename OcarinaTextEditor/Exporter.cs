@@ -62,7 +62,17 @@ namespace Zelda64TextEditor
                     for (int i = 3; i > -1; i--)
                         messageTableWriter.Write(decompOffset[i]);
 
-                    stringBank.AddRange(mes.ConvertTextData(Version, Credits, true));
+
+                    List<byte> msgB = mes.ConvertTextData(Version, Credits, true);
+
+                    if (msgB.Count > Properties.Settings.Default.MsgMaxSize)
+                    {
+                        MessageBox.Show($"Message ID 0x{mes.MessageID.ToString("X")} exceeds maximum message size and will not be saved.");
+                        Message msgBlank = new Message("", OcarinaTextboxType.Black);
+                        msgB = msgBlank.ConvertTextData(Version, Credits, true);
+                    }
+
+                    stringBank.AddRange(msgB);
                     ExtensionMethods.PadByteList4(stringBank);
                 }
 
