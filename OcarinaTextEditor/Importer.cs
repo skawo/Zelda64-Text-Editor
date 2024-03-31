@@ -56,7 +56,7 @@ namespace Zelda64TextEditor
                     {
                         TableRecord mesRecord = new TableRecord(reader);
 
-                        if (tableRecordList.Find(x => x.MessageID == mesRecord.MessageID) != null)
+                        if (!Properties.Settings.Default.IgnoreDuplicatedMsg && tableRecordList.Find(x => x.MessageID == mesRecord.MessageID) != null)
                             throw new Exception("Duplicate message entry.");
 
                         tableRecordList.Add(mesRecord);
@@ -141,7 +141,7 @@ namespace Zelda64TextEditor
                     {
                         TableRecord mesRecord = new TableRecord(reader);
 
-                        if (tableRecordList.Find(x => x.MessageID == mesRecord.MessageID) != null)
+                        if (!Properties.Settings.Default.IgnoreDuplicatedMsg && tableRecordList.Find(x => x.MessageID == mesRecord.MessageID) != null)
                             throw new Exception("Duplicate message entry.");
 
                         tableRecordList.Add(mesRecord);

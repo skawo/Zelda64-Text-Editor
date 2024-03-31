@@ -58,5 +58,17 @@ namespace Zelda64TextEditor.Properties {
                 this["MsgMaxSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool IgnoreDuplicatedMsg {
+            get {
+                return ((bool)(this["IgnoreDuplicatedMsg"]));
+            }
+            set {
+                this["IgnoreDuplicatedMsg"] = value;
+            }
+        }
     }
 }
