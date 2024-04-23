@@ -428,8 +428,8 @@ namespace Zelda64TextEditor
                     return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX.ToString()}>{Environment.NewLine}").ToCharArray();
                 case MajoraControlCode.NEW_BOX_CENTER:
                     return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX_CENTER.ToString()}>{Environment.NewLine}").ToCharArray();
-                case MajoraControlCode.DELAY_DC:
-                case MajoraControlCode.DELAY_DI:
+                case MajoraControlCode.DELAY:
+                case MajoraControlCode.DELAY_NEWBOX:
                 case MajoraControlCode.DELAY_END:
                 case MajoraControlCode.FADE:
                     short delay = reader.ReadInt16();
