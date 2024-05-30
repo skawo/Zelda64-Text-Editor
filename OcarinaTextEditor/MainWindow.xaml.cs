@@ -42,9 +42,27 @@ namespace Zelda64TextEditor
             view.MessageAdded += View_MessageAdded;
             view.ROMVersionChanged += View_ROMVersionChanged;
 
+            msgPreview.MouseRightButtonUp += MsgPreview_MouseRightButtonUp;
+
             ConstructContextMenu();
         }
 
+        private void MsgPreview_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            System.Windows.Forms.SaveFileDialog sf = new System.Windows.Forms.SaveFileDialog();
+            sf.DefaultExt = ".png";
+            sf.FileName = "textbox";
+            
+            if (sf.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                using (var fileStream = new FileStream(sf.FileName, FileMode.Create))
+                {
+                    BitmapEncoder encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(msgPreview.Source as BitmapSource));
+                    encoder.Save(fileStream);
+                }
+            }
+        }
 
         private void View_ROMVersionChanged()
         {
