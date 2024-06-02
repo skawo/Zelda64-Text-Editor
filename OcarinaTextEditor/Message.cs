@@ -699,8 +699,8 @@ namespace Zelda64TextEditor
                             output.Add(Convert.ToByte(code[1]));
                             break;
                         }
-                    case "DELAY_DC":
-                    case "DELAY_DI":
+                    case "DELAY":
+                    case "DELAY_NEWBOX":
                     case "DELAY_END":
                     case "FADE":
                         {
