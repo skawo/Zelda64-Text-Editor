@@ -27,6 +27,9 @@ namespace Zelda64TextEditor
         private List<List<byte>> BoxesData = new List<List<byte>>();
         private Bitmap CurrentPreview;
 
+        private float[] FontWidths = null;
+        private byte[] FontData = null;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -45,6 +48,35 @@ namespace Zelda64TextEditor
             msgPreview.MouseRightButtonUp += MsgPreview_MouseRightButtonUp;
 
             ConstructContextMenu();
+
+            try
+            {
+                if (System.IO.File.Exists("font.width_table"))
+                {
+                    byte[] widths = System.IO.File.ReadAllBytes("font.width_table");
+                    FontWidths = new float[widths.Length / 4];
+
+                    for (int i = 0; i < widths.Length; i += 4)
+                    {
+                        byte[] width = widths.Skip(i).Take(4).Reverse().ToArray();
+                        FontWidths[i / 4] = BitConverter.ToSingle(width, 0);
+                    }
+                }
+            }
+            catch (Exception)
+            { }
+
+            try
+            {
+                if (System.IO.File.Exists("font.font_static"))
+                {
+                    FontData = System.IO.File.ReadAllBytes("font.font_static");
+                }
+            }
+            catch (Exception)
+            {
+                FontData = null;
+            }
         }
 
         private void MsgPreview_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -288,10 +320,11 @@ namespace Zelda64TextEditor
 
             Message mes = view.SelectedMessage;
             byte[] outD = mes.ConvertTextData(view.Version, view.CreditsMode, false).ToArray();
+            bool IsInBombers = view.BomberMsgsList.Contains(mes.MessageID);
 
-            ZeldaMessage.MessagePreviewMajora mp = new ZeldaMessage.MessagePreviewMajora(outD, view.BomberMsgsList.Contains(mes.MessageID));
+            ZeldaMessage.MessagePreviewMajora mp = new ZeldaMessage.MessagePreviewMajora(outD, IsInBombers, FontWidths, FontData);
 
-            if (mp.Message.Count == BoxesData.Count && CurrentPreview != null && !mp.InBombersNotebook)
+            if (mp.Message.Count == BoxesData.Count && CurrentPreview != null && !IsInBombers)
             {
                 using (Graphics grfx = Graphics.FromImage(CurrentPreview))
                 {
@@ -342,7 +375,7 @@ namespace Zelda64TextEditor
             Message mes = new Message(textBoxMsg.Text, (OcarinaTextboxType)BoxTypeCombo.SelectedIndex);
             byte[] outD = mes.ConvertTextData(view.Version, view.CreditsMode, false).ToArray();
 
-            ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD);
+            ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD, FontWidths, FontData);
 
             if (mp.Message.Count == BoxesData.Count && CurrentPreview != null)
             {
@@ -401,7 +434,7 @@ namespace Zelda64TextEditor
                 else
                     Ocarina_RenderPreview();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 msgPreview.Opacity = 0.5;
             }
@@ -426,12 +459,13 @@ namespace Zelda64TextEditor
             {
                 if (view.MajoraMaskMode)
                 {
-                    BoxTypeCombo.SelectedItem = view.SelectedMessage.MajoraBoxType;
-                    MajoraIconCombo.SelectedItem = (MajoraIcon)view.SelectedMessage.MajoraIcon;
-
+                    MajoraIconCombo.SelectionChanged -= MajoraIconCombo_SelectionChanged;
                     MajoraJumpToTextBox.TextChanged -= MajoraJumpToTextBox_TextChanged;
                     MajoraFirstPriceTextBox.TextChanged -= MajoraFirstPriceTextBox_TextChanged;
                     MajoraSecondPriceTextBox.TextChanged -= MajoraSecondPriceTextBox_TextChanged;
+
+                    BoxTypeCombo.SelectedItem = view.SelectedMessage.MajoraBoxType;
+                    MajoraIconCombo.SelectedItem = (MajoraIcon)view.SelectedMessage.MajoraIcon;
 
                     MajoraJumpToTextBox.Background = System.Windows.Media.Brushes.White;
                     MajoraFirstPriceTextBox.Background = System.Windows.Media.Brushes.White;
@@ -444,6 +478,7 @@ namespace Zelda64TextEditor
                     MajoraJumpToTextBox.TextChanged += MajoraJumpToTextBox_TextChanged;
                     MajoraFirstPriceTextBox.TextChanged += MajoraFirstPriceTextBox_TextChanged;
                     MajoraSecondPriceTextBox.TextChanged += MajoraSecondPriceTextBox_TextChanged;
+                    MajoraIconCombo.SelectionChanged += MajoraIconCombo_SelectionChanged;
                 }
                 else if (!view.MajoraMaskMode)
                 {
