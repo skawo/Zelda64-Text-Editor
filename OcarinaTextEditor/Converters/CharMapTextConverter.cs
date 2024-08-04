@@ -13,6 +13,8 @@ namespace Zelda64TextEditor.Converters
             string text = "";
             bool Skip = false;
 
+            if (App.charMap == null)
+                return s;
 
             for (int i = 0; i < s.Length; i++)
             {
@@ -39,6 +41,8 @@ namespace Zelda64TextEditor.Converters
             string text = "";
             bool Skip = false;
 
+            if (App.charMap == null)
+                return s;
 
             for (int i = 0; i < s.Length; i++)
             {

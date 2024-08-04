@@ -52,7 +52,6 @@ namespace Zelda64TextEditor
                 {
                     Message mesN = Message.MakeCopy(mes);
 
-
                     if (App.charMap != null)
                         mesN.TextData = Converters.CharMapTextConverter.RemapTextFrom(mesN.TextData);
 
