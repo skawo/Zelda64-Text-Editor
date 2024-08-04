@@ -20,6 +20,11 @@ namespace Zelda64TextEditor.Converters
             {
                 if (s[i] == '\\')
                 {
+                    text += s[i];
+
+                    if (i + 1 < s.Length)
+                        text += s[i + 1];
+
                     i++;
                     continue;
                 }
@@ -54,6 +59,11 @@ namespace Zelda64TextEditor.Converters
             {
                 if (s[i] == '\\')
                 {
+                    text += s[i];
+
+                    if (i + 1 < s.Length)
+                        text += s[i + 1];
+
                     i++;
                     continue;
                 }
