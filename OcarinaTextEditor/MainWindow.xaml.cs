@@ -318,7 +318,10 @@ namespace Zelda64TextEditor
             Bitmap bmpTemp;
             Bitmap bmpOut;
 
-            Message mes = view.SelectedMessage;
+            Message mes = Message.MakeCopy(view.SelectedMessage);
+
+            mes.TextData = Converters.CharMapTextConverter.RemapTextFrom(mes.TextData);
+
             byte[] outD = mes.ConvertTextData(view.Version, view.CreditsMode, false).ToArray();
             bool IsInBombers = view.BomberMsgsList.Contains(mes.MessageID);
 

@@ -811,7 +811,7 @@ namespace Zelda64TextEditor
                         else
                         {
                             MessageList.Add(msg);
-                            
+                           
                         }
                     }
 

@@ -118,6 +118,7 @@
     </Compile>
     <Compile Include="ContextMenuData.cs" />
     <Compile Include="Converters\BoolVisibilityConverter.cs" />
+    <Compile Include="Converters\CharMapTextConverter.cs" />
     <Compile Include="Converters\NullToFalseConverter.cs" />
     <Compile Include="Dicts.cs" />
     <Compile Include="Enums\ControlTags.cs" />

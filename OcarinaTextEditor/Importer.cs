@@ -82,6 +82,9 @@ namespace Zelda64TextEditor
 
                         if (byteSz > Properties.Settings.Default.MsgMaxSize)
                             throw new Exception("Entry exceeded maximum message size.");
+
+                        if (App.charMap != null)
+                            mes.TextData = Converters.CharMapTextConverter.RemapTextTo(mes.TextData);
     
                         m_messageList.Add(mes);
                     }
@@ -165,6 +168,9 @@ namespace Zelda64TextEditor
 
                         if (byteSz > Properties.Settings.Default.MsgMaxSize)
                             throw new Exception("Entry exceeded maximum message size.");
+
+                        if (App.charMap != null)
+                            mes.TextData = Converters.CharMapTextConverter.RemapTextTo(mes.TextData);
 
                         m_messageList.Add(mes);
                     }

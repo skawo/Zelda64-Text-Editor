@@ -50,7 +50,13 @@ namespace Zelda64TextEditor
 
                 foreach (Message mes in messageList)
                 {
-                    mes.WriteMessage(messageTableWriter, Version, Credits);
+                    Message mesN = Message.MakeCopy(mes);
+
+
+                    if (App.charMap != null)
+                        mesN.TextData = Converters.CharMapTextConverter.RemapTextFrom(mesN.TextData);
+
+                    mesN.WriteMessage(messageTableWriter, Version, Credits);
 
                     messageTableWriter.BaseStream.Seek(-4, SeekOrigin.Current);
 
@@ -63,11 +69,11 @@ namespace Zelda64TextEditor
                         messageTableWriter.Write(decompOffset[i]);
 
 
-                    List<byte> msgB = mes.ConvertTextData(Version, Credits, true);
+                    List<byte> msgB = mesN.ConvertTextData(Version, Credits, true);
 
                     if (msgB.Count > Properties.Settings.Default.MsgMaxSize)
                     {
-                        MessageBox.Show($"Message ID 0x{mes.MessageID.ToString("X")} exceeds maximum message size and will not be saved.");
+                        MessageBox.Show($"Message ID 0x{mesN.MessageID.ToString("X")} exceeds maximum message size and will not be saved.");
                         Message msgBlank = new Message("", OcarinaTextboxType.Black);
                         msgB = msgBlank.ConvertTextData(Version, Credits, true);
                     }

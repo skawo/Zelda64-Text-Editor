@@ -683,6 +683,23 @@ namespace Zelda64TextEditor
                 return new List<byte>();
         }
 
+        public static Message MakeCopy(Message mes)
+        {
+            Message mesO = new Message();
+
+            mesO.TextData = mes.TextData;
+            mesO.MajoraFirstItemPrice = mes.MajoraFirstItemPrice;
+            mesO.MajoraBoxType = mes.MajoraBoxType;
+            mesO.MajoraIcon = mes.MajoraIcon;
+            mesO.MajoraNextMessage = mes.MajoraNextMessage;
+            mesO.MajoraSecondItemPrice = mes.MajoraSecondItemPrice;
+            mesO.BoxPosition = mes.BoxPosition;
+            mesO.BoxType = mes.BoxType;
+            mesO.MessageID = mes.MessageID;
+
+            return mesO;
+        }
+
         private List<byte> GetMajoraControlCode(string[] code, ref List<string> errors)
         {
             List<byte> output = new List<byte>();
