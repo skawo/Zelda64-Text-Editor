@@ -19,7 +19,7 @@ You can search through the messages by typing in the top-left corner textbox. Yo
 <br><br>
 Right click the message input textbox to open a context menu containing all the control codes available. Hover over one to receive an explanation.
 <br><br>
-Supports custom fonts as exported from <a href="https://github.com/z64me/z64font">z64font</a>. Simply put both files exported from the program in the same directory as the text editor - named ''font.font_static'' and ''font.width_table'' - and they will be automatically loaded and used for the preview.
+Supports custom fonts as exported from <a href="https://github.com/z64me/z64font">z64font</a>. Simply put both files exported from the program in the same directory as the text editor - named <i>font.font_static</i> and <i>font.width_table</i> - and they will be automatically loaded and used for the preview.
 <br><br>
 By placing a "charMap.csv" file in the same folder as the editor, you can remap the OoT/MM character set, allowing for fonts suited to languages. More information <a href="https://github.com/skawo/Zelda64-Text-Editor/releases/tag/v.3.31">here</a>.
 <br><br>
