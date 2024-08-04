@@ -813,14 +813,13 @@ namespace Zelda64TextEditor
                             MessageList.Add(msg);
                             
                         }
-
-
-                        ViewSource.View.Refresh();
-
-                        if (MessageList.Count != 0)
-                            MessageAdded?.Invoke(MessageList.Last());
                     }
-                    
+
+                    ViewSource.View.Refresh();
+
+                    if (MessageList.Count != 0)
+                        MessageAdded?.Invoke(MessageList.Last());
+
                 }
                 else
                     return;
