@@ -18,6 +18,12 @@ namespace Zelda64TextEditor.Converters
 
             for (int i = 0; i < s.Length; i++)
             {
+                if (s[i] == '\\')
+                {
+                    i++;
+                    continue;
+                }
+
                 if (s[i] == '<')
                     Skip = true;
 
@@ -46,6 +52,12 @@ namespace Zelda64TextEditor.Converters
 
             for (int i = 0; i < s.Length; i++)
             {
+                if (s[i] == '\\')
+                {
+                    i++;
+                    continue;
+                }
+
                 if (s[i] == '<')
                     Skip = true;
 
