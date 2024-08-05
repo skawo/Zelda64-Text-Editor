@@ -21,7 +21,7 @@ Right click the message input textbox to open a context menu containing all the 
 <br><br>
 Supports custom fonts as exported from <a href="https://github.com/z64me/z64font">z64font</a>. Simply put both files exported from the program in the same directory as the text editor - named <i>font.font_static</i> and <i>font.width_table</i> - and they will be automatically loaded and used for the preview.
 <br><br>
-By placing a <i>charMap.csv</i> file in the same folder as the editor, you can remap the OoT/MM character set, allowing for fonts suited to other languages. More information <a href="https://github.com/skawo/Zelda64-Text-Editor/releases/tag/v.3.32">here</a>.
+By placing a <i>codepoint.txt</i> file in the same folder as the editor, you can remap the OoT/MM character set, allowing for fonts suited to other languages. More information <a href="https://github.com/skawo/Zelda64-Text-Editor/releases/tag/v.3.32">here</a>.
 <br><br>
 
 ![image](https://github.com/skawo/Zelda64-Text-Editor/assets/43761362/57cc981d-0b8c-42d1-91ef-90d45fbf89e3)
