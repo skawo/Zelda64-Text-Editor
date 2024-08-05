@@ -16,7 +16,7 @@ namespace Zelda64TextEditor
 
     public partial class App : Application
     {
-        public static Dictionary<char, char> charMap = new Dictionary<char, char>();
+        public static Dictionary<char, char> charMap = null;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -24,9 +24,28 @@ namespace Zelda64TextEditor
             System.Windows.Forms.Application.EnableVisualStyles();
 
 
+            if (File.Exists("codepoint.txt"))
+            {
+                string[] codePoint = File.ReadAllLines("codepoint.txt");
+
+                if (codePoint.Length >= 145)
+                {
+                    charMap = new Dictionary<char, char>();
+
+                    for (int i = 2; i < 145; i++)
+                    {
+                        if (codePoint.Length >= 1)
+                            charMap.Add(codePoint[i].ToCharArray()[0], (char)(0x20 + i - 1));
+                        else
+                            charMap.Add((char)(0x20 + i - 1), (char)(0x20 + i - 1));
+                    }
+                }
+            }
+
             if (File.Exists("CharMap.csv"))
             {
                 string[] CharMap = File.ReadAllLines("CharMap.csv");
+                charMap = new Dictionary<char, char>();
 
                 foreach (string l in CharMap)
                 {
@@ -38,8 +57,7 @@ namespace Zelda64TextEditor
                     charMap.Add(s[0].ToCharArray()[0], s[1].ToCharArray()[0]);
                 }
             }
-            else
-                charMap = null;
+
         }
     }
 }
