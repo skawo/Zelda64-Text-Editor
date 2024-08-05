@@ -34,5 +34,10 @@ namespace Zelda64TextEditor
 
             Offset = reader.ReadUInt32();
         }
+
+        public TableRecord()
+        {
+
+        }
     }
 }

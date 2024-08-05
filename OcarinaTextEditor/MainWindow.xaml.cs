@@ -154,6 +154,14 @@ namespace Zelda64TextEditor
             _ = textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Copy",  Command = ApplicationCommands.Copy });
             _ = textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Paste", Command = ApplicationCommands.Paste });
 
+            MenuItem CopyAsCItem = new MenuItem() { Header = "Copy C String" };
+            CopyAsCItem.Click += CopyAsC;
+            textBoxMsg.ContextMenu.Items.Add(CopyAsCItem);
+
+            MenuItem PasteAsCItem = new MenuItem() { Header = "Paste C String" };
+            PasteAsCItem.Click += PasteAsCItem_Click;
+            textBoxMsg.ContextMenu.Items.Add(PasteAsCItem);
+
             if (IsMajoraMode)
             {
                 MenuItem ControlTagsMenu = new MenuItem() {     Header = "Control Tags..." };
@@ -221,6 +229,69 @@ namespace Zelda64TextEditor
             }
 
 
+        }
+
+        private void PasteAsCItem_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ViewModel view = (ViewModel)DataContext;
+
+                string s = Clipboard.GetText();
+                s = s.TrimStart('\"').TrimEnd('\"');
+
+                List<byte> b = new List<byte>();
+
+                if (IsMajoraMode)
+                    b.AddRange(new byte[11]);
+
+                for (int i = 0; i < s.Length; i++)
+                {
+                    char ch = s[i];
+
+                    if (ch == '\\')
+                    {
+                        i += 2;
+
+                        char[] arr = new char[] { s[i], s[i + 1] };
+                        string st = new string(arr);
+                        b.Add((byte)int.Parse(st, System.Globalization.NumberStyles.HexNumber));
+
+                        i += 2;
+
+                        if (i < s.Length)
+                        {
+                            ch = s[i];
+
+                            if (ch == '\"')
+                                i++;
+                            else if (i < s.Length)
+                                i--;
+                        }
+
+                        continue;
+                    }
+                    else
+                        b.Add((byte)s[i]);
+                }
+
+                Message msg = new Message(b.ToArray(), new TableRecord(), view.CreditsMode, view.Version);
+                textBoxMsg.Text = msg.TextData;
+            }
+            catch (Exception ex)
+            {
+                System.Windows.Forms.MessageBox.Show($"Error parsing message string: {ex.Message}");
+            }
+        }
+
+        private void CopyAsC(object sender, RoutedEventArgs e)
+        {
+            ViewModel view = (ViewModel)DataContext;
+            Message msg = (messageListView.SelectedItem as Message);
+            string outS = msg.ConvertToCString(view.Version, view.CreditsMode, true);
+
+            if (outS != "")
+                Clipboard.SetText(outS);
         }
 
         private void SoundEffectMenu_Click(object sender, RoutedEventArgs e)

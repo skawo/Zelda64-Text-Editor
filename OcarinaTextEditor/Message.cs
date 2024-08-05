@@ -172,6 +172,35 @@ namespace Zelda64TextEditor
             TextData = "";
         }
 
+        public Message(byte[] Message, TableRecord mesgTableRecord, bool Credits, ROMVer Version = ROMVer.Unknown)
+        {
+            EndianBinaryReader reader = new EndianBinaryReader(Message, Endian.Big);
+
+            if (ROMInfo.IsMajoraMask(Version) && !Credits)
+            {
+                MessageID = mesgTableRecord.MessageID;
+
+                MajoraBoxType = (MajoraTextboxType)reader.ReadByte();
+                BoxPosition = (TextboxPosition)reader.ReadByte();
+                MajoraIcon = reader.ReadByte();
+
+                MajoraNextMessage = reader.ReadInt16();
+                MajoraFirstItemPrice = reader.ReadInt16();
+                MajoraSecondItemPrice = reader.ReadInt16();
+                reader.ReadInt16();     // Padding
+
+                GetStringDataMajora(reader);
+            }
+            else
+            {
+                MessageID = mesgTableRecord.MessageID;
+                BoxType = mesgTableRecord.BoxType;
+                BoxPosition = mesgTableRecord.BoxPosition;
+
+                GetStringData(reader);
+            }
+        }
+
         public Message(EndianBinaryReader reader, TableRecord mesgTableRecord, bool Credits, ROMVer Version = ROMVer.Unknown)
         {
             if (ROMInfo.IsMajoraMask(Version) && !Credits)
@@ -480,6 +509,133 @@ namespace Zelda64TextEditor
                 return ConvertTextData(ShowErrors);
         }
 
+        public string ConvertToCString(ROMVer Version, bool Credits, bool ShowErrors = true)
+        {
+            if (ROMInfo.IsMajoraMask(Version) && !Credits)
+                return ConvertMajoraTextToCString(ShowErrors);
+            else
+                return ConvertTextToCString(ShowErrors);
+        }
+
+        private string ConvertMajoraTextToCString(bool ShowErrors = true)
+        {
+            string outS = "\"";
+            List<string> errors = new List<string>();
+
+            /*
+            outS += GetXString((byte)this.MajoraBoxType);
+            outS += GetXString((byte)this.BoxPosition);
+            outS += GetXString((byte)this.MajoraIcon);
+
+            byte[] nextMsgBytes = BitConverter.GetBytes(Convert.ToInt16(this.MajoraNextMessage));
+            outS += GetXString(nextMsgBytes[1]);
+            outS += GetXString(nextMsgBytes[0]);
+
+            byte[] firstPriceBytes = BitConverter.GetBytes(Convert.ToInt16(this.MajoraFirstItemPrice));
+            outS += GetXString(firstPriceBytes[1]);
+            outS += GetXString(firstPriceBytes[0]);
+
+            byte[] secondPriceBytes = BitConverter.GetBytes(Convert.ToInt16(this.MajoraSecondItemPrice));
+            outS += GetXString(secondPriceBytes[1]);
+            outS += GetXString(secondPriceBytes[0]);
+
+            outS += GetXString(0xFF);
+            outS += GetXString(0xFF);
+            */
+
+            for (int i = 0; i < TextData.Length; i++)
+            {
+                // Not a control code, copy char to output buffer
+                if (TextData[i] != '<' && TextData[i] != '>')
+                {
+                    if (TextData[i] == '¡')
+                    {
+                        outS += GetXString(0xAD);
+                    }
+                    else if (TextData[i] == '¿')
+                    {
+                        outS += GetXString(0xAE);
+                    }
+                    else if (Enum.IsDefined(typeof(MajoraControlCode), TextData[i].ToString()))
+                    {
+                        _ = Enum.TryParse(TextData[i].ToString(), out MajoraControlCode Result);
+                        outS += (char)Result;
+                    }
+                    else if (TextData[i] == '\n')
+                        outS += GetXString((byte)MajoraControlCode.LINE_BREAK);
+                    else if (TextData[i] == '\r')
+                    {
+                        // Do nothing
+                    }
+                    else
+                        outS += (char)TextData[i];
+
+                    continue;
+                }
+                // Control code end tag. This should never be encountered on its own.
+                else if (TextData[i] == '>')
+                    errors.Add($"Message formatting is not valid: found stray >");
+                // We've got a control code
+                else
+                {
+                    // Buffer for the control code
+                    List<char> controlCode = new List<char>();
+
+                    while (TextData[i] != '>' && i < TextData.Length - 1)
+                    {
+                        // Add code chars to the buffer
+                        controlCode.Add(TextData[i]);
+                        // Increase i so we can skip the code when we're done parsing
+                        i++;
+                    }
+
+                    if (controlCode.Count == 0)
+                        continue;
+
+                    // Remove the < chevron from the beginning of the code
+                    controlCode.RemoveAt(0);
+
+                    string parsedCode = new string(controlCode.ToArray());
+                    string parsedFixed = parsedCode.Split(':')[0].Replace(" ", "_").ToUpper();
+
+                    if (parsedFixed == MajoraControlCode.NEW_BOX.ToString() || parsedFixed == MajoraControlCode.DELAY_END.ToString() || parsedFixed == MajoraControlCode.NEW_BOX_CENTER.ToString())
+                    {
+                        outS = outS.Remove(outS.LastIndexOf(GetXString((byte)MajoraControlCode.LINE_BREAK)));
+
+                        if (TextData.Length > i + Environment.NewLine.Length)
+                        {
+                            string s;
+
+                            if (Environment.NewLine.Length == 2)
+                                s = String.Concat(TextData[i + 1], TextData[i + 2]);
+                            else
+                                s = String.Concat(TextData[i + 1]);
+
+                            if (s == Environment.NewLine)
+                                i += Environment.NewLine.Length; // Skips next linebreak
+                        }
+                    }
+
+                    List<byte> data = GetMajoraControlCode(parsedCode.Split(':'), ref errors);
+
+                    foreach (byte b in data)
+                    {
+                        outS += GetXString(b);
+                    }
+                }
+            }
+
+            outS += GetXString((byte)MajoraControlCode.END);
+
+            if (ShowErrors && errors.Count != 0)
+                System.Windows.Forms.MessageBox.Show($"Errors parsing message {MessageID}: " + Environment.NewLine + String.Join(Environment.NewLine, errors.ToArray()));
+
+            if (errors.Count == 0)
+                return outS.TrimEnd('\"') + "\"";
+            else
+                return "";
+        }
+
         private List<byte> ConvertMajoraTextData(bool ShowErrors = true)
         {
             List<byte> data = new List<byte>();
@@ -591,6 +747,103 @@ namespace Zelda64TextEditor
                 return data;
             else
                 return new List<byte>();
+        }
+
+        private string GetXString(byte Character)
+        {
+            return $"\\x{Character.ToString("X2")}\"\"";
+        }
+
+        private string ConvertTextToCString(bool ShowErrors = true)
+        {
+            string outS = "\"";
+            List<string> errors = new List<string>();
+
+            for (int i = 0; i < TextData.Length; i++)
+            {
+                // Not a control code, copy char to output buffer
+                if (TextData[i] != '<' && TextData[i] != '>')
+                {
+                    if (Enum.IsDefined(typeof(OcarinaControlCode), TextData[i].ToString()))
+                    {
+                        _ = Enum.TryParse(TextData[i].ToString(), out OcarinaControlCode Result);
+                        outS += (char)Result;
+                    }
+                    else if (TextData[i] == '\n')
+                        outS += GetXString((byte)OcarinaControlCode.LINE_BREAK);
+                    else if (TextData[i] == '\r')
+                    {
+                        // Do nothing
+                    }
+                    else
+                        outS += (char)TextData[i];
+
+                    continue;
+                }
+                // Control code end tag. This should never be encountered on its own.
+                else if (TextData[i] == '>')
+                    errors.Add($"Message formatting is not valid: found stray >");
+                // We've got a control code
+                else
+                {
+                    // Buffer for the control code
+                    List<char> controlCode = new List<char>();
+
+                    while (TextData[i] != '>' && i < TextData.Length - 1)
+                    {
+                        // Add code chars to the buffer
+                        controlCode.Add(TextData[i]);
+                        // Increase i so we can skip the code when we're done parsing
+                        i++;
+                    }
+
+                    if (controlCode.Count == 0)
+                        continue;
+
+                    // Remove the < chevron from the beginning of the code
+                    controlCode.RemoveAt(0);
+
+                    string parsedCode = new string(controlCode.ToArray());
+                    string parsedFixed = parsedCode.Split(':')[0].Replace(" ", "_").ToUpper();
+
+                    if (parsedFixed == OcarinaControlCode.NEW_BOX.ToString() || parsedFixed == OcarinaControlCode.DELAY.ToString())
+                    {
+                        outS = outS.Remove(outS.LastIndexOf(GetXString((byte)OcarinaControlCode.LINE_BREAK)));
+
+                        if (TextData.Length > i + Environment.NewLine.Length)
+                        {
+                            string s;
+
+                            if (Environment.NewLine.Length == 2)
+                                s = String.Concat(TextData[i + 1], TextData[i + 2]);
+                            else
+                                s = String.Concat(TextData[i + 1]);
+
+                            if (s == Environment.NewLine)
+                            {
+                                i += Environment.NewLine.Length; // Skips next linebreak
+                            }
+                        }
+                    }
+
+                    List<byte> data = GetControlCode(parsedCode.Split(':'), ref errors);
+                    
+                    foreach (byte b in data)
+                    {
+                        outS += GetXString(b);
+                    }
+                }
+            }
+
+            outS += GetXString((byte)OcarinaControlCode.END);
+
+            if (ShowErrors && errors.Count != 0)
+                System.Windows.Forms.MessageBox.Show($"Errors parsing message {MessageID}: " + Environment.NewLine + String.Join(Environment.NewLine, errors.ToArray()));
+
+            if (errors.Count == 0)
+                return outS.TrimEnd('\"') + "\"";
+            else
+                return "";
         }
 
 
