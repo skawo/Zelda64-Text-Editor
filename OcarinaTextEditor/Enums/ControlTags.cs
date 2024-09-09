@@ -52,6 +52,9 @@ namespace Zelda64TextEditor.Enums
         HIGH_SCORE = 0x1E,
         TIME = 0x1F,
 
+        LCHEVRON = 0x3C,
+        RCHEVRON = 0x3E,
+
         DASH = 0x7F,
         À = 0x80,
         Î = 0x81,
@@ -366,6 +369,8 @@ namespace Zelda64TextEditor.Enums
         UNK_FE = 0xFE,
         UNK_FF = 0xFF,
 
+        LCHEVRON = 0x3C,
+        RCHEVRON = 0x3E,
 
         DASH = 0x7F,
         À = 0x80,
