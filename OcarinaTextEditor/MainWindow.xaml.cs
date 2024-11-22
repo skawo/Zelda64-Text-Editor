@@ -396,6 +396,11 @@ namespace Zelda64TextEditor
             byte[] outD = mes.ConvertTextData(view.Version, view.CreditsMode, false).ToArray();
             bool IsInBombers = view.BomberMsgsList.Contains(mes.MessageID);
 
+            if (outD.Length > 1280)
+                msgSizeWarn.Visibility = Visibility.Visible;
+            else
+                msgSizeWarn.Visibility = Visibility.Hidden;
+
             ZeldaMessage.MessagePreviewMajora mp = new ZeldaMessage.MessagePreviewMajora(outD, IsInBombers, FontWidths, FontData);
 
             if (mp.Message.Count == BoxesData.Count && CurrentPreview != null && !IsInBombers)
