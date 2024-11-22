@@ -449,6 +449,11 @@ namespace Zelda64TextEditor
             Message mes = new Message(textBoxMsg.Text, (OcarinaTextboxType)BoxTypeCombo.SelectedIndex);
             byte[] outD = mes.ConvertTextData(view.Version, view.CreditsMode, false).ToArray();
 
+            if (outD.Length > 1280)
+                msgSizeWarn.Visibility = Visibility.Visible;
+            else
+                msgSizeWarn.Visibility = Visibility.Hidden;
+
             ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD, FontWidths, FontData);
 
             if (mp.Message.Count == BoxesData.Count && CurrentPreview != null)
