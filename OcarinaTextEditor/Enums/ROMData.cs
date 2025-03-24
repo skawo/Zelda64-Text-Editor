@@ -118,12 +118,12 @@ namespace Zelda64TextEditor
 
         private static Dictionary<ROMVer, List<int>> OffsetsData = new Dictionary<ROMVer, List<int>>()
         {
-            { ROMVer.NTSC_0_9,  new List<int>()             { 0x00B847DC,     0x00B889FC,       0x92D000,     0x0966000,      16928,    392,    233472,     3968,   0 } },
-            { ROMVer.NTSC_1_0,  new List<int>()             { 0x00B849EC,     0x00B88C0C,       0x92D000,     0x0966000,      16928,    392,    233472,     3920,   0 } },
-            { ROMVer.NTSC_1_1,  new List<int>()             { 0x00B84BAC,     0x00B88DCC,       0x92D000,     0x0966000,      16928,    392,    233472,     3936,   0 } },
-            { ROMVer.NTSC_1_2,  new List<int>()             { 0x00B84A5C,     0x00B88C7C,       0x92D000,     0x0966000,      16928,    392,    233472,     3936,   0 } },
-            { ROMVer.NTSC_MasterQuest,  new List<int>()     { 0x00B830CC,     0x00B872EC,       0x92C000,     0x0965000,      16928,    392,    233472,     3920,   0 } },
-            { ROMVer.NTSC_GameCube,  new List<int>()        { 0x00B830EC,     0x00B8730C,       0x92C000,     0x0965000,      16928,    392,    233472,     3936,   0 } },
+            { ROMVer.NTSC_0_9,  new List<int>()             { 0x00B847DC,     0x00B889FC,       0x92D000,     0x0966000,      16928,    392,    229648,     3968,   0 } },
+            { ROMVer.NTSC_1_0,  new List<int>()             { 0x00B849EC,     0x00B88C0C,       0x92D000,     0x0966000,      16928,    392,    229680,     3936,   0 } },
+            { ROMVer.NTSC_1_1,  new List<int>()             { 0x00B84BAC,     0x00B88DCC,       0x92D000,     0x0966000,      16928,    392,    229632,     3936,   0 } },
+            { ROMVer.NTSC_1_2,  new List<int>()             { 0x00B84A5C,     0x00B88C7C,       0x92D000,     0x0966000,      16928,    392,    229600,     3936,   0 } },
+            { ROMVer.NTSC_MasterQuest,  new List<int>()     { 0x00B830CC,     0x00B872EC,       0x92C000,     0x0965000,      16928,    392,    229600,     3936,   0 } },
+            { ROMVer.NTSC_GameCube,  new List<int>()        { 0x00B830EC,     0x00B8730C,       0x92C000,     0x0965000,      16928,    392,    229600,     3936,   0 } },
             { ROMVer.PAL1_0,  new List<int>()               { 0x00B801DC,     0x00B88624,       0x8BB000,     0x0968000,      16936,    392,    708608,     3920,   0 } },
             { ROMVer.PAL1_1,  new List<int>()               { 0x00B8021C,     0x00B88664,       0x8BB000,     0x0968000,      16936,    392,    708608,     3920,   0 } },
             { ROMVer.PAL_GameCube,  new List<int>()         { 0x00B7E910,     0x00B86D58,       0x8BA000,     0x0967000,      33860,    392,    708608,     3920,   0 } },
@@ -131,13 +131,13 @@ namespace Zelda64TextEditor
             { ROMVer.Debug, new List<int>()                 { 0x00BC24C0,     0x00BCA908,       0x8C6000,     0x0973000,      33860,    392,    704960,     3920,   0 } },
             { ROMVer.PAL_GameCube_Beta, new List<int>()     { 0x00BC24E0,     0x00BCA928,       0x8C6000,     0x0973000,      33860,    392,    704960,     3920,   0 } },
             { ROMVer.Lodgenet,  new List<int>()             { 0x00B82C0C,     0x00B86E2C,       0x92D000,     0x0966000,      16928,    392,    233472,     3920,   0 } },
-            { ROMVer.NTSC_Majora,  new List<int>()          { 0x00C5D0D8,     0x00C66048,       0xAD1000,     0x0B3B000,      36720,    368,    434176,     3680,   0xC679AC } },
-            { ROMVer.GC_NTSC_Majora,  new List<int>()       { 0x00C6A648,     0x00C735B8,       0xAE0000,     0x0B4A000,      36720,    368,    434176,     3712,   0xC752AC } },
-            { ROMVer.NTSC_KIOSK_Majora,  new List<int>()    { 0x00C5D2D8,     0x00C66240,       0xAD2000,     0x0B3C000,      36712,    368,    434176,     3296,   0 } },
-            { ROMVer.PAL_Majora1_0,  new List<int>()        { 0x00C66000,     0x00DABF58,       0xAA5000,     0x0C65000,      147456,   368,    1835008,    3712,   0xDADC80 } },
-            { ROMVer.PAL_Majora1_1,  new List<int>()        { 0x00C66000,     0x00DAC078,       0xAA5000,     0x0C65000,      147456,   368,    1835008,    3712,   0xDADDA0 } },
-            { ROMVer.Debug_Majora,  new List<int>()         { 0x00C71000,     0x00DEEE28,       0xAB0000,     0x0C70000,      147456,   368,    1835008,    3712,   0xDF0EF0 } },
-            { ROMVer.GC_PAL_Majora,  new List<int>()        { 0x00C75000,     0x00DB9078,       0xAB4000,     0x0C74000,      147456,   368,    1835008,    3712,   0xDBADA0 } },
+            { ROMVer.NTSC_Majora,  new List<int>()          { 0x00C5D0D8,     0x00C66048,       0xAD1000,     0x0B3B000,      36720,    368,    432624,     3680,   0xC679AC } },
+            { ROMVer.GC_NTSC_Majora,  new List<int>()       { 0x00C6A648,     0x00C735B8,       0xAE0000,     0x0B4A000,      36720,    368,    432864,     3680,   0xC752AC } },
+            { ROMVer.NTSC_KIOSK_Majora,  new List<int>()    { 0x00C5D2D8,     0x00C66240,       0xAD2000,     0x0B3C000,      36712,    368,    432864,     3296,   0 } },
+            { ROMVer.PAL_Majora1_0,  new List<int>()        { 0x00C66000,     0x00DABF58,       0xAA5000,     0x0C65000,      147456,   368,    432768,     3712,   0xDADC80 } },
+            { ROMVer.PAL_Majora1_1,  new List<int>()        { 0x00C66000,     0x00DAC078,       0xAA5000,     0x0C65000,      147456,   368,    432768,     3712,   0xDADDA0 } },
+            { ROMVer.Debug_Majora,  new List<int>()         { 0x00C71000,     0x00DEEE28,       0xAB0000,     0x0C70000,      147456,   368,    432768,     3712,   0xDF0EF0 } },
+            { ROMVer.GC_PAL_Majora,  new List<int>()        { 0x00C75000,     0x00DB9078,       0xAB4000,     0x0C74000,      147456,   368,    432768,     3712,   0xDBADA0 } },
         };
 
         private enum OffsetsDataIdx
