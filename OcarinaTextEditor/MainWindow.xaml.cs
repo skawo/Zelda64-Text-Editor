@@ -451,7 +451,9 @@ namespace Zelda64TextEditor
             Bitmap bmpTemp;
             Bitmap bmpOut;
 
-            Message mes = new Message(textBoxMsg.Text, (OcarinaTextboxType)BoxTypeCombo.SelectedIndex);
+            string remapped = Converters.CharMapTextConverter.RemapTextFrom(textBoxMsg.Text);
+
+            Message mes = new Message(remapped, (OcarinaTextboxType)BoxTypeCombo.SelectedIndex);
             byte[] outD = mes.ConvertTextData(view.Version, view.CreditsMode, false).ToArray();
 
             if (outD.Length > 1280)
