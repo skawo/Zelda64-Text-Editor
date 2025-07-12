@@ -385,7 +385,7 @@ namespace Zelda64TextEditor
                     break;
                 case OcarinaControlCode.SOUND:
                     short soundID = reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : soundID.ToString());
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : "0x" + soundID.ToString("X"));
                     break;
                 case OcarinaControlCode.SPEED:
                     byte speed = reader.ReadByte();
@@ -466,7 +466,7 @@ namespace Zelda64TextEditor
                     break;
                 case MajoraControlCode.SOUND:
                     short soundID = reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : soundID.ToString());
+                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : "0x" + soundID.ToString("X"));
                     break;
                 default:
                     codeInsides = code.ToString();
@@ -983,15 +983,15 @@ namespace Zelda64TextEditor
                     case "SOUND":
                         {
                             output.Add((byte)MajoraControlCode.SOUND);
-                            UInt16 soundValue = 0;
+                            short soundValue = 0;
 
                             if (Dicts.SFXes.ContainsKey(code[1]))
-                                soundValue = (UInt16)Dicts.SFXes[code[1]];
+                                soundValue = (short)Dicts.SFXes[code[1]];
                             else
                             {
                                 try
                                 {
-                                    soundValue = Convert.ToUInt16(code[1]);
+                                    soundValue = ExtensionMethods.IsHex(code[1]) ? Convert.ToInt16(code[1].Substring(2), 16) : Convert.ToInt16(code[1]);
                                 }
                                 catch (Exception)
                                 {
@@ -1100,7 +1100,7 @@ namespace Zelda64TextEditor
                             {
                                 try
                                 {
-                                    soundValue = Convert.ToInt16(code[1]);
+                                    soundValue = ExtensionMethods.IsHex(code[1]) ? Convert.ToInt16(code[1].Substring(2), 16) : Convert.ToInt16(code[1]);
                                 }
                                 catch (Exception)
                                 {

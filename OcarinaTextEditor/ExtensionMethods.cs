@@ -50,5 +50,12 @@ namespace Zelda64TextEditor
                 list.Add(0);
             }
         }
+
+        public static bool IsHex(string Number)
+        {
+            string nU = Number.ToUpper();
+            return (Number.Length >= 3 && nU.StartsWith("0X") || Number.Length >= 4 && nU.StartsWith("-0X"));
+        }
+
     }
 }
