@@ -287,7 +287,13 @@ namespace Zelda64TextEditor
         private void CopyAsC(object sender, RoutedEventArgs e)
         {
             ViewModel view = (ViewModel)DataContext;
-            Message msg = (messageListView.SelectedItem as Message);
+            Message msg = new Message();
+
+            msg.TextData = textBoxMsg.SelectedText;
+
+            if (msg.TextData == "")
+                msg = (messageListView.SelectedItem as Message);
+
             string outS = msg.ConvertToCString(view.Version, view.CreditsMode, true);
 
             if (outS != "")
