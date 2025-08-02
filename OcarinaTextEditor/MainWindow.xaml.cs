@@ -251,28 +251,47 @@ namespace Zelda64TextEditor
 
                     if (ch == '\\')
                     {
+                        // Skip the backslash and 'x'
                         i += 2;
 
+                        if (i + 1 >= s.Length)
+                            throw new ArgumentException("Invalid escape sequence");
+
+                        // Parse the hex digits
                         char[] arr = new char[] { s[i], s[i + 1] };
                         string st = new string(arr);
                         b.Add((byte)int.Parse(st, System.Globalization.NumberStyles.HexNumber));
 
+                        // Move past the hex digits
                         i += 2;
 
-                        if (i < s.Length)
+                        // Skip any whitespace
+                        while (i < s.Length && char.IsWhiteSpace(s[i]))
                         {
-                            ch = s[i];
-
-                            if (ch == '\"')
-                                i++;
-                            else if (i < s.Length)
-                                i--;
+                            i++;
                         }
 
+                        // Skip the closing quote if present
+                        if (i < s.Length && s[i] == '\"')
+                        {
+                            i++;
+
+                            // Skip any whitespace after the quote
+                            while (i < s.Length && char.IsWhiteSpace(s[i]))
+                                i++;
+
+                            // Skip the opening quote if present
+                            if (i < s.Length && s[i] == '\"')
+                                i++;
+                        }
+
+                        i--;
                         continue;
                     }
                     else
+                    {
                         b.Add((byte)s[i]);
+                    }
                 }
 
                 Message msg = new Message(b.ToArray(), new TableRecord(), view.CreditsMode, view.Version);

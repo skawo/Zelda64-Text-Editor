@@ -556,6 +556,10 @@ namespace Zelda64TextEditor
                     {
                         outS += GetXString(0xAE);
                     }
+                    else if (TextData[i] == '"')
+                    {
+                        outS += GetXString((byte)'"');
+                    }
                     else if (Enum.IsDefined(typeof(MajoraControlCode), TextData[i].ToString()))
                     {
                         _ = Enum.TryParse(TextData[i].ToString(), out MajoraControlCode Result);
@@ -768,6 +772,10 @@ namespace Zelda64TextEditor
                     {
                         _ = Enum.TryParse(TextData[i].ToString(), out OcarinaControlCode Result);
                         outS += (char)Result;
+                    }
+                    else if (TextData[i] == '"')
+                    {
+                        outS += GetXString((byte)'"');
                     }
                     else if (TextData[i] == '\n')
                         outS += GetXString((byte)OcarinaControlCode.LINE_BREAK);
