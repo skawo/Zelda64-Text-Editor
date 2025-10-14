@@ -184,7 +184,7 @@ namespace Zelda64TextEditor
 
 
         #region UnknownMM
-        public int MajoraUnk
+        public bool MajoraTextCenter
         {
             get { return m_unkMM; }
             set
@@ -196,7 +196,7 @@ namespace Zelda64TextEditor
                 }
             }
         }
-        private int m_unkMM;
+        private bool m_unkMM;
         #endregion
 
         #region Unknown2MM
@@ -235,7 +235,7 @@ namespace Zelda64TextEditor
                 settings <<= 8;
                 settings |= b2;
 
-                MajoraUnk = (settings & 0xF000) >> 0xC;
+                MajoraTextCenter = ((settings & 0xF000) >> 0xC) == 1;
                 MajoraBoxType = (MajoraTextboxType)((settings & 0xF00) >> 0x8);
                 BoxPosition = (TextboxPosition)((settings & 0xF0) >> 0x4);
                 Unskippable = (settings & 0x1) == 1;
@@ -272,7 +272,7 @@ namespace Zelda64TextEditor
                 settings <<= 8;
                 settings |= b2;
 
-                MajoraUnk = (settings & 0xF000) >> 0xC;
+                MajoraTextCenter = ((settings & 0xF000) >> 0xC) == 1;
                 MajoraBoxType = (MajoraTextboxType)((settings & 0xF00) >> 0x8);
                 BoxPosition = (TextboxPosition)((settings & 0xF0) >> 0x4);
                 Unskippable = (settings & 0x1) == 1;
@@ -717,7 +717,7 @@ namespace Zelda64TextEditor
             int settings = 0;
 
             // Pack the fields back into the settings integer
-            settings |= ((int)MajoraUnk & 0xF) << 0xC;        // Upper 4 bits (0xF000)
+            settings |= (MajoraTextCenter ? 1 : 0) << 0xC;        // Upper 4 bits (0xF000)
             settings |= ((int)MajoraBoxType & 0xF) << 0x8;    // Next 4 bits (0xF00)
             settings |= ((int)BoxPosition & 0xF) << 0x4;      // Next 4 bits (0xF0)
 
@@ -1048,7 +1048,7 @@ namespace Zelda64TextEditor
             mesO.BoxType = mes.BoxType;
             mesO.MessageID = mes.MessageID;
             mesO.Unskippable = mes.Unskippable;
-            mesO.MajoraUnk = mes.MajoraUnk;
+            mesO.MajoraTextCenter = mes.MajoraTextCenter;
             mesO.MajoraDrawInstantly = mes.MajoraDrawInstantly;
 
             return mesO;
