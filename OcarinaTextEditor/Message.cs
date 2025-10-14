@@ -166,6 +166,55 @@ namespace Zelda64TextEditor
         private MajoraTextboxType m_MajoraBoxType;
         #endregion
 
+        #region unskippable
+        public bool Unskippable
+        {
+            get { return m_UnskippableMM; }
+            set
+            {
+                if (value != m_UnskippableMM)
+                {
+                    m_UnskippableMM = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        private bool m_UnskippableMM;
+        #endregion
+
+
+        #region UnknownMM
+        public int MajoraUnk
+        {
+            get { return m_unkMM; }
+            set
+            {
+                if (value != m_unkMM)
+                {
+                    m_unkMM = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        private int m_unkMM;
+        #endregion
+
+        #region Unknown2MM
+        public bool MajoraDrawInstantly
+        {
+            get { return m_typeOutInstant; }
+            set
+            {
+                if (value != m_typeOutInstant)
+                {
+                    m_typeOutInstant = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        private bool m_typeOutInstant;
+        #endregion
+
 
         public Message()
         {
@@ -180,8 +229,18 @@ namespace Zelda64TextEditor
             {
                 MessageID = mesgTableRecord.MessageID;
 
-                MajoraBoxType = (MajoraTextboxType)reader.ReadByte();
-                BoxPosition = (TextboxPosition)reader.ReadByte();
+                byte b1 = reader.ReadByte();
+                byte b2 = reader.ReadByte();
+                int settings = b1;
+                settings <<= 8;
+                settings |= b2;
+
+                MajoraUnk = (settings & 0xF000) >> 0xC;
+                MajoraBoxType = (MajoraTextboxType)((settings & 0xF00) >> 0x8);
+                BoxPosition = (TextboxPosition)((settings & 0xF0) >> 0x4);
+                Unskippable = (settings & 0x1) == 1;
+                MajoraDrawInstantly = (settings & 0x3) == 3;
+
                 MajoraIcon = reader.ReadByte();
 
                 MajoraNextMessage = reader.ReadInt16();
@@ -207,8 +266,18 @@ namespace Zelda64TextEditor
             {
                 MessageID = mesgTableRecord.MessageID;
 
-                MajoraBoxType = (MajoraTextboxType)reader.ReadByte();
-                BoxPosition = (TextboxPosition)reader.ReadByte();
+                byte b1 = reader.ReadByte();
+                byte b2 = reader.ReadByte();
+                int settings = b1;
+                settings <<= 8;
+                settings |= b2;
+
+                MajoraUnk = (settings & 0xF000) >> 0xC;
+                MajoraBoxType = (MajoraTextboxType)((settings & 0xF00) >> 0x8);
+                BoxPosition = (TextboxPosition)((settings & 0xF0) >> 0x4);
+                Unskippable = (settings & 0x1) == 1;
+                MajoraDrawInstantly = (settings & 0x3) == 3;
+
                 MajoraIcon = reader.ReadByte();
 
                 MajoraNextMessage = reader.ReadInt16();
@@ -645,8 +714,29 @@ namespace Zelda64TextEditor
             List<byte> data = new List<byte>();
             List<string> errors = new List<string>();
 
-            data.Add((byte)this.MajoraBoxType);
-            data.Add((byte)this.BoxPosition);
+            int settings = 0;
+
+            // Pack the fields back into the settings integer
+            settings |= ((int)MajoraUnk & 0xF) << 0xC;        // Upper 4 bits (0xF000)
+            settings |= ((int)MajoraBoxType & 0xF) << 0x8;    // Next 4 bits (0xF00)
+            settings |= ((int)BoxPosition & 0xF) << 0x4;      // Next 4 bits (0xF0)
+
+            // Handle the lower 4 bits based on Unskippable and Unknown2MM
+            int lowerN = 0;
+
+            if (Unskippable)
+                lowerN |= 1;
+            if (MajoraDrawInstantly)
+                lowerN |= 3;
+
+            settings |= lowerN & 0xF;                    // Lower 4 bits (0xF)
+
+            // Extract the two bytes
+            byte b1 = (byte)((settings >> 8) & 0xFF);
+            byte b2 = (byte)(settings & 0xFF);
+
+            data.Add(b1);
+            data.Add(b2);
             data.Add((byte)this.MajoraIcon);
 
             byte[] nextMsgBytes = BitConverter.GetBytes(Convert.ToInt16(this.MajoraNextMessage));
@@ -957,6 +1047,9 @@ namespace Zelda64TextEditor
             mesO.BoxPosition = mes.BoxPosition;
             mesO.BoxType = mes.BoxType;
             mesO.MessageID = mes.MessageID;
+            mesO.Unskippable = mes.Unskippable;
+            mesO.MajoraUnk = mes.MajoraUnk;
+            mesO.MajoraDrawInstantly = mes.MajoraDrawInstantly;
 
             return mesO;
         }
