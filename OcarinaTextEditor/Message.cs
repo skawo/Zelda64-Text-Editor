@@ -1071,8 +1071,8 @@ namespace Zelda64TextEditor
                             break;
                         }
                     case "DELAY":
-                    case "DELAY_NEWBOX":
-                    case "DELAY_END":
+                    case "NEW_BOX_DELAY":
+                    case "FADE_SKIPPABLE":
                     case "FADE":
                         {
                             output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.MajoraControlCode), code[0]));
