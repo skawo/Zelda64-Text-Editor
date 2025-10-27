@@ -24,7 +24,7 @@ namespace Zelda64TextEditor
     public partial class MainWindow : Window
     {
         bool IsMajoraMode = false;
-        private List<List<byte>> BoxesData = new List<List<byte>>();
+        private List<ZeldaMsgPreview.Textbox> BoxesData = new List<ZeldaMsgPreview.Textbox>();
         private Bitmap CurrentPreview;
 
         private float[] FontWidths = null;
@@ -36,7 +36,7 @@ namespace Zelda64TextEditor
 
             BoxTypeCombo.ItemsSource = Enum.GetValues(typeof(OcarinaTextboxType)).Cast<OcarinaTextboxType>();
             BoxPositionCombo.ItemsSource = Enum.GetValues(typeof(TextboxPosition)).Cast<TextboxPosition>().Where(x => x <= TextboxPosition.Bottom);
-            MajoraIconCombo.ItemsSource = Enum.GetValues(typeof(MajoraIcon)).Cast<MajoraIcon>().OrderByDescending(x => x);
+            MajoraIconCombo.ItemsSource = Enum.GetValues(typeof(ZeldaMsgPreview.MajoraIcon)).Cast<ZeldaMsgPreview.MajoraIcon>().OrderByDescending(x => x);
 
             DockTextBoxOptions.Height = 95;
             textBoxMsgDock.Margin = new Thickness(0, 118, 0, 10);
@@ -215,8 +215,8 @@ namespace Zelda64TextEditor
 
                 List<string> Icons = new List<string>();
 
-                foreach (object Icon in Enum.GetValues(typeof(Enums.OcarinaIcon)))
-                    Icons.AddRange(new string[] { Icon.ToString(), $"{OcarinaControlCode.ICON}:{Icon}", "" });
+                foreach (object Icon in Enum.GetValues(typeof(ZeldaMsgPreview.OcarinaIcon)))
+                    Icons.AddRange(new string[] { Icon.ToString(), $"{ZeldaMsgPreview.OcarinaControlCode.ICON}:{Icon}", "" });
 
                 AddTagControlsToMenu(IconTagMenu, Icons.ToArray());
                 _ = ControlTagsMenu.Items.Add(IconTagMenu);
@@ -410,8 +410,8 @@ namespace Zelda64TextEditor
 
         private void Majora_RenderPreview()
         {
+            
             ViewModel view = (ViewModel)DataContext;
-            Bitmap bmpTemp;
             Bitmap bmpOut;
 
             Message mes = Message.MakeCopy(view.SelectedMessage);
@@ -426,46 +426,16 @@ namespace Zelda64TextEditor
             else
                 msgSizeWarn.Visibility = Visibility.Hidden;
 
-            ZeldaMessage.MessagePreviewMajora mp = new ZeldaMessage.MessagePreviewMajora(outD, IsInBombers, FontWidths, FontData);
 
-            if (mp.Message.Count == BoxesData.Count && CurrentPreview != null && !IsInBombers)
-            {
-                using (Graphics grfx = Graphics.FromImage(CurrentPreview))
-                {
-                    for (int i = 0; i < BoxesData.Count; i++)
-                    {
-                        if (mp.Message[i].Count != BoxesData[i].Count || !Enumerable.SequenceEqual(mp.Message[i], BoxesData[i]))
-                        {
-                            bmpTemp = mp.GetPreview(i, true, 1.5f);
-                            grfx.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
-                            grfx.FillRectangle(System.Drawing.Brushes.Transparent, 0, bmpTemp.Height * i, bmpTemp.Width, bmpTemp.Height);
-                            grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
-                        }
-                    }
-                }
+            ZeldaMsgPreview.Message mesP = new ZeldaMsgPreview.Message(ZeldaMsgPreview.Game.Majora, outD, (ZeldaMsgPreview.TextboxPosition)view.SelectedMessage.BoxPosition,
+                                                                      (ZeldaMsgPreview.TextboxType)view.SelectedMessage.BoxType, FontData, FontWidths, view.CreditsMode, true, IsInBombers);
 
-                bmpOut = CurrentPreview;
-            }
-            else
-            {
-                bmpTemp = mp.GetPreview(0, true, 1.5f);
+            bmpOut = mesP.GetPreview();
 
-                bmpOut = new Bitmap(bmpTemp.Width, mp.MessageCount * bmpTemp.Height);
-                bmpOut.MakeTransparent();
+            if (bmpOut == null)
+                throw new Exception("Error getting preview");
 
-                using (Graphics grfx = Graphics.FromImage(bmpOut))
-                {
-                    grfx.DrawImage(bmpTemp, 0, 0);
-
-                    for (int i = 1; i < mp.MessageCount; i++)
-                    {
-                        bmpTemp = mp.GetPreview(i, true, 1.5f);
-                        grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
-                    }
-                }
-            }
-
-            BoxesData = mp.Message;
+            BoxesData = mesP.Textboxes;
             CurrentPreview = bmpOut;
             msgPreview.Source = BitmapToImageSource(bmpOut);
         }
@@ -486,17 +456,23 @@ namespace Zelda64TextEditor
             else
                 msgSizeWarn.Visibility = Visibility.Hidden;
 
-            ZeldaMessage.MessagePreview mp = new ZeldaMessage.MessagePreview((ZeldaMessage.Data.BoxType)BoxTypeCombo.SelectedIndex, outD, FontWidths, FontData);
+            ZeldaMsgPreview.Message mesP = new ZeldaMsgPreview.Message(view.Version == ROMVer.Debug ? ZeldaMsgPreview.Game.Ocarina_Debug : ZeldaMsgPreview.Game.Ocarina, outD, 
+                                                                      (ZeldaMsgPreview.TextboxPosition)view.SelectedMessage.BoxPosition, 
+                                                                      (ZeldaMsgPreview.TextboxType)view.SelectedMessage.BoxType, FontData, FontWidths, view.CreditsMode, true);
 
-            if (mp.Message.Count == BoxesData.Count && CurrentPreview != null)
+            if (mesP.Textboxes.Count == BoxesData.Count && CurrentPreview != null)
             {
                 using (Graphics grfx = Graphics.FromImage(CurrentPreview))
                 {
                     for (int i = 0; i < BoxesData.Count; i++)
                     {
-                        if (mp.Message[i].Count != BoxesData[i].Count || !Enumerable.SequenceEqual(mp.Message[i], BoxesData[i]))
+                        if (mesP.Textboxes[i].DecodedData.Count != BoxesData[i].DecodedData.Count || !Enumerable.SequenceEqual(mesP.Textboxes[i].DecodedData, BoxesData[i].DecodedData))
                         {
-                            bmpTemp = mp.GetPreview(i, true, 1.5f);
+                            bmpTemp = mesP.Textboxes[i].GetPreview();
+
+                            if (bmpTemp == null)
+                                throw new Exception("Error getting preview");
+
                             grfx.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
                             grfx.FillRectangle(System.Drawing.Brushes.Transparent, 0, bmpTemp.Height * i, bmpTemp.Width, bmpTemp.Height);
                             grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
@@ -508,24 +484,13 @@ namespace Zelda64TextEditor
             }
             else
             {
-                bmpTemp = mp.GetPreview(0, true, 1.5f);
+                bmpOut = mesP.GetPreview();
 
-                bmpOut = new Bitmap(bmpTemp.Width, mp.MessageCount * bmpTemp.Height);
-                bmpOut.MakeTransparent();
-
-                using (Graphics grfx = Graphics.FromImage(bmpOut))
-                {
-                    grfx.DrawImage(bmpTemp, 0, 0);
-
-                    for (int i = 1; i < mp.MessageCount; i++)
-                    {
-                        bmpTemp = mp.GetPreview(i, true, 1.5f);
-                        grfx.DrawImage(bmpTemp, 0, bmpTemp.Height * i);
-                    }
-                }
+                if (bmpOut == null)
+                    throw new Exception("Error getting preview");
             }
 
-            BoxesData = mp.Message;
+            BoxesData = mesP.Textboxes;
             CurrentPreview = bmpOut;
             msgPreview.Source = BitmapToImageSource(bmpOut);
         }
@@ -545,7 +510,7 @@ namespace Zelda64TextEditor
                 else
                     Ocarina_RenderPreview();
             }
-            catch (Exception ex)
+            catch 
             {
                 msgPreview.Opacity = 0.5;
             }
@@ -562,7 +527,7 @@ namespace Zelda64TextEditor
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             CurrentPreview = null;
-            BoxesData = new List<List<byte>>();
+            BoxesData = new List<ZeldaMsgPreview.Textbox>();
 
             ViewModel view = (ViewModel)DataContext;
 
@@ -576,7 +541,7 @@ namespace Zelda64TextEditor
                     MajoraSecondPriceTextBox.TextChanged -= MajoraSecondPriceTextBox_TextChanged;
 
                     BoxTypeCombo.SelectedItem = view.SelectedMessage.MajoraBoxType;
-                    MajoraIconCombo.SelectedItem = (MajoraIcon)view.SelectedMessage.MajoraIcon;
+                    MajoraIconCombo.SelectedItem = (ZeldaMsgPreview.MajoraIcon)view.SelectedMessage.MajoraIcon;
 
                     MajoraJumpToTextBox.Background = System.Windows.Media.Brushes.White;
                     MajoraFirstPriceTextBox.Background = System.Windows.Media.Brushes.White;
@@ -603,7 +568,7 @@ namespace Zelda64TextEditor
             ViewModel view = (ViewModel)DataContext;
             CurrentPreview = null;
 
-            view.SelectedMessage.MajoraIcon = (byte)(MajoraIcon)MajoraIconCombo.SelectedItem;
+            view.SelectedMessage.MajoraIcon = (byte)(ZeldaMsgPreview.MajoraIcon)MajoraIconCombo.SelectedItem;
             TextBoxMsg_TextChanged(null, null);
         }
 
@@ -677,6 +642,15 @@ namespace Zelda64TextEditor
                     view.RemoveMessage();
 
             }
+        }
+
+        private void MajoraBoxCenter_Checked(object sender, RoutedEventArgs e)
+        {
+            MajoraBoxCenter.Checked -= MajoraBoxCenter_Checked;
+            MajoraBoxCenter.Unchecked -= MajoraBoxCenter_Checked;
+            TextBoxMsg_TextChanged(null, null);
+            MajoraBoxCenter.Unchecked += MajoraBoxCenter_Checked;
+            MajoraBoxCenter.Unchecked += MajoraBoxCenter_Checked;
         }
     }
 }

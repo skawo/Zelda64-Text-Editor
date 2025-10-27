@@ -85,7 +85,7 @@ namespace Zelda64TextEditor
         private string m_textData;
         #endregion
 
-        #region public byte MajoraIcon
+        #region public byte ZeldaMsgPreview.MajoraIcon
         public byte MajoraIcon
         {
             get { return m_MajoraIcon; }
@@ -315,16 +315,16 @@ namespace Zelda64TextEditor
 
             byte testByte = reader.ReadByte();
 
-            while (testByte != (byte)MajoraControlCode.END)
+            while (testByte != (byte)ZeldaMsgPreview.MajoraControlCode.END)
             {
                 bool readControlCode = false;
 
                 // Control tags
                 if (testByte < 0x7F || testByte > 0xAF)
                 {
-                    if (Enum.IsDefined(typeof(MajoraControlCode), (int)testByte))
+                    if (Enum.IsDefined(typeof(ZeldaMsgPreview.MajoraControlCode), (int)testByte))
                     {
-                        charData.AddRange(GetMajoraControlCode((MajoraControlCode)testByte, reader));
+                        charData.AddRange(GetMajoraControlCode((ZeldaMsgPreview.MajoraControlCode)testByte, reader));
                         readControlCode = true;
                     }
                 }
@@ -345,7 +345,7 @@ namespace Zelda64TextEditor
                         else if (testByte == 0xAE)
                             charData.Add('¿');
                         else
-                            charData.Add(Enum.GetName(typeof(MajoraControlCode), testByte).First());
+                            charData.Add(Enum.GetName(typeof(ZeldaMsgPreview.MajoraControlCode), testByte).First());
                     }
                     // The rest~
                     else if ((testByte >= 0x20 && testByte < 0x7F) || char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte))
@@ -362,7 +362,7 @@ namespace Zelda64TextEditor
                 if (reader.BaseStream.Position != reader.BaseStream.Length)
                     testByte = reader.ReadByte();
                 else
-                    testByte = (byte)MajoraControlCode.END;
+                    testByte = (byte)ZeldaMsgPreview.MajoraControlCode.END;
             }
 
             TextData = new String(charData.ToArray());
@@ -374,15 +374,15 @@ namespace Zelda64TextEditor
 
             byte testByte = reader.ReadByte();
 
-            while (testByte != (byte)OcarinaControlCode.END)
+            while (testByte != (byte)ZeldaMsgPreview.OcarinaControlCode.END)
             {
                 bool readControlCode = false;
 
                 if (testByte < 0x7F || testByte > 0x9E)
                 {
-                    if (Enum.IsDefined(typeof(OcarinaControlCode), (int)testByte))
+                    if (Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaControlCode), (int)testByte))
                     {
-                        charData.AddRange(GetControlCode((OcarinaControlCode)testByte, reader));
+                        charData.AddRange(GetControlCode((ZeldaMsgPreview.OcarinaControlCode)testByte, reader));
                         readControlCode = true;
                     }
                 }
@@ -397,7 +397,7 @@ namespace Zelda64TextEditor
                     // Stressed characters
                     else if (testByte >= 0x80 && testByte <= 0x9E)
                     {
-                        charData.Add(Enum.GetName(typeof(OcarinaControlCode), testByte).First());
+                        charData.Add(Enum.GetName(typeof(ZeldaMsgPreview.OcarinaControlCode), testByte).First());
                     }
                     // ASCII-mapped characters
                     else if((testByte >= 0x20 && testByte < 0x7F) || (char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte)))
@@ -419,73 +419,73 @@ namespace Zelda64TextEditor
             TextData = new String(charData.ToArray());
         }
 
-        private char[] GetControlCode(OcarinaControlCode code, EndianBinaryReader reader)
+        private char[] GetControlCode(ZeldaMsgPreview.OcarinaControlCode code, EndianBinaryReader reader)
         {
             List<char> codeBank = new List<char>();
             string codeInsides = "";
 
             switch (code)
             {
-                case OcarinaControlCode.COLOR:
-                    OcarinaMsgColor col = (OcarinaMsgColor)reader.ReadByte();
+                case ZeldaMsgPreview.OcarinaControlCode.COLOR:
+                    ZeldaMsgPreview.OcarinaMsgColor col = (ZeldaMsgPreview.OcarinaMsgColor)reader.ReadByte();
                     codeInsides = col.ToString();
                     break;
-                case OcarinaControlCode.ICON:
+                case ZeldaMsgPreview.OcarinaControlCode.ICON:
                     int iconID = (int)reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.ICON.ToString(), Enum.IsDefined(typeof(OcarinaIcon), iconID) ? ((OcarinaIcon)iconID).ToString() : iconID.ToString());
+                    codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.ICON.ToString(), Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaIcon), iconID) ? ((ZeldaMsgPreview.OcarinaIcon)iconID).ToString() : iconID.ToString());
                     break;
-                case OcarinaControlCode.LINE_BREAK:
+                case ZeldaMsgPreview.OcarinaControlCode.LINE_BREAK:
                     return "\n".ToCharArray();
-                case OcarinaControlCode.SHIFT:
+                case ZeldaMsgPreview.OcarinaControlCode.SHIFT:
                     byte numSpaces = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SHIFT.ToString(), numSpaces);
+                    codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.SHIFT.ToString(), numSpaces);
                     break;
-                case OcarinaControlCode.DELAY:
+                case ZeldaMsgPreview.OcarinaControlCode.DELAY:
                     byte numFrames = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.DELAY.ToString(), numFrames);
+                    codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.DELAY.ToString(), numFrames);
                     break;
-                case OcarinaControlCode.FADE:
+                case ZeldaMsgPreview.OcarinaControlCode.FADE:
                     byte numFramesFade = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.FADE.ToString(), numFramesFade);
+                    codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.FADE.ToString(), numFramesFade);
                     break;
-                case OcarinaControlCode.FADE2:
+                case ZeldaMsgPreview.OcarinaControlCode.FADE2:
                     short numFramesFade2 = reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.FADE2.ToString(), numFramesFade2);
+                    codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.FADE2.ToString(), numFramesFade2);
                     break;
-                case OcarinaControlCode.SOUND:
+                case ZeldaMsgPreview.OcarinaControlCode.SOUND:
                     short soundID = reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : "0x" + soundID.ToString("X"));
+                    codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : "0x" + soundID.ToString("X"));
                     break;
-                case OcarinaControlCode.SPEED:
+                case ZeldaMsgPreview.OcarinaControlCode.SPEED:
                     byte speed = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SPEED.ToString(), speed);
+                    codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.SPEED.ToString(), speed);
                     break;
-                case OcarinaControlCode.HIGH_SCORE:
+                case ZeldaMsgPreview.OcarinaControlCode.HIGH_SCORE:
                     int scoreID = (int)reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.HIGH_SCORE.ToString(), Enum.IsDefined(typeof(OcarinaHighScore), scoreID) ? ((OcarinaHighScore)scoreID).ToString() : scoreID.ToString());
+                    codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.HIGH_SCORE.ToString(), Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaHighScore), scoreID) ? ((ZeldaMsgPreview.OcarinaHighScore)scoreID).ToString() : scoreID.ToString());
                     break;
-                case OcarinaControlCode.JUMP:
+                case ZeldaMsgPreview.OcarinaControlCode.JUMP:
                     short msgID = reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1:X4}", OcarinaControlCode.JUMP.ToString(), msgID);
+                    codeInsides = string.Format("{0}:{1:X4}", ZeldaMsgPreview.OcarinaControlCode.JUMP.ToString(), msgID);
                     break;
-                case OcarinaControlCode.NEW_BOX:
-                    return ($"{Environment.NewLine}<{OcarinaControlCode.NEW_BOX.ToString()}>{Environment.NewLine}").ToCharArray();
-                case OcarinaControlCode.NS:
-                    codeInsides = OcarinaControlCode.NS.ToString();
+                case ZeldaMsgPreview.OcarinaControlCode.NEW_BOX:
+                    return ($"{Environment.NewLine}<{ZeldaMsgPreview.OcarinaControlCode.NEW_BOX.ToString()}>{Environment.NewLine}").ToCharArray();
+                case ZeldaMsgPreview.OcarinaControlCode.NS:
+                    codeInsides = ZeldaMsgPreview.OcarinaControlCode.NS.ToString();
                     break;
-                case OcarinaControlCode.DI:
-                    codeInsides = OcarinaControlCode.DI.ToString();
+                case ZeldaMsgPreview.OcarinaControlCode.DI:
+                    codeInsides = ZeldaMsgPreview.OcarinaControlCode.DI.ToString();
                     break;
-                case OcarinaControlCode.DC:
-                    codeInsides = OcarinaControlCode.DC.ToString();
+                case ZeldaMsgPreview.OcarinaControlCode.DC:
+                    codeInsides = ZeldaMsgPreview.OcarinaControlCode.DC.ToString();
                     break;
-                case OcarinaControlCode.BACKGROUND:
+                case ZeldaMsgPreview.OcarinaControlCode.BACKGROUND:
                     int backgroundID;
                     byte id1 = reader.ReadByte();
                     byte id2 = reader.ReadByte();
                     byte id3 = reader.ReadByte();
                     backgroundID = BitConverter.ToInt32(new byte[] { id3, id2, id1, 0 }, 0 );
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.BACKGROUND.ToString(), backgroundID);
+                    codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.BACKGROUND.ToString(), backgroundID);
                     break;
 
                 default:
@@ -498,44 +498,44 @@ namespace Zelda64TextEditor
             return codeBank.ToArray();
         }
 
-        private char[] GetMajoraControlCode(MajoraControlCode code, EndianBinaryReader reader)
+        private char[] GetMajoraControlCode(ZeldaMsgPreview.MajoraControlCode code, EndianBinaryReader reader)
         {
             List<char> codeBank = new List<char>();
             string codeInsides = "";
 
             switch (code)
             {
-                case MajoraControlCode.COLOR_DEFAULT:
-                case MajoraControlCode.COLOR_RED:
-                case MajoraControlCode.COLOR_GREEN:
-                case MajoraControlCode.COLOR_BLUE:
-                case MajoraControlCode.COLOR_YELLOW:
-                case MajoraControlCode.COLOR_NAVY:
-                case MajoraControlCode.COLOR_PINK:
-                case MajoraControlCode.COLOR_SILVER:
-                case MajoraControlCode.COLOR_ORANGE:
-                    codeInsides = string.Format("{0}", ((MajoraMsgColor)code).ToString());
+                case ZeldaMsgPreview.MajoraControlCode.COLOR_DEFAULT:
+                case ZeldaMsgPreview.MajoraControlCode.COLOR_RED:
+                case ZeldaMsgPreview.MajoraControlCode.COLOR_GREEN:
+                case ZeldaMsgPreview.MajoraControlCode.COLOR_BLUE:
+                case ZeldaMsgPreview.MajoraControlCode.COLOR_YELLOW:
+                case ZeldaMsgPreview.MajoraControlCode.COLOR_NAVY:
+                case ZeldaMsgPreview.MajoraControlCode.COLOR_PINK:
+                case ZeldaMsgPreview.MajoraControlCode.COLOR_SILVER:
+                case ZeldaMsgPreview.MajoraControlCode.COLOR_ORANGE:
+                    codeInsides = string.Format("{0}", ((ZeldaMsgPreview.MajoraMsgColor)code).ToString());
                     break;
-                case MajoraControlCode.SHIFT:
+                case ZeldaMsgPreview.MajoraControlCode.SHIFT:
                     byte numSpaces = reader.ReadByte();
-                    codeInsides = string.Format("{0}:{1}", MajoraControlCode.SHIFT.ToString(), numSpaces);
+                    codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.MajoraControlCode.SHIFT.ToString(), numSpaces);
                     break;
-                case MajoraControlCode.LINE_BREAK:
+                case ZeldaMsgPreview.MajoraControlCode.LINE_BREAK:
                     return "\n".ToCharArray();
-                case MajoraControlCode.NEW_BOX:
-                    return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX.ToString()}>{Environment.NewLine}").ToCharArray();
-                case MajoraControlCode.NEW_BOX_CENTER:
-                    return ($"{Environment.NewLine}<{MajoraControlCode.NEW_BOX_CENTER.ToString()}>{Environment.NewLine}").ToCharArray();
-                case MajoraControlCode.DELAY:
-                case MajoraControlCode.DELAY_NEWBOX:
-                case MajoraControlCode.DELAY_END:
-                case MajoraControlCode.FADE:
+                case ZeldaMsgPreview.MajoraControlCode.NEW_BOX:
+                    return ($"{Environment.NewLine}<{ZeldaMsgPreview.MajoraControlCode.NEW_BOX.ToString()}>{Environment.NewLine}").ToCharArray();
+                case ZeldaMsgPreview.MajoraControlCode.NEW_BOX_CENTER:
+                    return ($"{Environment.NewLine}<{ZeldaMsgPreview.MajoraControlCode.NEW_BOX_CENTER.ToString()}>{Environment.NewLine}").ToCharArray();
+                case ZeldaMsgPreview.MajoraControlCode.DELAY:
+                case ZeldaMsgPreview.MajoraControlCode.NEW_BOX_DELAY:
+                case ZeldaMsgPreview.MajoraControlCode.FADE_SKIPPABLE:
+                case ZeldaMsgPreview.MajoraControlCode.FADE:
                     short delay = reader.ReadInt16();
                     codeInsides = string.Format("{0}:{1}", code.ToString(), delay);
                     break;
-                case MajoraControlCode.SOUND:
+                case ZeldaMsgPreview.MajoraControlCode.SOUND:
                     short soundID = reader.ReadInt16();
-                    codeInsides = string.Format("{0}:{1}", OcarinaControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : "0x" + soundID.ToString("X"));
+                    codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : "0x" + soundID.ToString("X"));
                     break;
                 default:
                     codeInsides = code.ToString();
@@ -594,7 +594,7 @@ namespace Zelda64TextEditor
             /*
             outS += GetXString((byte)this.MajoraBoxType);
             outS += GetXString((byte)this.BoxPosition);
-            outS += GetXString((byte)this.MajoraIcon);
+            outS += GetXString((byte)this.ZeldaMsgPreview.MajoraIcon);
 
             byte[] nextMsgBytes = BitConverter.GetBytes(Convert.ToInt16(this.MajoraNextMessage));
             outS += GetXString(nextMsgBytes[1]);
@@ -629,13 +629,13 @@ namespace Zelda64TextEditor
                     {
                         outS += GetXString((byte)'"');
                     }
-                    else if (Enum.IsDefined(typeof(MajoraControlCode), TextData[i].ToString()))
+                    else if (Enum.IsDefined(typeof(ZeldaMsgPreview.MajoraControlCode), TextData[i].ToString()))
                     {
-                        _ = Enum.TryParse(TextData[i].ToString(), out MajoraControlCode Result);
+                        _ = Enum.TryParse(TextData[i].ToString(), out ZeldaMsgPreview.MajoraControlCode Result);
                         outS += (char)Result;
                     }
                     else if (TextData[i] == '\n')
-                        outS += GetXString((byte)MajoraControlCode.LINE_BREAK);
+                        outS += GetXString((byte)ZeldaMsgPreview.MajoraControlCode.LINE_BREAK);
                     else if (TextData[i] == '\r')
                     {
                         // Do nothing
@@ -671,9 +671,9 @@ namespace Zelda64TextEditor
                     string parsedCode = new string(controlCode.ToArray());
                     string parsedFixed = parsedCode.Split(':')[0].Replace(" ", "_").ToUpper();
 
-                    if (parsedFixed == MajoraControlCode.NEW_BOX.ToString() || parsedFixed == MajoraControlCode.DELAY_END.ToString() || parsedFixed == MajoraControlCode.NEW_BOX_CENTER.ToString())
+                    if (parsedFixed == ZeldaMsgPreview.MajoraControlCode.NEW_BOX.ToString() || parsedFixed == ZeldaMsgPreview.MajoraControlCode.FADE_SKIPPABLE.ToString() || parsedFixed == ZeldaMsgPreview.MajoraControlCode.NEW_BOX_CENTER.ToString())
                     {
-                        outS = outS.Remove(outS.LastIndexOf(GetXString((byte)MajoraControlCode.LINE_BREAK)));
+                        outS = outS.Remove(outS.LastIndexOf(GetXString((byte)ZeldaMsgPreview.MajoraControlCode.LINE_BREAK)));
 
                         if (TextData.Length > i + Environment.NewLine.Length)
                         {
@@ -698,7 +698,7 @@ namespace Zelda64TextEditor
                 }
             }
 
-            outS += GetXString((byte)MajoraControlCode.END);
+            outS += GetXString((byte)ZeldaMsgPreview.MajoraControlCode.END);
 
             if (ShowErrors && errors.Count != 0)
                 System.Windows.Forms.MessageBox.Show($"Errors parsing message {MessageID}: " + Environment.NewLine + String.Join(Environment.NewLine, errors.ToArray()));
@@ -766,13 +766,13 @@ namespace Zelda64TextEditor
                     {
                         data.Add(0xAE);
                     }
-                    else if (Enum.IsDefined(typeof(MajoraControlCode), TextData[i].ToString()))
+                    else if (Enum.IsDefined(typeof(ZeldaMsgPreview.MajoraControlCode), TextData[i].ToString()))
                     {
-                        _ = Enum.TryParse(TextData[i].ToString(), out MajoraControlCode Result);
+                        _ = Enum.TryParse(TextData[i].ToString(), out ZeldaMsgPreview.MajoraControlCode Result);
                         data.Add((byte)Result);
                     }
                     else if (TextData[i] == '\n')
-                        data.Add((byte)MajoraControlCode.LINE_BREAK);
+                        data.Add((byte)ZeldaMsgPreview.MajoraControlCode.LINE_BREAK);
                     else if (TextData[i] == '\r')
                     {
                         // Do nothing
@@ -808,7 +808,7 @@ namespace Zelda64TextEditor
                     string parsedCode = new string(controlCode.ToArray());
                     string parsedFixed = parsedCode.Split(':')[0].Replace(" ", "_").ToUpper();
 
-                    if (parsedFixed == MajoraControlCode.NEW_BOX.ToString() || parsedFixed == MajoraControlCode.DELAY_END.ToString() || parsedFixed == MajoraControlCode.NEW_BOX_CENTER.ToString())
+                    if (parsedFixed == ZeldaMsgPreview.MajoraControlCode.NEW_BOX.ToString() || parsedFixed == ZeldaMsgPreview.MajoraControlCode.FADE_SKIPPABLE.ToString() || parsedFixed == ZeldaMsgPreview.MajoraControlCode.NEW_BOX_CENTER.ToString())
                     {
                         if (data.Count != 0)
                             if (data[data.Count - 1] == 0x11)
@@ -832,7 +832,7 @@ namespace Zelda64TextEditor
                 }
             }
 
-            data.Add((byte)MajoraControlCode.END);
+            data.Add((byte)ZeldaMsgPreview.MajoraControlCode.END);
 
             if (ShowErrors && errors.Count != 0)
                 System.Windows.Forms.MessageBox.Show($"Errors parsing message {MessageID}: " + Environment.NewLine + String.Join(Environment.NewLine, errors.ToArray()));
@@ -858,9 +858,9 @@ namespace Zelda64TextEditor
                 // Not a control code, copy char to output buffer
                 if (TextData[i] != '<' && TextData[i] != '>')
                 {
-                    if (Enum.IsDefined(typeof(OcarinaControlCode), TextData[i].ToString()))
+                    if (Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaControlCode), TextData[i].ToString()))
                     {
-                        _ = Enum.TryParse(TextData[i].ToString(), out OcarinaControlCode Result);
+                        _ = Enum.TryParse(TextData[i].ToString(), out ZeldaMsgPreview.OcarinaControlCode Result);
                         outS += (char)Result;
                     }
                     else if (TextData[i] == '"')
@@ -868,7 +868,7 @@ namespace Zelda64TextEditor
                         outS += GetXString((byte)'"');
                     }
                     else if (TextData[i] == '\n')
-                        outS += GetXString((byte)OcarinaControlCode.LINE_BREAK);
+                        outS += GetXString((byte)ZeldaMsgPreview.OcarinaControlCode.LINE_BREAK);
                     else if (TextData[i] == '\r')
                     {
                         // Do nothing
@@ -904,9 +904,9 @@ namespace Zelda64TextEditor
                     string parsedCode = new string(controlCode.ToArray());
                     string parsedFixed = parsedCode.Split(':')[0].Replace(" ", "_").ToUpper();
 
-                    if (parsedFixed == OcarinaControlCode.NEW_BOX.ToString() || parsedFixed == OcarinaControlCode.DELAY.ToString())
+                    if (parsedFixed == ZeldaMsgPreview.OcarinaControlCode.NEW_BOX.ToString() || parsedFixed == ZeldaMsgPreview.OcarinaControlCode.DELAY.ToString())
                     {
-                        outS = outS.Remove(outS.LastIndexOf(GetXString((byte)OcarinaControlCode.LINE_BREAK)));
+                        outS = outS.Remove(outS.LastIndexOf(GetXString((byte)ZeldaMsgPreview.OcarinaControlCode.LINE_BREAK)));
 
                         if (TextData.Length > i + Environment.NewLine.Length)
                         {
@@ -933,7 +933,7 @@ namespace Zelda64TextEditor
                 }
             }
 
-            outS += GetXString((byte)OcarinaControlCode.END);
+            outS += GetXString((byte)ZeldaMsgPreview.OcarinaControlCode.END);
 
             if (ShowErrors && errors.Count != 0)
                 System.Windows.Forms.MessageBox.Show($"Errors parsing message {MessageID}: " + Environment.NewLine + String.Join(Environment.NewLine, errors.ToArray()));
@@ -955,13 +955,13 @@ namespace Zelda64TextEditor
                 // Not a control code, copy char to output buffer
                 if (TextData[i] != '<' && TextData[i] != '>')
                 {
-                    if (Enum.IsDefined(typeof(OcarinaControlCode), TextData[i].ToString()))
+                    if (Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaControlCode), TextData[i].ToString()))
                     {
-                        _ = Enum.TryParse(TextData[i].ToString(), out OcarinaControlCode Result);
+                        _ = Enum.TryParse(TextData[i].ToString(), out ZeldaMsgPreview.OcarinaControlCode Result);
                         data.Add((byte)Result);
                     }
                     else if (TextData[i] == '\n')
-                        data.Add((byte)OcarinaControlCode.LINE_BREAK);
+                        data.Add((byte)ZeldaMsgPreview.OcarinaControlCode.LINE_BREAK);
                     else if (TextData[i] == '\r')
                     {
                         // Do nothing
@@ -997,7 +997,7 @@ namespace Zelda64TextEditor
                     string parsedCode = new string(controlCode.ToArray());
                     string parsedFixed = parsedCode.Split(':')[0].Replace(" ", "_").ToUpper();
 
-                    if (parsedFixed == OcarinaControlCode.NEW_BOX.ToString() || parsedFixed == OcarinaControlCode.DELAY.ToString())
+                    if (parsedFixed == ZeldaMsgPreview.OcarinaControlCode.NEW_BOX.ToString() || parsedFixed == ZeldaMsgPreview.OcarinaControlCode.DELAY.ToString())
                     {
                         if (data.Count != 0)
                             if (data[data.Count - 1] == 0x01)
@@ -1023,7 +1023,7 @@ namespace Zelda64TextEditor
                 }
             }
 
-            data.Add((byte)OcarinaControlCode.END);
+            data.Add((byte)ZeldaMsgPreview.OcarinaControlCode.END);
 
             if (ShowErrors && errors.Count != 0)
                 System.Windows.Forms.MessageBox.Show($"Errors parsing message {MessageID}: " + Environment.NewLine + String.Join(Environment.NewLine, errors.ToArray()));
@@ -1066,7 +1066,7 @@ namespace Zelda64TextEditor
                 {
                     case "SHIFT":
                         {
-                            output.Add((byte)MajoraControlCode.SHIFT);
+                            output.Add((byte)ZeldaMsgPreview.MajoraControlCode.SHIFT);
                             output.Add(Convert.ToByte(code[1]));
                             break;
                         }
@@ -1075,7 +1075,7 @@ namespace Zelda64TextEditor
                     case "DELAY_END":
                     case "FADE":
                         {
-                            output.Add((byte)(int)Enum.Parse(typeof(MajoraControlCode), code[0]));
+                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.MajoraControlCode), code[0]));
                             byte[] fadeAmountBytes = BitConverter.GetBytes(Convert.ToInt16(code[1]));
                             output.Add(fadeAmountBytes[1]);
                             output.Add(fadeAmountBytes[0]);
@@ -1083,7 +1083,7 @@ namespace Zelda64TextEditor
                         }
                     case "SOUND":
                         {
-                            output.Add((byte)MajoraControlCode.SOUND);
+                            output.Add((byte)ZeldaMsgPreview.MajoraControlCode.SOUND);
                             short soundValue = 0;
 
                             if (Dicts.SFXes.ContainsKey(code[1]))
@@ -1109,10 +1109,10 @@ namespace Zelda64TextEditor
                         }
                     default:
                         {
-                            if (Enum.IsDefined(typeof(MajoraMsgColor), code[0]))
-                                output.Add((byte)(int)Enum.Parse(typeof(MajoraMsgColor), code[0]));
-                            else if (Enum.IsDefined(typeof(MajoraControlCode), code[0]))
-                                output.Add((byte)(int)Enum.Parse(typeof(MajoraControlCode), code[0]));
+                            if (Enum.IsDefined(typeof(ZeldaMsgPreview.MajoraMsgColor), code[0]))
+                                output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.MajoraMsgColor), code[0]));
+                            else if (Enum.IsDefined(typeof(ZeldaMsgPreview.MajoraControlCode), code[0]))
+                                output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.MajoraControlCode), code[0]));
                             else
                                 errors.Add($"{code[0]} is not a valid control code.");
 
@@ -1140,13 +1140,13 @@ namespace Zelda64TextEditor
                 {
                     case "PIXELS_RIGHT":
                         {
-                            output.Add((byte)OcarinaControlCode.SHIFT);
+                            output.Add((byte)ZeldaMsgPreview.OcarinaControlCode.SHIFT);
                             output.Add(Convert.ToByte(code[1]));
                             break;
                         }
                     case "JUMP":
                         {
-                            output.Add((byte)OcarinaControlCode.JUMP);
+                            output.Add((byte)ZeldaMsgPreview.OcarinaControlCode.JUMP);
                             byte[] jumpIDBytes = BitConverter.GetBytes(short.Parse(code[1], System.Globalization.NumberStyles.HexNumber));
                             output.Add(jumpIDBytes[1]);
                             output.Add(jumpIDBytes[0]);
@@ -1157,13 +1157,13 @@ namespace Zelda64TextEditor
                     case "SHIFT":
                     case "SPEED":
                         {
-                            output.Add((byte)(int)Enum.Parse(typeof(OcarinaControlCode), code[0]));
+                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaControlCode), code[0]));
                             output.Add(Convert.ToByte(code[1]));
                             break;
                         }
                     case "FADE2":
                         {
-                            output.Add((byte)(int)Enum.Parse(typeof(OcarinaControlCode), code[0]));
+                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaControlCode), code[0]));
                             byte[] fadeAmountBytes = BitConverter.GetBytes(Convert.ToInt16(code[1]));
                             output.Add(fadeAmountBytes[1]);
                             output.Add(fadeAmountBytes[0]);
@@ -1171,13 +1171,13 @@ namespace Zelda64TextEditor
                         }
                     case "ICON":
                         {
-                            output.Add((byte)(int)Enum.Parse(typeof(OcarinaControlCode), code[0]));
-                            output.Add((byte)(int)Enum.Parse(typeof(OcarinaIcon), code[1]));
+                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaControlCode), code[0]));
+                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaIcon), code[1]));
                             break;
                         }
                     case "BACKGROUND":
                         {
-                            output.Add((byte)OcarinaControlCode.BACKGROUND);
+                            output.Add((byte)ZeldaMsgPreview.OcarinaControlCode.BACKGROUND);
                             byte[] backgroundIDBytes = BitConverter.GetBytes(Convert.ToInt32(code[1]));
                             output.Add(backgroundIDBytes[2]);
                             output.Add(backgroundIDBytes[1]);
@@ -1186,13 +1186,13 @@ namespace Zelda64TextEditor
                         }
                     case "HIGH_SCORE":
                         {
-                            output.Add((byte)OcarinaControlCode.HIGH_SCORE);
-                            output.Add((byte)(int)Enum.Parse(typeof(OcarinaHighScore), code[1]));
+                            output.Add((byte)ZeldaMsgPreview.OcarinaControlCode.HIGH_SCORE);
+                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaHighScore), code[1]));
                             break;
                         }
                     case "SOUND":
                         {
-                            output.Add((byte)OcarinaControlCode.SOUND);
+                            output.Add((byte)ZeldaMsgPreview.OcarinaControlCode.SOUND);
                             short soundValue = 0;
 
                             if (Dicts.SFXes.ContainsKey(code[1]))
@@ -1218,13 +1218,13 @@ namespace Zelda64TextEditor
                         }
                     default:
                         {
-                            if (Enum.IsDefined(typeof(OcarinaMsgColor), code[0]))
+                            if (Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaMsgColor), code[0]))
                             {
-                                output.Add((byte)OcarinaControlCode.COLOR);
-                                output.Add((byte)(int)Enum.Parse(typeof(OcarinaMsgColor), code[0]));
+                                output.Add((byte)ZeldaMsgPreview.OcarinaControlCode.COLOR);
+                                output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaMsgColor), code[0]));
                             }
-                            else if (Enum.IsDefined(typeof(OcarinaControlCode), code[0]))
-                                output.Add((byte)(int)Enum.Parse(typeof(OcarinaControlCode), code[0]));
+                            else if (Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaControlCode), code[0]))
+                                output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaControlCode), code[0]));
                             else
                                 errors.Add($"{code[0]} is not a valid control code.");
 

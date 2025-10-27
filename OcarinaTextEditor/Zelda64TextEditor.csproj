@@ -100,9 +100,9 @@
     <Reference Include="Xceed.Wpf.Toolkit, Version=4.1.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
       <HintPath>..\packages\Extended.Wpf.Toolkit.4.1.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
     </Reference>
-    <Reference Include="ZeldaMessage, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ZeldaMsgPreview, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ZeldaMessagePreview\ZeldaMessagePreview\bin\Release\ZeldaMessage.dll</HintPath>
+      <HintPath>..\..\ZeldaMsgPreview\bin\Release\ZeldaMsgPreview.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -121,7 +121,6 @@
     <Compile Include="Converters\CharMapTextConverter.cs" />
     <Compile Include="Converters\NullToFalseConverter.cs" />
     <Compile Include="Dicts.cs" />
-    <Compile Include="Enums\ControlTags.cs" />
     <Compile Include="Enums\EditorMode.cs" />
     <Compile Include="Enums\ExportType.cs" />
     <Compile Include="Enums\ROMData.cs" />

@@ -177,7 +177,7 @@ namespace Zelda64TextEditor
         private string m_searchFilter;
         #endregion
 
-        public Dictionary<OcarinaControlCode, string> m_controlCodes;
+        public Dictionary<ZeldaMsgPreview.OcarinaControlCode, string> m_controlCodes;
 
         #region public string Version
         public ROMVer Version
