@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Zelda64TextEditor.Enums;
+using Path = System.IO.Path;
 
 namespace Zelda64TextEditor
 {
@@ -76,6 +77,23 @@ namespace Zelda64TextEditor
             catch (Exception)
             {
                 FontData = null;
+            }
+
+            foreach (string arg in App.startupEventArgs.Args)
+            {
+                if (File.Exists(arg))
+                    switch (Path.GetExtension(arg).ToLower())
+                    {
+                        case ".zzrpl":
+                        case ".toml":
+                        case ".zzrp":
+                        case ".n64":
+                        case ".z64":
+                            {
+                                view.Open(arg);
+                                break;
+                            }
+                    }
             }
         }
 

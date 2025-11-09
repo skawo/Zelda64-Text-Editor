@@ -17,11 +17,14 @@ namespace Zelda64TextEditor
     public partial class App : Application
     {
         public static Dictionary<char, char> charMap = null;
+        public static StartupEventArgs startupEventArgs;
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
             System.Windows.Forms.Application.EnableVisualStyles();
+
+            startupEventArgs = e;
 
 
             if (File.Exists("codepoint.txt"))

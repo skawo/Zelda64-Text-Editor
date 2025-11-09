@@ -329,7 +329,7 @@ namespace Zelda64TextEditor
         }
 
         #region Input/Output
-        private void Open(string PathD = "")
+        public void Open(string PathD = "")
         {
             OpenFileDialog openFile = new OpenFileDialog
             {
