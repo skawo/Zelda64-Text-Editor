@@ -14,7 +14,7 @@ namespace NPC_Maker
         string FileName { get; set; }
         List<int> SkipEntries { get; set; }
 
-        public PickableList(string _Filename, bool PickMode = false, List<int> _SkipEntries = null)
+        public PickableList(string _Filename, bool PickMode = false, List<int> _SkipEntries = null, string sfx_enum = "")
         {
             InitializeComponent();
 
@@ -33,11 +33,12 @@ namespace NPC_Maker
                 foreach (string Row in RawData)
                 {
                     string[] NameAndDesc = Row.Split(',');
-
+                    if (NameAndDesc[0] == "-1") continue;
+                    
                     if (NameAndDesc.Length < 3)
-                        Data.Add(new ListEntry(Convert.ToInt16(NameAndDesc[0]), NameAndDesc[1], ""));
+                        Data.Add(new ListEntry(Convert.ToUInt16(NameAndDesc[0]), NameAndDesc[1], ""));
                     else
-                        Data.Add(new ListEntry(Convert.ToInt16(NameAndDesc[0]), NameAndDesc[1], NameAndDesc[2]));
+                        Data.Add(new ListEntry(Convert.ToUInt16(NameAndDesc[0]), NameAndDesc[1], NameAndDesc[2]));
                 }
             }
             catch (Exception)
@@ -45,6 +46,24 @@ namespace NPC_Maker
                 MessageBox.Show(FileName + " is missing or incorrect.");
                 return;
             }
+
+            if (sfx_enum != "" && File.Exists(sfx_enum))
+            {
+                string[] lines = File.ReadAllLines(sfx_enum);
+                ushort cnt = 0;
+
+                foreach (string line in lines)
+                {
+                    string trimmedline = line.Trim().Replace(",","");
+                    if (trimmedline.Contains("SOUND_"))
+                    {
+                        Data.Add(new ListEntry(Convert.ToUInt16(cnt + 0xF000), trimmedline, ""));
+                        cnt++;
+                    }
+                }
+            }
+
+
 
             SetListView(SkipEntries);
 
@@ -161,14 +180,14 @@ namespace NPC_Maker
                     Data.Remove(Sel);
 
                     int DataIndex = Data.FindIndex(x => x.ID == pE.Out_EntryID);
-                    Sel = new ListEntry(pE.Out_EntryID, pE.Out_Name, pE.Out_Desc);
+                    Sel = new ListEntry((ushort)pE.Out_EntryID, pE.Out_Name, pE.Out_Desc);
                     Data[DataIndex] = Sel;
                     SetListView(SkipEntries);
                 }
                 else if (Sel.ID == pE.Out_EntryID || (Data.FindIndex(x => x.ID == pE.Out_EntryID) < 0))
                 {
                     int DataIndex = Data.FindIndex(x => x.ID == Sel.ID);
-                    Sel = new ListEntry(pE.Out_EntryID, pE.Out_Name, pE.Out_Desc);
+                    Sel = new ListEntry((ushort)pE.Out_EntryID, pE.Out_Name, pE.Out_Desc);
                     Data[DataIndex] = Sel;
                     SetListView(SkipEntries);
                 }
@@ -183,7 +202,7 @@ namespace NPC_Maker
 
             if (dr == DialogResult.OK)
             {
-                ListEntry NewEntry = new ListEntry(pE.Out_EntryID, pE.Out_Name, pE.Out_Desc);
+                ListEntry NewEntry = new ListEntry((ushort)pE.Out_EntryID, pE.Out_Name, pE.Out_Desc);
 
                 if (NewEntry.ID < 0)
                 {
@@ -246,7 +265,7 @@ namespace NPC_Maker
 
 
                 foreach (ListEntry Entry in Data)
-                    Out = String.Concat(Out, Entry.ID.ToString(), ",", Entry.Name, ",", Entry.Description, Environment.NewLine);
+                    if (Entry.ID < 0xF000) Out = String.Concat(Out, Entry.ID.ToString(), ",", Entry.Name, ",", Entry.Description, Environment.NewLine);
 
                 File.WriteAllText(FileName, Out);
                 Zelda64TextEditor.Dicts.ReloadDict(FileName, ref Zelda64TextEditor.Dicts.SFXes);
@@ -261,11 +280,11 @@ namespace NPC_Maker
 
     public class ListEntry
     {
-        public short ID { get; set; }
+        public ushort ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public ListEntry(short _ID, string _Name, string _Description)
+        public ListEntry(ushort _ID, string _Name, string _Description)
         {
             ID = _ID;
             Name = _Name;

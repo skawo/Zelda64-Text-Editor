@@ -556,6 +556,22 @@ namespace Zelda64TextEditor
                 SelectedMessage = MessageList[0];
 
                 WindowTitle = string.Format("{0} - {1}", Path.GetFileNameWithoutExtension(openFile.FileName), EditorName);
+
+                Dicts.ReloadDict(Dicts.OoTSFXesFilename, ref Dicts.SFXes);
+
+                string[] lines = File.ReadAllLines(cfgFolder + "/include/sfx_enum.h");
+                ushort cnt = 0;
+
+                foreach (string line in lines)
+                {
+                    string trimmedline = line.Trim().Replace(",", "");
+                    if (trimmedline.Contains("SOUND_"))
+                    {
+                        Dicts.SFXes.Add(trimmedline,cnt + 0xF000);
+                        cnt++;
+                    }
+                }
+
             }
         }
 
@@ -1103,7 +1119,10 @@ namespace Zelda64TextEditor
 
         private void PerformOnRequestOpenSFXesMenu(object commandParameter)
         {
-            NPC_Maker.PickableList SFX = new NPC_Maker.PickableList(MajoraMaskMode ? Dicts.MMSFXesFilename : Dicts.OoTSFXesFilename, true);
+            NPC_Maker.PickableList SFX = 
+                Mode == EditorMode.Z64ROMMode
+                ? new NPC_Maker.PickableList(Dicts.OoTSFXesFilename, true, null, Path.GetDirectoryName(Path1) + "/include/sfx_enum.h")
+                : new NPC_Maker.PickableList(MajoraMaskMode ? Dicts.MMSFXesFilename : Dicts.OoTSFXesFilename, true);
             System.Windows.Forms.DialogResult DR = SFX.ShowDialog();
 
             if (DR == System.Windows.Forms.DialogResult.OK)

@@ -340,7 +340,10 @@ namespace Zelda64TextEditor
         private void SoundEffectMenu_Click(object sender, RoutedEventArgs e)
         {
             ViewModel view = (ViewModel)DataContext;
-            NPC_Maker.PickableList SFX = new NPC_Maker.PickableList(view.MajoraMaskMode ? Dicts.MMSFXesFilename : Dicts.OoTSFXesFilename, true);
+            NPC_Maker.PickableList SFX =
+                view.Mode == EditorMode.Z64ROMMode
+                ? new NPC_Maker.PickableList(Dicts.OoTSFXesFilename, true, null, Path.GetDirectoryName(view.Path1) + "/include/sfx_enum.h")
+                : new NPC_Maker.PickableList(view.MajoraMaskMode ? Dicts.MMSFXesFilename : Dicts.OoTSFXesFilename, true);
             System.Windows.Forms.DialogResult DR = SFX.ShowDialog();
 
             if (DR == System.Windows.Forms.DialogResult.OK)
