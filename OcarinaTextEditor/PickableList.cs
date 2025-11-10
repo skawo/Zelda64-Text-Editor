@@ -12,9 +12,10 @@ namespace NPC_Maker
         List<ListEntry> Data { get; set; }
         public ListEntry Chosen { get; set; }
         string FileName { get; set; }
+        string sfxHPath { get; set; }
         List<int> SkipEntries { get; set; }
 
-        public PickableList(string _Filename, bool PickMode = false, List<int> _SkipEntries = null, string sfx_enum = "")
+        public PickableList(string _Filename, string _sfxHPath, bool PickMode = false, List<int> _SkipEntries = null, string sfx_enum = "")
         {
             InitializeComponent();
 
@@ -24,6 +25,7 @@ namespace NPC_Maker
                 SkipEntries = new List<int>();
 
             FileName = _Filename;
+            sfxHPath = _sfxHPath;
 
             try
             {
@@ -262,13 +264,12 @@ namespace NPC_Maker
             {
                 string Out = "";
 
-
-
                 foreach (ListEntry Entry in Data)
-                    if (Entry.ID < 0xF000) Out = String.Concat(Out, Entry.ID.ToString(), ",", Entry.Name, ",", Entry.Description, Environment.NewLine);
+                    if (Entry.ID < 0xF000) 
+                        Out = String.Concat(Out, Entry.ID.ToString(), ",", Entry.Name, ",", Entry.Description, Environment.NewLine);
 
                 File.WriteAllText(FileName, Out);
-                Zelda64TextEditor.Dicts.ReloadDict(FileName, ref Zelda64TextEditor.Dicts.SFXes);
+                Zelda64TextEditor.Dicts.ReloadSfxesDict(FileName, sfxHPath, ref Zelda64TextEditor.Dicts.SFXes);
             }
             catch (Exception ex)
             {

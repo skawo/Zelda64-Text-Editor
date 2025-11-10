@@ -19,6 +19,30 @@ namespace Zelda64TextEditor
             Dict = GetDictionary(Filename);
         }
 
+        public static void ReloadSfxesDict(string Filename, string hPath, ref Dictionary<string, int> Dict)
+        {
+            Dict = GetDictionary(Filename);
+
+            if (hPath != "")
+            {
+                if (File.Exists(hPath))
+                {
+                    string[] lines = File.ReadAllLines(hPath);
+                    ushort cnt = 0;
+
+                    foreach (string line in lines)
+                    {
+                        string trimmedline = line.Trim().Replace(",", "");
+                        if (trimmedline.Contains("SOUND_"))
+                        {
+                            Dict.Add(trimmedline, cnt + 0xF000);
+                            cnt++;
+                        }
+                    }
+                }
+            }
+        }
+
         public static Dictionary<string, int> GetDictionary(string Filename)
         {
             Dictionary<string, int> Dict = new Dictionary<string, int>();

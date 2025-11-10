@@ -108,6 +108,7 @@ namespace Zelda64TextEditor
         public string Path1 { get; set; }
         public string Path2 { get; set; }
 
+        public string sfxHPath { get; set; }
 
         #region public Message SelectedMessage
         public Message SelectedMessage
@@ -344,6 +345,8 @@ namespace Zelda64TextEditor
             else
                 return;
 
+            sfxHPath = "";
+
             switch (Path.GetExtension(openFile.FileName))
             {
                 case ".zzrpl":
@@ -534,6 +537,9 @@ namespace Zelda64TextEditor
                     }
                 }
 
+                sfxHPath = Path.Combine(cfgFolder, "include", "sfx_enum.h");
+                Dicts.ReloadSfxesDict(Dicts.OoTSFXesFilename, sfxHPath, ref Dicts.SFXes);
+
                 Mode = EditorMode.Z64ROMMode;
                 Version = ROMVer.Debug;
 
@@ -557,20 +563,6 @@ namespace Zelda64TextEditor
 
                 WindowTitle = string.Format("{0} - {1}", Path.GetFileNameWithoutExtension(openFile.FileName), EditorName);
 
-                Dicts.ReloadDict(Dicts.OoTSFXesFilename, ref Dicts.SFXes);
-
-                string[] lines = File.ReadAllLines(cfgFolder + "/include/sfx_enum.h");
-                ushort cnt = 0;
-
-                foreach (string line in lines)
-                {
-                    string trimmedline = line.Trim().Replace(",", "");
-                    if (trimmedline.Contains("SOUND_"))
-                    {
-                        Dicts.SFXes.Add(trimmedline,cnt + 0xF000);
-                        cnt++;
-                    }
-                }
 
             }
         }
@@ -1121,8 +1113,8 @@ namespace Zelda64TextEditor
         {
             NPC_Maker.PickableList SFX = 
                 Mode == EditorMode.Z64ROMMode
-                ? new NPC_Maker.PickableList(Dicts.OoTSFXesFilename, true, null, Path.GetDirectoryName(Path1) + "/include/sfx_enum.h")
-                : new NPC_Maker.PickableList(MajoraMaskMode ? Dicts.MMSFXesFilename : Dicts.OoTSFXesFilename, true);
+                ? new NPC_Maker.PickableList(Dicts.OoTSFXesFilename, sfxHPath, true, null, Path.GetDirectoryName(Path1) + "/include/sfx_enum.h")
+                : new NPC_Maker.PickableList(MajoraMaskMode ? Dicts.MMSFXesFilename : Dicts.OoTSFXesFilename, "", true);
             System.Windows.Forms.DialogResult DR = SFX.ShowDialog();
 
             if (DR == System.Windows.Forms.DialogResult.OK)

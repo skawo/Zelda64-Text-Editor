@@ -130,7 +130,8 @@ namespace Zelda64TextEditor
                     ConstructContextMenu();
                 }
 
-                Dicts.ReloadDict(Dicts.MMSFXesFilename, ref Dicts.SFXes);
+
+                Dicts.ReloadSfxesDict(Dicts.MMSFXesFilename, view.sfxHPath, ref Dicts.SFXes);
             }
             else if (!view.MajoraMaskMode)
             {
@@ -144,7 +145,7 @@ namespace Zelda64TextEditor
                     ConstructContextMenu();
                 }
 
-                Dicts.ReloadDict(Dicts.OoTSFXesFilename, ref Dicts.SFXes);
+                Dicts.ReloadSfxesDict(Dicts.OoTSFXesFilename, view.sfxHPath, ref Dicts.SFXes);
             }
 
 
@@ -342,8 +343,8 @@ namespace Zelda64TextEditor
             ViewModel view = (ViewModel)DataContext;
             NPC_Maker.PickableList SFX =
                 view.Mode == EditorMode.Z64ROMMode
-                ? new NPC_Maker.PickableList(Dicts.OoTSFXesFilename, true, null, Path.GetDirectoryName(view.Path1) + "/include/sfx_enum.h")
-                : new NPC_Maker.PickableList(view.MajoraMaskMode ? Dicts.MMSFXesFilename : Dicts.OoTSFXesFilename, true);
+                ? new NPC_Maker.PickableList(Dicts.OoTSFXesFilename, view.sfxHPath, true, null, Path.GetDirectoryName(view.Path1) + "/include/sfx_enum.h")
+                : new NPC_Maker.PickableList(view.MajoraMaskMode ? Dicts.MMSFXesFilename : Dicts.OoTSFXesFilename, "", true);
             System.Windows.Forms.DialogResult DR = SFX.ShowDialog();
 
             if (DR == System.Windows.Forms.DialogResult.OK)

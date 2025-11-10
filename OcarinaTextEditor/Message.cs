@@ -453,7 +453,7 @@ namespace Zelda64TextEditor
                     codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.FADE2.ToString(), numFramesFade2);
                     break;
                 case ZeldaMsgPreview.OcarinaControlCode.SOUND:
-                    short soundID = reader.ReadInt16();
+                    ushort soundID = reader.ReadUInt16();
                     codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.SOUND.ToString(), Dicts.SFXes.ContainsValue(soundID) ? Dicts.SFXes.FirstOrDefault(x => x.Value == soundID).Key : "0x" + soundID.ToString("X"));
                     break;
                 case ZeldaMsgPreview.OcarinaControlCode.SPEED:
@@ -1130,24 +1130,25 @@ namespace Zelda64TextEditor
     private List<byte> GetControlCode(string[] code, ref List<string> errors)
         {
             List<byte> output = new List<byte>();
+            List<string> codesUpper = new List<string>();
 
             try
             {
                 for (int i = 0; i < code.Length; i++)
-                    code[i] = code[i].Replace(" ", "_").ToUpper();
+                    codesUpper.Add(code[i].Replace(" ", "_").ToUpper());
 
-                switch (code[0])
+                switch (codesUpper[0])
                 {
                     case "PIXELS_RIGHT":
                         {
                             output.Add((byte)ZeldaMsgPreview.OcarinaControlCode.SHIFT);
-                            output.Add(Convert.ToByte(code[1]));
+                            output.Add(Convert.ToByte(codesUpper[1]));
                             break;
                         }
                     case "JUMP":
                         {
                             output.Add((byte)ZeldaMsgPreview.OcarinaControlCode.JUMP);
-                            byte[] jumpIDBytes = BitConverter.GetBytes(short.Parse(code[1], System.Globalization.NumberStyles.HexNumber));
+                            byte[] jumpIDBytes = BitConverter.GetBytes(short.Parse(codesUpper[1], System.Globalization.NumberStyles.HexNumber));
                             output.Add(jumpIDBytes[1]);
                             output.Add(jumpIDBytes[0]);
                             break;
@@ -1157,28 +1158,28 @@ namespace Zelda64TextEditor
                     case "SHIFT":
                     case "SPEED":
                         {
-                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaControlCode), code[0]));
-                            output.Add(Convert.ToByte(code[1]));
+                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaControlCode), codesUpper[0]));
+                            output.Add(Convert.ToByte(codesUpper[1]));
                             break;
                         }
                     case "FADE2":
                         {
-                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaControlCode), code[0]));
-                            byte[] fadeAmountBytes = BitConverter.GetBytes(Convert.ToInt16(code[1]));
+                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaControlCode), codesUpper[0]));
+                            byte[] fadeAmountBytes = BitConverter.GetBytes(Convert.ToInt16(codesUpper[1]));
                             output.Add(fadeAmountBytes[1]);
                             output.Add(fadeAmountBytes[0]);
                             break;
                         }
                     case "ICON":
                         {
-                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaControlCode), code[0]));
-                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaIcon), code[1]));
+                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaControlCode), codesUpper[0]));
+                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaIcon), codesUpper[1]));
                             break;
                         }
                     case "BACKGROUND":
                         {
                             output.Add((byte)ZeldaMsgPreview.OcarinaControlCode.BACKGROUND);
-                            byte[] backgroundIDBytes = BitConverter.GetBytes(Convert.ToInt32(code[1]));
+                            byte[] backgroundIDBytes = BitConverter.GetBytes(Convert.ToInt32(codesUpper[1]));
                             output.Add(backgroundIDBytes[2]);
                             output.Add(backgroundIDBytes[1]);
                             output.Add(backgroundIDBytes[0]);
@@ -1187,7 +1188,7 @@ namespace Zelda64TextEditor
                     case "HIGH_SCORE":
                         {
                             output.Add((byte)ZeldaMsgPreview.OcarinaControlCode.HIGH_SCORE);
-                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaHighScore), code[1]));
+                            output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaHighScore), codesUpper[1]));
                             break;
                         }
                     case "SOUND":
@@ -1197,11 +1198,13 @@ namespace Zelda64TextEditor
 
                             if (Dicts.SFXes.ContainsKey(code[1]))
                                 soundValue = (short)Dicts.SFXes[code[1]];
+                            else if (Dicts.SFXes.ContainsKey(codesUpper[1]))
+                                soundValue = (short)Dicts.SFXes[codesUpper[1]];
                             else
                             {
                                 try
                                 {
-                                    soundValue = ExtensionMethods.IsHex(code[1]) ? Convert.ToInt16(code[1].Substring(2), 16) : Convert.ToInt16(code[1]);
+                                    soundValue = ExtensionMethods.IsHex(codesUpper[1]) ? Convert.ToInt16(codesUpper[1].Substring(2), 16) : Convert.ToInt16(codesUpper[1]);
                                 }
                                 catch (Exception)
                                 {
@@ -1218,13 +1221,13 @@ namespace Zelda64TextEditor
                         }
                     default:
                         {
-                            if (Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaMsgColor), code[0]))
+                            if (Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaMsgColor), codesUpper[0]))
                             {
                                 output.Add((byte)ZeldaMsgPreview.OcarinaControlCode.COLOR);
-                                output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaMsgColor), code[0]));
+                                output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaMsgColor), codesUpper[0]));
                             }
                             else if (Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaControlCode), code[0]))
-                                output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaControlCode), code[0]));
+                                output.Add((byte)(int)Enum.Parse(typeof(ZeldaMsgPreview.OcarinaControlCode), codesUpper[0]));
                             else
                                 errors.Add($"{code[0]} is not a valid control code.");
 

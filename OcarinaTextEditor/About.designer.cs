@@ -57,11 +57,11 @@
             this.Credits.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Credits.Location = new System.Drawing.Point(252, 127);
             this.Credits.Name = "Credits";
-            this.Credits.Size = new System.Drawing.Size(154, 143);
+            this.Credits.Size = new System.Drawing.Size(154, 156);
             this.Credits.TabIndex = 5;
-            this.Credits.Text = "Programming:\r\nSageofMirrors, Skawo\r\n\r\nSpecial Thanks:\r\nZelda 64 Decompilation Tea" +
-    "ms\r\nCloudmodding Wiki\r\nHylian Modding Server\r\ngithub contributors\r\n\r\nDedicated t" +
-    "o CrookedPoe\r\nR.I.P";
+            this.Credits.Text = "Programming:\r\nSageofMirrors, Skawo,\r\nNokaubure\r\n\r\nSpecial Thanks:\r\nZelda 64 Decom" +
+    "pilation Teams\r\nCloudmodding Wiki\r\nHylian Modding Server\r\ngithub contributors\r\n\r" +
+    "\nDedicated to CrookedPoe\r\nR.I.P";
             // 
             // Logo
             // 
@@ -122,7 +122,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(414, 280);
+            this.ClientSize = new System.Drawing.Size(414, 291);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.LblVersion);
