@@ -232,12 +232,6 @@ namespace NPC_Maker
             string ID = (string)listView1.SelectedItems[0].Text;
             ListEntry Sel = Data.Find(x => x.ID.ToString() == ID);
 
-            if (Sel.ID < 0)
-            {
-                MessageBox.Show("Entries with negative IDs are treated as editor constants and cannot be deleted.");
-                return;
-            }
-
             DialogResult Res = MessageBox.Show("Definitely remove this entry?", "Remove ID?", MessageBoxButtons.YesNo);
 
             if (Res == DialogResult.Yes)
