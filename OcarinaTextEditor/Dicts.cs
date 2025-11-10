@@ -22,6 +22,18 @@ namespace Zelda64TextEditor
         public static void ReloadSfxesDict(string Filename, string hPath, ref Dictionary<string, int> Dict)
         {
             Dict = GetDictionary(Filename);
+            var hDict = LoadSFXFromH(hPath);
+
+            foreach (var p in hDict)
+            {
+                if (!Dict.ContainsKey(p.Key))
+                    Dict.Add(p.Key, p.Value);
+            }
+        }
+
+        public static Dictionary<string, int> LoadSFXFromH(string hPath)
+        {
+            Dictionary<string, int> outD = new Dictionary<string, int>();
 
             if (hPath != "")
             {
@@ -35,12 +47,14 @@ namespace Zelda64TextEditor
                         string trimmedline = line.Trim().Replace(",", "");
                         if (trimmedline.Contains("SOUND_"))
                         {
-                            Dict.Add(trimmedline, cnt + 0xF000);
+                            outD.Add(trimmedline, cnt + 0xF000);
                             cnt++;
                         }
                     }
                 }
             }
+
+            return outD;
         }
 
         public static Dictionary<string, int> GetDictionary(string Filename)

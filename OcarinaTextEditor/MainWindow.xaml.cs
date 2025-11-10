@@ -343,7 +343,7 @@ namespace Zelda64TextEditor
             ViewModel view = (ViewModel)DataContext;
             NPC_Maker.PickableList SFX =
                 view.Mode == EditorMode.Z64ROMMode
-                ? new NPC_Maker.PickableList(Dicts.OoTSFXesFilename, view.sfxHPath, true, null, Path.GetDirectoryName(view.Path1) + "/include/sfx_enum.h")
+                ? new NPC_Maker.PickableList(Dicts.OoTSFXesFilename, view.sfxHPath, true, null)
                 : new NPC_Maker.PickableList(view.MajoraMaskMode ? Dicts.MMSFXesFilename : Dicts.OoTSFXesFilename, "", true);
             System.Windows.Forms.DialogResult DR = SFX.ShowDialog();
 

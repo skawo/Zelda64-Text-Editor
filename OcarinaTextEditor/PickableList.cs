@@ -15,7 +15,7 @@ namespace NPC_Maker
         string sfxHPath { get; set; }
         List<int> SkipEntries { get; set; }
 
-        public PickableList(string _Filename, string _sfxHPath, bool PickMode = false, List<int> _SkipEntries = null, string sfx_enum = "")
+        public PickableList(string _Filename, string _sfxHPath, bool PickMode = false, List<int> _SkipEntries = null)
         {
             InitializeComponent();
 
@@ -29,7 +29,6 @@ namespace NPC_Maker
 
             try
             {
-                Data = new List<ListEntry>();
                 string[] RawData = File.ReadAllLines(FileName);
 
                 foreach (string Row in RawData)
@@ -42,30 +41,21 @@ namespace NPC_Maker
                     else
                         Data.Add(new ListEntry(Convert.ToUInt16(NameAndDesc[0]), NameAndDesc[1], NameAndDesc[2]));
                 }
+
+                if (!string.IsNullOrWhiteSpace(sfxHPath))
+                {
+                    var Dict = Zelda64TextEditor.Dicts.LoadSFXFromH(sfxHPath);
+
+                    foreach (var p in Dict)
+                        Data.Add(new ListEntry((ushort)p.Value, p.Key, "Z64ROM SFX"));
+                }
+
             }
             catch (Exception)
             {
                 MessageBox.Show(FileName + " is missing or incorrect.");
                 return;
             }
-
-            if (sfx_enum != "" && File.Exists(sfx_enum))
-            {
-                string[] lines = File.ReadAllLines(sfx_enum);
-                ushort cnt = 0;
-
-                foreach (string line in lines)
-                {
-                    string trimmedline = line.Trim().Replace(",","");
-                    if (trimmedline.Contains("SOUND_"))
-                    {
-                        Data.Add(new ListEntry(Convert.ToUInt16(cnt + 0xF000), trimmedline, ""));
-                        cnt++;
-                    }
-                }
-            }
-
-
 
             SetListView(SkipEntries);
 
