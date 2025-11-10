@@ -155,12 +155,6 @@ namespace NPC_Maker
             string ID = (string)listView1.SelectedItems[0].Text;
             ListEntry Sel = Data.Find(x => x.ID.ToString() == ID);
 
-            if (Sel.ID < 0)
-            {
-                MessageBox.Show("Entries with negative IDs are treated as editor constants and cannot be edited.");
-                return;
-            }
-
             PickableListEntryEdit pE = new PickableListEntryEdit(Sel.ID, Sel.Name, Sel.Description);
             DialogResult dr = pE.ShowDialog();
 
@@ -195,12 +189,6 @@ namespace NPC_Maker
             if (dr == DialogResult.OK)
             {
                 ListEntry NewEntry = new ListEntry((ushort)pE.Out_EntryID, pE.Out_Name, pE.Out_Desc);
-
-                if (NewEntry.ID < 0)
-                {
-                    MessageBox.Show("Entries with negative IDs are treated as editor constants and cannot be edited.");
-                    return;
-                }
 
                 ListEntry Sel = Data.Find(x => x.ID == pE.Out_EntryID);
 
