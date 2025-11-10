@@ -31,6 +31,9 @@ namespace Zelda64TextEditor
         private float[] FontWidths = null;
         private byte[] FontData = null;
 
+        const string widthTableFile = "font.width_table";
+        const string fontFile = "font.font_static";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -52,9 +55,9 @@ namespace Zelda64TextEditor
 
             try
             {
-                if (System.IO.File.Exists("font.width_table"))
+                if (File.Exists(widthTableFile))
                 {
-                    byte[] widths = System.IO.File.ReadAllBytes("font.width_table");
+                    byte[] widths = File.ReadAllBytes(widthTableFile);
                     FontWidths = new float[widths.Length / 4];
 
                     for (int i = 0; i < widths.Length; i += 4)
@@ -65,14 +68,14 @@ namespace Zelda64TextEditor
                 }
             }
             catch (Exception)
-            { }
+            {
+                FontWidths = null;
+            }
 
             try
             {
-                if (System.IO.File.Exists("font.font_static"))
-                {
-                    FontData = System.IO.File.ReadAllBytes("font.font_static");
-                }
+                if (File.Exists(fontFile))
+                    FontData = File.ReadAllBytes(fontFile);
             }
             catch (Exception)
             {
