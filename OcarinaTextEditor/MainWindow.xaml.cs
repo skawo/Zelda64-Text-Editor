@@ -675,7 +675,7 @@ namespace Zelda64TextEditor
             MajoraBoxCenter.Unchecked -= MajoraBoxCenter_Checked;
             TextBoxMsg_TextChanged(null, null);
             MajoraBoxCenter.Unchecked += MajoraBoxCenter_Checked;
-            MajoraBoxCenter.Unchecked += MajoraBoxCenter_Checked;
+            MajoraBoxCenter.Checked += MajoraBoxCenter_Checked;
         }
     }
 }
