@@ -673,7 +673,10 @@ namespace Zelda64TextEditor
 
                     if (parsedFixed == ZeldaMsgPreview.MajoraControlCode.NEW_BOX.ToString() || parsedFixed == ZeldaMsgPreview.MajoraControlCode.FADE_SKIPPABLE.ToString() || parsedFixed == ZeldaMsgPreview.MajoraControlCode.NEW_BOX_CENTER.ToString())
                     {
-                        outS = outS.Remove(outS.LastIndexOf(GetXString((byte)ZeldaMsgPreview.MajoraControlCode.LINE_BREAK)));
+                        int lastIndex = outS.LastIndexOf(GetXString((byte)ZeldaMsgPreview.OcarinaControlCode.LINE_BREAK));
+
+                        if (lastIndex > 0 && lastIndex + 6 == outS.Length)
+                            outS = outS.Remove(lastIndex);
 
                         if (TextData.Length > i + Environment.NewLine.Length)
                         {
@@ -906,7 +909,10 @@ namespace Zelda64TextEditor
 
                     if (parsedFixed == ZeldaMsgPreview.OcarinaControlCode.NEW_BOX.ToString() || parsedFixed == ZeldaMsgPreview.OcarinaControlCode.DELAY.ToString())
                     {
-                        outS = outS.Remove(outS.LastIndexOf(GetXString((byte)ZeldaMsgPreview.OcarinaControlCode.LINE_BREAK)));
+                        int lastIndex = outS.LastIndexOf(GetXString((byte)ZeldaMsgPreview.OcarinaControlCode.LINE_BREAK));
+
+                        if (lastIndex > 0 && lastIndex + 6 == outS.Length)
+                            outS = outS.Remove(lastIndex);
 
                         if (TextData.Length > i + Environment.NewLine.Length)
                         {
