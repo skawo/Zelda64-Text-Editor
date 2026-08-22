@@ -26,6 +26,7 @@ namespace NPC_Maker
 
             FileName = _Filename;
             sfxHPath = _sfxHPath;
+            Data = new List<ListEntry>();
 
             try
             {
