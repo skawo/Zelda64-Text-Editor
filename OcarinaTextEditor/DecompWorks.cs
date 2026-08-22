@@ -9,7 +9,7 @@ namespace Zelda64TextEditor
     public class ControlCodeInfo
     {
         public string Name;
-        public string ArgFormat; // 'b' = 1 byte, 'h' = 2 bytes (little-endian)
+        public string ArgFormat; // 'b' = 1 byte, 'h' = 2 bytes (big-endian)
         public Func<int, string>[] Formatters;
 
         public ControlCodeInfo(string name, string argFormat, params Func<int, string>[] formatters)
