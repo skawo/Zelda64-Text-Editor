@@ -120,6 +120,7 @@
     <Compile Include="Converters\BoolVisibilityConverter.cs" />
     <Compile Include="Converters\CharMapTextConverter.cs" />
     <Compile Include="Converters\NullToFalseConverter.cs" />
+    <Compile Include="DecompWorks.cs" />
     <Compile Include="Dicts.cs" />
     <Compile Include="Enums\EditorMode.cs" />
     <Compile Include="Enums\ExportType.cs" />

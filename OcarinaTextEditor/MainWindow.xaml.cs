@@ -176,13 +176,19 @@ namespace Zelda64TextEditor
             _ = textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Copy",  Command = ApplicationCommands.Copy });
             _ = textBoxMsg.ContextMenu.Items.Add(new MenuItem() { Header = "Paste", Command = ApplicationCommands.Paste });
 
-            MenuItem CopyAsCItem = new MenuItem() { Header = "Copy C String" };
-            CopyAsCItem.Click += CopyAsC;
+            MenuItem CopyAsCItem = new MenuItem() { Header = "Copy C string" };
+            CopyAsCItem.Click += CopyAsC_Click;
             textBoxMsg.ContextMenu.Items.Add(CopyAsCItem);
 
-            MenuItem PasteAsCItem = new MenuItem() { Header = "Paste C String" };
+            MenuItem PasteAsCItem = new MenuItem() { Header = "Paste C string" };
             PasteAsCItem.Click += PasteAsCItem_Click;
             textBoxMsg.ContextMenu.Items.Add(PasteAsCItem);
+
+            MenuItem CopyAsDecomp = new MenuItem() { Header = "Copy for decomp" };
+            CopyAsDecomp.Click += CopyAsDecomp_Click;
+            
+            if (!IsMajoraMode)
+                textBoxMsg.ContextMenu.Items.Add(CopyAsDecomp);
 
             if (IsMajoraMode)
             {
@@ -325,7 +331,7 @@ namespace Zelda64TextEditor
             }
         }
 
-        private void CopyAsC(object sender, RoutedEventArgs e)
+        private void CopyAsC_Click(object sender, RoutedEventArgs e)
         {
             ViewModel view = (ViewModel)DataContext;
             Message msg = new Message();
@@ -336,6 +342,22 @@ namespace Zelda64TextEditor
                 msg = (messageListView.SelectedItem as Message);
 
             string outS = msg.ConvertToCString(view.Version, view.CreditsMode, true);
+
+            if (outS != "")
+                Clipboard.SetText(outS);
+        }
+
+        private void CopyAsDecomp_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel view = (ViewModel)DataContext;
+            Message msg = new Message();
+
+            msg.TextData = textBoxMsg.SelectedText;
+
+            if (msg.TextData == "")
+                msg = (messageListView.SelectedItem as Message);
+
+            string outS = msg.ConvertToDecompString(view.Version, view.CreditsMode, true);
 
             if (outS != "")
                 Clipboard.SetText(outS);

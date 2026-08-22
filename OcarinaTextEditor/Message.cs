@@ -1,15 +1,29 @@
-﻿using System;
+﻿using GameFormatReader.Common;
+using MS.WindowsAPICodePack.Internal;
+using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 using Zelda64TextEditor.Enums;
-using GameFormatReader.Common;
 
 namespace Zelda64TextEditor
 {
+    public class MessageToken
+    {
+        public byte[] data;
+        public bool isControlChar;
+
+        public MessageToken(byte[] d, bool isCC)
+        {
+            data = d;
+            isControlChar = isCC;
+        }
+    }
+
     public class Message : INotifyPropertyChanged
     {
         #region NotifyPropertyChanged overhead
@@ -356,7 +370,7 @@ namespace Zelda64TextEditor
                     {
                         charData.AddRange($"<UNK {testByte:X}>");
                     }
-    
+
                 }
 
                 if (reader.BaseStream.Position != reader.BaseStream.Length)
@@ -400,7 +414,7 @@ namespace Zelda64TextEditor
                         charData.Add(Enum.GetName(typeof(ZeldaMsgPreview.OcarinaControlCode), testByte).First());
                     }
                     // ASCII-mapped characters
-                    else if((testByte >= 0x20 && testByte < 0x7F) || (char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte)))
+                    else if ((testByte >= 0x20 && testByte < 0x7F) || (char.IsLetterOrDigit((char)testByte) || char.IsWhiteSpace((char)testByte) || char.IsPunctuation((char)testByte)))
                     {
                         charData.Add((char)testByte);
                     }
@@ -484,7 +498,7 @@ namespace Zelda64TextEditor
                     byte id1 = reader.ReadByte();
                     byte id2 = reader.ReadByte();
                     byte id3 = reader.ReadByte();
-                    backgroundID = BitConverter.ToInt32(new byte[] { id3, id2, id1, 0 }, 0 );
+                    backgroundID = BitConverter.ToInt32(new byte[] { id3, id2, id1, 0 }, 0);
                     codeInsides = string.Format("{0}:{1}", ZeldaMsgPreview.OcarinaControlCode.BACKGROUND.ToString(), backgroundID);
                     break;
 
@@ -584,6 +598,14 @@ namespace Zelda64TextEditor
                 return ConvertMajoraTextToCString(ShowErrors);
             else
                 return ConvertTextToCString(ShowErrors);
+        }
+
+        public string ConvertToDecompString(ROMVer Version, bool Credits, bool ShowErrors = true)
+        {
+            if (ROMInfo.IsMajoraMask(Version) && !Credits)
+                return ConvertMajoraTextToCString(ShowErrors);
+            else
+                return ConvertTextToDecompString(ShowErrors);
         }
 
         private string ConvertMajoraTextToCString(bool ShowErrors = true)
@@ -931,7 +953,7 @@ namespace Zelda64TextEditor
                     }
 
                     List<byte> data = GetControlCode(parsedCode.Split(':'), ref errors);
-                    
+
                     foreach (byte b in data)
                     {
                         outS += GetXString(b);
@@ -950,6 +972,177 @@ namespace Zelda64TextEditor
                 return "";
         }
 
+        private string ConvertTextToDecompString(bool showErrors = true)
+        {
+            var errors = new List<string>();
+            var tokens = ConvertOcarinaTextToTokens(out errors);
+
+            if (showErrors && errors.Count != 0)
+            {
+                System.Windows.Forms.MessageBox.Show($"Errors parsing message {MessageID}: " + Environment.NewLine + string.Join(Environment.NewLine, errors));
+                return "";
+            }
+
+            var output = new StringBuilder();
+            bool prevWasTag = true;
+
+            // Appends text to the output, opening a new quoted string if the previous token was a control-code tag.
+            void AppendText(string text)
+            {
+                if (prevWasTag)
+                    output.Append('"');
+
+                prevWasTag = false;
+                output.Append(text);
+            }
+
+            foreach (var token in tokens)
+            {
+                if (!token.isControlChar)
+                {
+                    if ((char)token.data[0] == '\'')
+                        AppendText("\\\'");
+                    else if ((char)token.data[0] == '\"')
+                        AppendText("\\\"");
+                    else
+                        AppendText(((char)token.data[0]).ToString());
+
+                    continue;
+                }
+
+                byte firstByte = token.data.Length > 0 ? token.data[0] : (byte)0;
+
+                // Line breaks
+                if (token.data.Length == 1 && firstByte == (byte)ZeldaMsgPreview.OcarinaControlCode.LINE_BREAK)
+                {
+                    AppendText("\\n");
+                    output.Append("\"\n");
+                    prevWasTag = true;
+                }
+                // Box break
+                else if (token.data.Length == 1 && firstByte == (byte)ZeldaMsgPreview.OcarinaControlCode.NEW_BOX)
+                {
+                    if (!prevWasTag)
+                        output.Append('"');
+
+                    output.Append("\n");
+                    output.Append($"{DecompWorks.GetDecompControlCode(token.data)} ");
+                    output.Append("\n");
+                    prevWasTag = true;
+                }
+                // Stressed chars
+                else if (token.data.Length == 1 && 
+                    Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaControlCode), token.data[0].ToString()) && 
+                    Enum.TryParse(token.data[0].ToString(), out ZeldaMsgPreview.OcarinaControlCode ocarinaCode))
+                {
+                    AppendText(((char)ocarinaCode).ToString());
+                }
+                // Buttons (added as text, not as control codes)
+                else if (token.data.Length == 1
+                    && firstByte >= (byte)ZeldaMsgPreview.OcarinaControlCode.A_BUTTON
+                    && firstByte <= (byte)ZeldaMsgPreview.OcarinaControlCode.D_PAD)
+                {
+                    AppendText($"{DecompWorks.GetDecompControlCode(token.data)} ");
+                }
+                // Other control codes
+                else
+                {
+                    if (!prevWasTag)
+                        output.Append("\" ");
+
+                    output.Append($"{DecompWorks.GetDecompControlCode(token.data)} ");
+                    prevWasTag = true;
+                }
+            }
+
+            if (!prevWasTag)
+                output.Append('"');
+
+            return output.ToString().TrimEnd();
+        }
+
+        private List<MessageToken> ConvertOcarinaTextToTokens(out List<string> errors)
+        {
+            var tokens = new List<MessageToken>();
+            errors = new List<string>();
+
+            for (int i = 0; i < TextData.Length; i++)
+            {
+                char c = TextData[i];
+
+                // Got a control code
+                if (c == '<')
+                {
+                    var buffer = new List<char>();
+
+                    while (i < TextData.Length - 1 && TextData[i] != '>')
+                    {
+                        buffer.Add(TextData[i]);
+                        i++;
+                    }
+
+                    if (buffer.Count == 0)
+                        continue;
+
+                    // Drop the leading '<'
+                    buffer.RemoveAt(0);
+
+                    string parsedCode = new string(buffer.ToArray());
+                    List<byte> data = GetControlCode(parsedCode.Split(':'), ref errors);
+
+                    bool isBoxBreak = data.Count != 0 &&
+                        (data[0] == (byte)ZeldaMsgPreview.OcarinaControlCode.NEW_BOX ||
+                         data[0] == (byte)ZeldaMsgPreview.OcarinaControlCode.DELAY);
+
+                    if (isBoxBreak)
+                    {
+                        // Remove a trailing line break if a new box is starting right after one.
+                        var lastToken = tokens.LastOrDefault();
+
+                        if (lastToken != null && lastToken.data.Length != 0 && lastToken.isControlChar && lastToken.data[0] == (byte)ZeldaMsgPreview.OcarinaControlCode.LINE_BREAK)
+                        {
+                            tokens.RemoveAt(tokens.Count - 1);
+                        }
+                    }
+
+                    tokens.Add(new MessageToken(data.ToArray(), true));
+                    continue;
+                }
+                // Stray closing tag
+                else if(c == '>')
+                {
+                    errors.Add("Message formatting is not valid: found stray >");
+                    continue;
+                }
+                // Single-char ocarina control code
+                else if(Enum.TryParse(c.ToString(), out ZeldaMsgPreview.OcarinaControlCode ocarinaCode) && Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaControlCode), ocarinaCode))
+                {
+                    tokens.Add(new MessageToken(new byte[] { (byte)ocarinaCode }, true));
+                    continue;
+                }
+                // Linebreak
+                else if(c == '\n')
+                {
+                    var lastToken = tokens.LastOrDefault();
+
+                    bool lastWasBoxBreak = lastToken != null && lastToken.data.Length != 0 && lastToken.isControlChar && 
+                        (lastToken.data[0] == (byte)ZeldaMsgPreview.OcarinaControlCode.NEW_BOX ||
+                         lastToken.data[0] == (byte)ZeldaMsgPreview.OcarinaControlCode.DELAY);
+
+                    if (!lastWasBoxBreak)
+                        tokens.Add(new MessageToken(new byte[] { (byte)ZeldaMsgPreview.OcarinaControlCode.LINE_BREAK }, true));
+
+                    continue;
+                }
+                // Ignore carriage return
+                else if (c == '\r')
+                    continue;
+                else
+                    tokens.Add(new MessageToken(new byte[] { (byte)c }, false));
+            }
+
+            return tokens;
+        }
 
         private List<byte> ConvertTextData(bool ShowErrors = true)
         {
@@ -1133,7 +1326,7 @@ namespace Zelda64TextEditor
             return output;
         }
 
-    private List<byte> GetControlCode(string[] code, ref List<string> errors)
+        private List<byte> GetControlCode(string[] code, ref List<string> errors)
         {
             List<byte> output = new List<byte>();
             List<string> codesUpper = new List<string>();
