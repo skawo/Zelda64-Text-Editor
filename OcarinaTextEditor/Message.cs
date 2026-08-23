@@ -998,29 +998,32 @@ namespace Zelda64TextEditor
 
             foreach (var token in tokens)
             {
+                if (token.data.Length == 0)
+                    continue;
+
+                char c = (char)token.data[0];
+
                 if (!token.isControlChar)
                 {
-                    if ((char)token.data[0] == '\'')
+                    if (c == '\'')
                         AppendText("\\\'");
-                    else if ((char)token.data[0] == '\"')
+                    else if (c == '\"')
                         AppendText("\\\"");
                     else
-                        AppendText(((char)token.data[0]).ToString());
+                        AppendText(c.ToString());
 
                     continue;
                 }
 
-                byte firstByte = token.data.Length > 0 ? token.data[0] : (byte)0;
-
                 // Line breaks
-                if (token.data.Length == 1 && firstByte == (byte)ZeldaMsgPreview.OcarinaControlCode.LINE_BREAK)
+                if (token.data.Length == 1 && c == (byte)ZeldaMsgPreview.OcarinaControlCode.LINE_BREAK)
                 {
                     AppendText("\\n");
                     output.Append("\"\n");
                     prevWasTag = true;
                 }
                 // Box break
-                else if (token.data.Length == 1 && firstByte == (byte)ZeldaMsgPreview.OcarinaControlCode.NEW_BOX)
+                else if (token.data.Length == 1 && c == (byte)ZeldaMsgPreview.OcarinaControlCode.NEW_BOX)
                 {
                     if (!prevWasTag)
                         output.Append('"');
@@ -1032,15 +1035,15 @@ namespace Zelda64TextEditor
                 }
                 // Stressed chars
                 else if (token.data.Length == 1 && 
-                    Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaControlCode), token.data[0].ToString()) && 
-                    Enum.TryParse(token.data[0].ToString(), out ZeldaMsgPreview.OcarinaControlCode ocarinaCode))
+                    Enum.IsDefined(typeof(ZeldaMsgPreview.OcarinaControlCode), c.ToString()) && 
+                    Enum.TryParse(c.ToString(), out ZeldaMsgPreview.OcarinaControlCode ocarinaCode))
                 {
                     AppendText(((char)ocarinaCode).ToString());
                 }
                 // Buttons (added as text, not as control codes)
                 else if (token.data.Length == 1
-                    && firstByte >= (byte)ZeldaMsgPreview.OcarinaControlCode.A_BUTTON
-                    && firstByte <= (byte)ZeldaMsgPreview.OcarinaControlCode.D_PAD)
+                    && c >= (byte)ZeldaMsgPreview.OcarinaControlCode.A_BUTTON
+                    && c <= (byte)ZeldaMsgPreview.OcarinaControlCode.D_PAD)
                 {
                     AppendText($"{DecompWorks.GetDecompControlCode(token.data)} ");
                 }
