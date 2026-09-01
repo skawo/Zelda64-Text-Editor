@@ -1238,20 +1238,21 @@ namespace Zelda64TextEditor
 
         public static Message MakeCopy(Message mes)
         {
-            Message mesO = new Message();
-
-            mesO.TextData = mes.TextData;
-            mesO.MajoraFirstItemPrice = mes.MajoraFirstItemPrice;
-            mesO.MajoraBoxType = mes.MajoraBoxType;
-            mesO.MajoraIcon = mes.MajoraIcon;
-            mesO.MajoraNextMessage = mes.MajoraNextMessage;
-            mesO.MajoraSecondItemPrice = mes.MajoraSecondItemPrice;
-            mesO.BoxPosition = mes.BoxPosition;
-            mesO.BoxType = mes.BoxType;
-            mesO.MessageID = mes.MessageID;
-            mesO.Unskippable = mes.Unskippable;
-            mesO.MajoraTextCenter = mes.MajoraTextCenter;
-            mesO.MajoraDrawInstantly = mes.MajoraDrawInstantly;
+            Message mesO = new Message
+            {
+                TextData = mes.TextData,
+                MajoraFirstItemPrice = mes.MajoraFirstItemPrice,
+                MajoraBoxType = mes.MajoraBoxType,
+                MajoraIcon = mes.MajoraIcon,
+                MajoraNextMessage = mes.MajoraNextMessage,
+                MajoraSecondItemPrice = mes.MajoraSecondItemPrice,
+                BoxPosition = mes.BoxPosition,
+                BoxType = mes.BoxType,
+                MessageID = mes.MessageID,
+                Unskippable = mes.Unskippable,
+                MajoraTextCenter = mes.MajoraTextCenter,
+                MajoraDrawInstantly = mes.MajoraDrawInstantly
+            };
 
             return mesO;
         }
