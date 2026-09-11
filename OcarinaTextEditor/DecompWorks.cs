@@ -29,7 +29,7 @@ namespace Zelda64TextEditor
             [0x04] = new ControlCodeInfo("BOX_BREAK", "", null),
             [0x05] = new ControlCodeInfo("COLOR", "b", FormatColor),
             [0x06] = new ControlCodeInfo("SHIFT", "b", null),
-            [0x07] = new ControlCodeInfo("TEXTID", "h", null),
+            [0x07] = new ControlCodeInfo("TEXTID", "h", FormatToHexString),
             [0x08] = new ControlCodeInfo("QUICKTEXT_ENABLE", "", null),
             [0x09] = new ControlCodeInfo("QUICKTEXT_DISABLE", "", null),
             [0x0A] = new ControlCodeInfo("PERSISTENT", "", null),
@@ -330,6 +330,11 @@ namespace Zelda64TextEditor
         {
             var entry = Dicts.SFXes.FirstOrDefault(x => x.Value == id);
             return entry.Key != null ? entry.Key : $"{id}";
+        }
+
+        private static string FormatToHexString(int id)
+        {
+            return "0x" + id.ToString("X");
         }
 
         public static string GetDecompControlCode(byte[] b)
